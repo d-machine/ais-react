@@ -66,3 +66,52 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.parent {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 20px);
+}
+
+.child {
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.child1 { grid-column: span 10; }
+.child2 { grid-column: span 10; }
+.child3 { grid-column: span 10; }
+.child4 { grid-column: span 10; }
+.child5 { grid-column: span 5; justify-content: center; }
+.child6 { grid-column: span 20; }
+.child7 { grid-column: span 10; }
+.child8 { grid-column: span 20; }
+.child9 { grid-column: span 20; }
+.child10 { grid-column: span 20; }
+.child11 { grid-column: span 10; }
+.child12 { grid-column: span 10; }
+.child13 { grid-column: span 10; }
+.child14 { grid-column: span 10; }
+.child15 { grid-column: span 10; }
+
+.input {
+  max-width: 100%;
+}
+
+.input-1 { width: 100px; }
+.input-2 { width: 100px; }
+.input-3 { width: 100px; }
+.input-4 { width: 100px; }
+.input-5 { width: 50px; }
+.input-6 { width: 300px; }
+.input-7 { width: 100px; }
+.input-8 { width: 300px; }
+.input-9 { width: 300px; }
+.input-10 { width: 300px; }
+.input-11 { width: 100px; }
+.input-12 { width: 100px; }
+.input-13 { width: 100px; }
+.input-14 { width: 100px; }
+.input-15 { width: 100px; }

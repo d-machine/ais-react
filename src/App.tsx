@@ -1,23 +1,24 @@
-import Header from './header/Header';
-import TabContainer from './tabs/TabContainer';
-import { Tab } from './tabs/types';
+import Header from './components/header/Header';
+import TabContainer from './components/tabs/TabContainer';
+import { Tab } from './components/tabs/types';
 import styles from './App.module.css';
+import EntryForm from './components/EntryForm/EntryForm';
 
 const DEMO_TABS: Tab[] = [
   {
     id: 'tab1',
-    title: 'First Tab',
-    content: 'This is the content of the first tab'
+    title: 'Entry Form',
+    content: <EntryForm />
   },
   {
     id: 'tab2',
     title: 'Second Tab',
-    content: 'Content for the second tab goes here'
+    content: <div>Content for the second tab goes here</div>
   },
   {
     id: 'tab3',
     title: 'Third Tab',
-    content: 'Third tab content is displayed here'
+    content: <div>Third tab content is displayed here</div>
   }
 ];
 

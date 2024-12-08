@@ -1,0 +1,49 @@
+.parent {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 20px);
+    max-width: 1200px;
+  }
+
+  .child {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+.child1 { grid-column: span 10; }
+.child2 { grid-column: span 10; }
+.child3 { grid-column: span 10; }
+.child4 { grid-column: span 10; }
+.child5 { grid-column: span 5; justify-content: center; }
+.child6 { grid-column: span 20; }
+.child7 { grid-column: span 10; }
+.child8 { grid-column: span 20; }
+.child9 { grid-column: span 20; }
+.child10 { grid-column: span 20; }
+.child11 { grid-column: span 10; }
+.child12 { grid-column: span 10; }
+.child13 { grid-column: span 10; }
+.child14 { grid-column: span 10; }
+.child15 { grid-column: span 10; }
+
+.input {
+    max-width: 100%;
+  }
+
+.input1 { width: 100px; }
+.input2 { width: 100px; }
+.input3 { width: 100px; }
+.input4 { width: 100px; }
+.input5 { width: 50px; }
+.input6 { width: 300px; }
+.input7 { width: 100px; }
+.input8 { width: 300px; }
+.input9 { width: 300px; }
+.input10 { width: 300px; }
+.input11 { width: 100px; }
+.input12 { width: 100px; }
+.input13 { width: 100px; }
+.input14 { width: 100px; }
+.input15 { width: 100px; }
