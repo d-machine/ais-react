@@ -1,0 +1,35 @@
+.header {
+  display: block;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  height: 40px;
+}
+
+.header h1 {
+  margin: 0;
+  margin-left: 20px;
+  font-size: 24px;
+  color: #333;
+  font-weight: 500;
+}
+
+.divider {
+  flex-grow: 1;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+} 

@@ -1,0 +1,129 @@
+.menuContainer {
+  position: relative;
+}
+
+.menuButton {
+  cursor: pointer;
+  display: block;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 1000;
+  outline: none;
+}
+
+.menuButton:focus-visible {
+  outline: 2px solid #646cff;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.menuButton:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.bar {
+  width: 30px;
+  height: 3px;
+  background-color: #333;
+  position: absolute;
+  border-radius: 3px;
+  left: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.bar:nth-child(1) { top: 6px; }
+.bar:nth-child(2) { top: 14px; }
+.bar:nth-child(3) { top: 22px; }
+
+.open .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.open .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+.menuList {
+  position: absolute;
+  background: white;
+  min-width: 200px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: block;
+}
+
+/* First level menu positioning */
+.menuContainer > .menuList {
+  top: 40px;
+  left: 0;
+}
+
+/* Submenu positioning */
+.submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.2s;
+  margin-left: 1px;
+}
+
+.menuItemContainer {
+  position: relative;
+}
+
+.menuItem {
+  display: flex;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menuItem:hover {
+  background-color: #f5f5f5;
+}
+
+.menuItem:active {
+  background-color: #e8e8e8;
+}
+
+.hasChildren::after {
+  content: "›";
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+/* Show submenu on hover */
+.menuItemContainer:hover > .submenu {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Add hover area to help with submenu navigation */
+.submenu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -10px;
+  width: 10px;
+  height: 100%;
+  background: transparent;
+}
