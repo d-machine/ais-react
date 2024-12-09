@@ -1,0 +1,26 @@
+.row {
+    display: flex;
+    border-bottom: 1px solid #eee;
+}
+
+.cell {
+    min-width: 80px;
+    padding: 8px;
+    border-right: 1px solid rgb(186, 186, 222);
+    background-color: white;
+    overflow: hidden; 
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+}
+
+.cell:hover{
+    background-color: rgb(167, 167, 228);
+}
+
+.cellLeft {
+    text-align: left;
+}
+
+.cellRight {
+    text-align: right;
+}
