@@ -3,7 +3,6 @@ import TabContainer from './components/tabs/TabContainer';
 import { Tab } from './components/tabs/types';
 import styles from './App.module.css';
 import EntryForm from './components/EntryForm/EntryForm';
-import Table from './components/Table/Table';
 
 const DEMO_TABS: Tab[] = [
   {
@@ -29,7 +28,6 @@ function App() {
       <Header title="React Components Demo" />
       <main className={styles.content}>
         <TabContainer tabs={DEMO_TABS} />
-        <Table/>
       </main>
     </div>
   );

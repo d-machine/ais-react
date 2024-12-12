@@ -1,7 +1,8 @@
 import styles from './EntryForm.module.css';
-
+import Table from '../Table/Table';
 export default function EntryForm() {
   return (
+    <>
     <div className={styles.parent}>
       <div className={styles.child + ' ' + styles.child1}>
         <label>Ent No</label>
@@ -63,5 +64,7 @@ export default function EntryForm() {
         <input className={styles.input + ' ' + styles.input15} type="text" />
       </div>
     </div>
+      <Table/>
+    </>
   );
 } 
