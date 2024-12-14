@@ -1,16 +1,33 @@
 import styles from './EntryForm.module.css';
 import Table from '../Table/Table';
+import {useState} from 'react';
+import Modal from './SelectModal';
+
+
+interface DependencyField {
+  as: string;
+  key: string;
+}
+
+interface Dependency {
+  dependency: string;
+  fields: DependencyField[];
+}
+interface Field {
+  name:string;
+  type:string;
+  label:string;
+  grid_column:string;
+  dependencies:Dependency[];
+  select_query: string;
+  to_show?: string;
+  width:number;
+  input_width:number;
+}
 
 interface FormCongif{
   section:string;
-  fields:{
-    name:string;
-    type:string;
-    label:string;
-    grid_column:string;
-    width:number;
-    input_width:number;
-  }[];
+  fields:Field[];
 }
 
 const formConfig: FormCongif =
@@ -18,10 +35,13 @@ const formConfig: FormCongif =
   "section": "metadata",
   "fields": [{
       "name": "entryNo",
-      "type": "text",
+      "type": "text",//can be select
       "label": "Ent No",
       "grid_column": "span 10",
       "width": 200,
+      "dependencies":[],
+      "select_query":"",
+      to_show:"",
       "input_width": 100
   }, {
       "name": "entryDate",
@@ -29,6 +49,9 @@ const formConfig: FormCongif =
       "label": "Ent Date",
       "grid_column": "span 10",
       "width": 200,
+      "dependencies":[],
+      "select_query":"",
+      to_show:"",
       "input_width": 100
   },{
       "name": "challanNo",
@@ -36,6 +59,9 @@ const formConfig: FormCongif =
       "label": "Challan No",
       "grid_column": "span 10",
       "width": 200,
+      "dependencies":[],
+      "select_query":"",
+      to_show:"",
       "input_width": 100
   },{
       "name": "challanDate",
@@ -43,6 +69,9 @@ const formConfig: FormCongif =
       "label": "Challan Date",
       "grid_column": "span 10",
       "width": 200,
+      "dependencies":[],
+      "select_query":"",
+      to_show:"",
       "input_width": 100 //after this a button
   },{
     "name":"log",
@@ -50,6 +79,9 @@ const formConfig: FormCongif =
     "label":"Log",
     "grid_column": "span 5",
     "width":200,
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",
     "input_width":50
   },{
       "name": "Process",
@@ -57,26 +89,38 @@ const formConfig: FormCongif =
       "label": "Process",
       "grid_column": "span 20",
       "width": 200,
+      "dependencies":[],
+      "select_query":"",
+      to_show:"",
       "input_width": 300
   },{
     "name":"LotNo",
     "type":"text",    
     "label":"Lot No",
     "grid_column": "span 10",
-    "width":200,    
+    "width":200, 
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",   
     "input_width":100
   },{
     "name":"Party",
-    "type":"text",
+    "type":"select",
     "label":"Party",
     "grid_column": "span 20",
     "width":200,
+    "dependencies":[],
+    "select_query":"SELECT * FROM Party",
+    to_show:"name",
     "input_width":300
   },{
     "name":"Godown",
-    "type":"text",    
+    "type":"select",    
     "label":"Godown",
     "grid_column": "span 20",
+    "dependencies":[{"dependency":"Party",fields:[{ as:"party_id",key:"id" }]}], 
+    "select_query":"SELECT * FROM Godown WHERE party_id={party_id}",
+    "to_show":"name",
     "width":200,    
     "input_width":300
   },{
@@ -85,46 +129,127 @@ const formConfig: FormCongif =
     "label":"Transport",
     "grid_column": "span 20",
     "width":200,    
+    "dependencies":[],
+    "select_query":"",
+    to_show:"", 
     "input_width":300
   },{
     "name":"Lrno.",
     "type":"text",    
     "label":"Lrno.",
     "grid_column": "span 10",
-    "width":200,    
+    "width":200, 
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",    
     "input_width":100
   },{
     "name":"Lrdt.",
     "type":"date",    
     "label":"Lrdt.",
     "grid_column": "span 10",
-    "width":200,    
+    "width":200,
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",     
     "input_width":100
   },{
     "name":"Something",
     "type":"text",    
     "label":"Something",
     "grid_column": "span 10",
-    "width":200,    
+    "width":200,
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",     
     "input_width":100
   },{
     "name":"Shade",
     "type":"text",    
     "label":"Shade",
     "grid_column": "span 10",
-    "width":200,    
+    "width":200,
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",     
     "input_width":100
   },{
     "name":"Color",
     "type":"text",    
     "label":"Color",
     "grid_column": "span 10",
-    "width":200,    
+    "width":200, 
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",    
     "input_width":100
   }]
 }
 
 export default function EntryForm() {
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalName, setModalName] = useState('');
+  const [modalData, setModalData] = useState<Array<{ id: number ; name: string }>>([]);
+  const [selectedValues, setSelectedValues] = useState<{
+    [key: string]: { id: string | number; name: string };
+  }>({});
+
+  const handleInputDoubleClick = async (field: Field) => {
+    
+    if (field.dependencies.length > 0) {
+      const dependencies = field.dependencies;
+      for (const dependency of dependencies) {
+        const dependencyValue = selectedValues[dependency.dependency];
+        if (!dependencyValue) {
+          alert(`Please select a value for ${dependency.dependency}`);
+          return;
+        }
+      }
+      setModalTitle(field.label);
+      setModalName(field.name);
+      const data = await fetchData(field.name, selectedValues[dependencies[0].dependency]?.id);
+  
+      setModalData(data);
+      setModalOpen(true);
+    }
+    else{
+        setModalTitle(field.label);
+        setModalName(field.name);
+        const data = await fetchData(field.name, "");
+        setModalData(data);
+        setModalOpen(true);
+    }
+  };
+
+  const fetchData = async (name: string, id: string | number) => {
+    console.log(name);
+      try {
+        if(id){
+          const response = await fetch(`http://localhost:5000/get_data?table_name=${name}&id=${id}`);
+          const data = await response.json();
+          return data;
+        }
+        const response = await fetch(`http://localhost:5000/get_data?table_name=${name}`);
+        const data = await response.json();
+        return data; 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+      }
+  };
+  
+
+  const handleSelect = (name: string, value: { id: string | number; name: string }) => {
+    setSelectedValues((prevValues) => ({
+      ...prevValues,
+      [name]: value, 
+    }));
+  };
+  
+
+
   return (
     <>
     <div className={styles.parent}>
@@ -134,76 +259,39 @@ export default function EntryForm() {
       <button className={styles.input} style={{ width: field.input_width,textAlign:"center" }}>
         {field.label}
       </button>
-    ) : (
+    ) : field.type=="select" ? (
+      <>
+      <label>{field.label}</label>
+      <input
+        value={selectedValues[field.name] ? selectedValues[field.name].name : ''}
+        className={styles.input}
+        style={{ width: field.input_width }}
+        type="text"
+        readOnly
+        placeholder='Double Click'
+        onDoubleClick={() => handleInputDoubleClick(field)}
+      />
+    </>
+        ) : (
       <>
         <label>{field.label}</label>
         <input className={styles.input} style={{ width: field.input_width }} type={field.type} />
       </>
-    )}
+    )}  
   </div>
 ))}
 
+{
+      modalOpen &&
+      <Modal
+      onClose={() => setModalOpen(false)}
+      title={modalTitle}
+      data={modalData}
+      fieldname={modalName}
+      onSelect={ (name: string, value: { id: string | number; name: string })=>handleSelect(name, value)}
+    />
+    }
 
-
-      {/* <div className={styles.child + ' ' + styles.child1}>
-        <label>Ent No</label>
-        <input className={styles.input + ' ' + styles.input1} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child2}>
-        <label>Ent Date</label>
-        <input className={styles.input + ' ' + styles.input2} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child3}>
-        <label>Challan No</label>
-        <input className={styles.input + ' ' + styles.input3} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child4}>
-        <label>Challan Dt</label>
-        <input className={styles.input + ' ' + styles.input4} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child5}>
-        <button className={styles.input + ' ' + styles.input5}>Log</button>
-      </div>
-      <div className={styles.child + ' ' + styles.child6}>
-        <label>Process</label>
-        <input className={styles.input + ' ' + styles.input6} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child7}>
-        <label>Lot No</label>
-        <input className={styles.input + ' ' + styles.input7} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child8}>
-        <label>Party</label>
-        <input className={styles.input + ' ' + styles.input8} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child9}>
-        <label>Godown</label>
-        <input className={styles.input + ' ' + styles.input9} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child10}>
-        <label>Transport</label>
-        <input className={styles.input + ' ' + styles.input10} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child11}>
-        <label>Lrno.</label>
-        <input className={styles.input + ' ' + styles.input11} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child12}>
-        <label>Lrdt.</label>
-        <input className={styles.input + ' ' + styles.input12} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child13}>
-        <label>Something</label>
-        <input className={styles.input + ' ' + styles.input13} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child14}>
-        <label>Shade</label>
-        <input className={styles.input + ' ' + styles.input14} type="text" />
-      </div>
-      <div className={styles.child + ' ' + styles.child15}>
-        <label>Color</label>
-        <input className={styles.input + ' ' + styles.input15} type="text" />
-      </div> */}
     </div>
       <Table/>
     </>

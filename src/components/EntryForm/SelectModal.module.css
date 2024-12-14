@@ -11,6 +11,7 @@
     z-index: 5000;
   }
   
+  
   .modal {
     z-index: 5000;
     background: white;
@@ -20,26 +21,28 @@
     max-height: 90%;
     overflow-y: auto; 
   }
-  
-  .modal h2 {
+  .table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 20px;
   }
   
-  form label {
-    display: block;
-    margin-bottom: 10px;
+  .table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
   }
   
-  form input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 15px;
+  .closeButton {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
   }
   
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+  .closeButton:hover {
+    background-color: #0056b3;
   }
   
