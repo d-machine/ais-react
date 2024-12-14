@@ -32,15 +32,19 @@ export default function ModalForm({fields, onClose, onAdd }: ModalFormProps) {
         
         <form>
           {fields.map((field) => (
+            <div>
+
             <label key={field.name}>
               {field.label}
+              </label>
               <input
                 type={field.type==='number' ? 'number' : 'text'}
                 value={formValues[field.name] || ""}
                 onChange={(e) => setFormValues({ ...formValues, [field.name]: e.target.value })}/>
-              </label>
+            </div>
           ))}
-          <div className={styles.actions}>
+        </form>
+        <div className={styles.actions}>
             <button type="button" onClick={handleSubmit}>
               Add
             </button>
@@ -48,7 +52,6 @@ export default function ModalForm({fields, onClose, onAdd }: ModalFormProps) {
               Cancel
             </button>
           </div>
-        </form>
         {/*errorMessage && <p className={styles.error}>{errorMessage}</p>*/}
       </div>
     </div>

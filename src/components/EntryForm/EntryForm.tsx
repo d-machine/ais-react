@@ -2,7 +2,7 @@ import styles from './EntryForm.module.css';
 import Table from '../Table/Table';
 import {useState} from 'react';
 import Modal from './SelectModal';
-
+import _ from "lodash";
 
 interface DependencyField {
   as: string;
@@ -20,7 +20,7 @@ interface Field {
   grid_column:string;
   dependencies:Dependency[];
   select_query: string;
-  to_show?: string;
+  to_show: string;
   width:number;
   input_width:number;
 }
@@ -72,7 +72,7 @@ const formConfig: FormCongif =
       "dependencies":[],
       "select_query":"",
       to_show:"",
-      "input_width": 100 //after this a button
+      "input_width": 100 
   },{
     "name":"log",
     "type":"button",
@@ -110,7 +110,7 @@ const formConfig: FormCongif =
     "grid_column": "span 20",
     "width":200,
     "dependencies":[],
-    "select_query":"SELECT * FROM Party",
+    "select_query":"SELECT id,name FROM Party",
     to_show:"name",
     "input_width":300
   },{
@@ -119,7 +119,7 @@ const formConfig: FormCongif =
     "label":"Godown",
     "grid_column": "span 20",
     "dependencies":[{"dependency":"Party",fields:[{ as:"party_id",key:"id" }]}], 
-    "select_query":"SELECT * FROM Godown WHERE party_id={party_id}",
+    "select_query":"SELECT id,name FROM Godown WHERE party_id={party_id}",
     "to_show":"name",
     "width":200,    
     "input_width":300
@@ -197,50 +197,67 @@ export default function EntryForm() {
   }>({});
 
   const handleInputDoubleClick = async (field: Field) => {
-    
     if (field.dependencies.length > 0) {
-      const dependencies = field.dependencies;
-      for (const dependency of dependencies) {
-        const dependencyValue = selectedValues[dependency.dependency];
-        if (!dependencyValue) {
-          alert(`Please select a value for ${dependency.dependency}`);
-          return;
-        }
-      }
-      setModalTitle(field.label);
-      setModalName(field.name);
-      const data = await fetchData(field.name, selectedValues[dependencies[0].dependency]?.id);
+      const allDependenciesValid = validateDependencies(field.dependencies);
+      if (!allDependenciesValid) return;
+    }
   
-      setModalData(data);
-      setModalOpen(true);
-    }
-    else{
-        setModalTitle(field.label);
-        setModalName(field.name);
-        const data = await fetchData(field.name, "");
-        setModalData(data);
-        setModalOpen(true);
-    }
-  };
-
-  const fetchData = async (name: string, id: string | number) => {
-    console.log(name);
-      try {
-        if(id){
-          const response = await fetch(`http://localhost:5000/get_data?table_name=${name}&id=${id}`);
-          const data = await response.json();
-          return data;
-        }
-        const response = await fetch(`http://localhost:5000/get_data?table_name=${name}`);
-        const data = await response.json();
-        return data; 
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        return [];
-      }
+    setModalTitle(field.label);
+    setModalName(field.name);
+  
+    const dependencyData = parseDependencies(field.dependencies, selectedValues);
+    console.log(dependencyData, "dependencyData");
+  
+    const data = await fetchData(field.name, field.select_query, dependencyData);
+  
+    setModalData(data);
+    setModalOpen(true);
   };
   
-
+  const validateDependencies = (dependencies: Dependency[]) => {
+    for (const dependency of dependencies) {
+      const dependencyValue = selectedValues[dependency.dependency];
+      if (!dependencyValue) {
+        alert(`Please select a value for ${dependency.dependency}`);
+        return false;
+      }
+    }
+    return true;
+  };
+  
+  const fetchData = async (
+    name: string,
+    select_query: string,
+    dependencyData: { [key: string]: string | number }
+  ) => {
+    const response = await fetch(
+      `http://localhost:5000/get_data?table=${name}&select_query=${select_query}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dependencyData),
+      }
+    );
+    const data = await response.json();
+    return data;
+  };
+  
+  function parseDependencies(
+    dependencies: Dependency[],
+    data: { [key: string]: { id: string | number; name: string } }
+  ) {
+    const _dependenciesData: { [key: string]: string | number } = {};
+    _.forEach(dependencies, ({ dependency, fields }) => {
+      const dependencyData = data?.[dependency];
+      _.forEach(fields, (field) => {
+        _dependenciesData[field.as] = _.get(dependencyData, field.key);
+      });
+    });
+    return _dependenciesData;
+  }
+  
   const handleSelect = (name: string, value: { id: string | number; name: string }) => {
     setSelectedValues((prevValues) => ({
       ...prevValues,
