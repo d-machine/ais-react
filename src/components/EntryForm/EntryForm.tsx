@@ -3,6 +3,9 @@ import Table from '../Table/Table';
 import {useState} from 'react';
 import Modal from './SelectModal';
 import _ from "lodash";
+import { useFormStore } from '../../entryformStore';
+import Form from '../Input/Index';
+
 
 interface DependencyField {
   as: string;
@@ -73,7 +76,8 @@ const formConfig: FormCongif =
       "select_query":"",
       to_show:"",
       "input_width": 100 
-  },{
+  }
+  ,{
     "name":"log",
     "type":"button",
     "label":"Log",
@@ -83,7 +87,9 @@ const formConfig: FormCongif =
     "select_query":"",
     to_show:"",
     "input_width":50
-  },{
+  }
+  
+  ,{
       "name": "Process",
       "type": "text",
       "label": "Process",
@@ -120,6 +126,7 @@ const formConfig: FormCongif =
     "grid_column": "span 20",
     "dependencies":[{"dependency":"Party",fields:[{ as:"party_id",key:"id" }]}], 
     "select_query":"SELECT id,name FROM Godown WHERE party_id={party_id}",
+    //"select_config+data" 
     "to_show":"name",
     "width":200,    
     "input_width":300
@@ -192,125 +199,67 @@ export default function EntryForm() {
   const [modalTitle, setModalTitle] = useState('');
   const [modalName, setModalName] = useState('');
   const [modalData, setModalData] = useState<Array<{ id: number ; name: string }>>([]);
-  const [selectedValues, setSelectedValues] = useState<{
-    [key: string]: { id: string | number; name: string };
-  }>({});
 
-  const handleInputDoubleClick = async (field: Field) => {
-    if (field.dependencies.length > 0) {
-      const allDependenciesValid = validateDependencies(field.dependencies);
-      if (!allDependenciesValid) return;
-    }
+
+  const {
+    formData,
+    selectedValues,
+    setFormData,
+    setSelectedValues,
+  } = useFormStore();
+
   
-    setModalTitle(field.label);
-    setModalName(field.name);
-  
-    const dependencyData = parseDependencies(field.dependencies, selectedValues);
-    console.log(dependencyData, "dependencyData");
-  
-    const data = await fetchData(field.name, field.select_query, dependencyData);
-  
-    setModalData(data);
-    setModalOpen(true);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(e.target.name, e.target.value); 
   };
-  
-  const validateDependencies = (dependencies: Dependency[]) => {
-    for (const dependency of dependencies) {
-      const dependencyValue = selectedValues[dependency.dependency];
-      if (!dependencyValue) {
-        alert(`Please select a value for ${dependency.dependency}`);
-        return false;
-      }
-    }
-    return true;
-  };
-  
-  const fetchData = async (
-    name: string,
-    select_query: string,
-    dependencyData: { [key: string]: string | number }
-  ) => {
-    const response = await fetch(
-      `http://localhost:5000/get_data?table=${name}&select_query=${select_query}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dependencyData),
-      }
-    );
-    const data = await response.json();
-    return data;
-  };
-  
-  function parseDependencies(
-    dependencies: Dependency[],
-    data: { [key: string]: { id: string | number; name: string } }
-  ) {
-    const _dependenciesData: { [key: string]: string | number } = {};
-    _.forEach(dependencies, ({ dependency, fields }) => {
-      const dependencyData = data?.[dependency];
-      _.forEach(fields, (field) => {
-        _dependenciesData[field.as] = _.get(dependencyData, field.key);
-      });
-    });
-    return _dependenciesData;
-  }
-  
+
   const handleSelect = (name: string, value: { id: string | number; name: string }) => {
-    setSelectedValues((prevValues) => ({
-      ...prevValues,
-      [name]: value, 
-    }));
+    setSelectedValues(name, value); 
+    setFormData(name, value.name); 
   };
-  
-
+  const submitForm=async()=>{
+    console.log(formData)
+  }
 
   return (
     <>
-    <div className={styles.parent}>
-    {formConfig.fields.map((field) => (
-  <div key={field.name} className={styles.child} style={{ gridColumn: field.grid_column }}>
-    {field.type === "button" ? (
-      <button className={styles.input} style={{ width: field.input_width,textAlign:"center" }}>
-        {field.label}
-      </button>
-    ) : field.type=="select" ? (
-      <>
-      <label>{field.label}</label>
-      <input
-        value={selectedValues[field.name] ? selectedValues[field.name].name : ''}
-        className={styles.input}
-        style={{ width: field.input_width }}
-        type="text"
-        readOnly
-        placeholder='Double Click'
-        onDoubleClick={() => handleInputDoubleClick(field)}
-      />
-    </>
-        ) : (
-      <>
-        <label>{field.label}</label>
-        <input className={styles.input} style={{ width: field.input_width }} type={field.type} />
-      </>
-    )}  
-  </div>
-))}
+      <div className={styles.parent}>
+      {
+          formConfig.fields.map((field) => (
+              <div key={field.name} className={styles.child} style={{ gridColumn: field.grid_column }}>
+                  <Form 
+                    key={field.name} 
+                    field={field} 
+                    handleInputChange={handleInputChange} 
+                    formData={formData}
+                    selectedValues={selectedValues}
+                    setModalData={setModalData} 
+                    setModalName={setModalName}
+                    setModalTitle={setModalTitle}
+                    setModalOpen={setModalOpen}
+                  />
+              </div>
+          ))
+        }
+  <button onClick={submitForm}>Submit</button>
+  
+  {
+  modalOpen &&
+  <Modal
+  onClose={() => setModalOpen(false)}
+  title={modalTitle}
+  data={modalData} 
+  fieldname={modalName}
+  onSelect={ (name: string, value: { id: string | number; name: string })=>handleSelect(name, value)}
+/>
+}
 
-{
-      modalOpen &&
-      <Modal
-      onClose={() => setModalOpen(false)}
-      title={modalTitle}
-      data={modalData}
-      fieldname={modalName}
-      onSelect={ (name: string, value: { id: string | number; name: string })=>handleSelect(name, value)}
-    />
-    }
-
-    </div>
-      <Table/>
+</div>
+<Table />
     </>
   );
 } 
+
+
+
