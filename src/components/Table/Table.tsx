@@ -2,7 +2,6 @@ import { useState } from "react";
 import clsx from 'clsx';
 import styles from "./Table.module.css";
 import ModalForm from "./Modal";
-import {useGridStore} from "../../store";
 
 // Type Definitions
 interface Field {
