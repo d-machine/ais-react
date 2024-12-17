@@ -1,9 +1,9 @@
-import { InputType } from "./types";
+import { EInputType } from "./types";
 import InputSelect from "./InputSelect";
 import InputText from "./InputText";
 import InputDate from "./InputDate";
 import InputButton from "./InputButton";
-
+import styles from "../EntryForm/EntryForm.module.css"
 
 interface DependencyField{
     as: string;
@@ -17,7 +17,7 @@ interface Dependency{
 
 interface Field{
     name:string;
-    type:string;
+    type:EInputType;
     label:string;
     grid_column:string;
     dependencies:Dependency[];
@@ -28,38 +28,45 @@ interface Field{
 };  
 
 interface InputProps{
-    field:Field;
-    handleInputChange:(e: React.ChangeEvent<HTMLInputElement>) => void;
+    fields:Field[];
     formData: { [key: string]: string | number };
     selectedValues: { [key: string]: { id: string | number; name: string } };
-    setModalTitle: (title: string) => void;
-    setModalName: (name: string) => void;
-    setModalData: (data: Array<{ id: number ; name: string }>) => void;
-    setModalOpen: (open: boolean) => void;
+    setSelectedValues: (name: string, value: { id: string | number; name: string }) => void;
+    setFormData: (name: string, value: string | number) => void;
 }
 
 const INPUT_MAP = {
-    [InputType.TEXT]: InputText,
-    [InputType.DATE]: InputDate,
-    [InputType.SELECT]: InputSelect,
-    [InputType.BUTTON]:InputButton
+    [EInputType.TEXT]: InputText,
+    [EInputType.DATE]: InputDate,
+    [EInputType.SELECT]: InputSelect,
+    [EInputType.BUTTON]:InputButton
   } ;
   
 
 
-export default function Form({field,handleInputChange, formData,selectedValues,setModalTitle,setModalName,setModalData,setModalOpen}:InputProps){
-    const INPUT = INPUT_MAP[field.type];
-
+export default function Form({fields, formData,selectedValues,setSelectedValues,setFormData}:InputProps){
     return (
-        <INPUT field={field}  handleInputChange={handleInputChange} formData={formData}
+        <div className={styles.parent}>
+        {
+            fields.map((field) => {
 
-        selectedValues={selectedValues} 
-        setModalTitle={setModalTitle} 
-        setModalName={setModalName} 
-        setModalData={setModalData} 
-        setModalOpen={setModalOpen}
-
-        />
+                const INPUT = INPUT_MAP[field.type];
+               return (
+                    <div key={field.name} className={styles.child} style={{ gridColumn: field.grid_column }}>
+                        <INPUT 
+                          key={field.name} 
+                          field={field} 
+                          formData={formData}
+                          selectedValues={selectedValues}
+                          setFormData={setFormData}
+                          setSelectedValues={setSelectedValues}
+                        />
+                    </div>
+                )
+            }
+                )
+          }
+        </div>
     );
 }
 

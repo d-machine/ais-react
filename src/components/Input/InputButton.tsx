@@ -17,11 +17,10 @@ interface InputButtonProps {
 
 export default function InputButton({ field }: InputButtonProps) {
   return (
-    <button
+    <input type="button"
+    value={field.label}
       className={styles.input}
       style={{ width: field.input_width, textAlign: "center" }}
-    >
-      {field.label}
-    </button>
+    />
   );
 }

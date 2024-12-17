@@ -13,11 +13,16 @@ interface Field {
 
 interface InputDateProps {
     field: Field;
-    handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     formData: { [key: string]: string | number };
+    setFormData: (name: string, value: string | number) => void;
 }
 
-export default function InputDate({field,handleInputChange, formData}:InputDateProps) {
+
+export default function InputDate({field, formData,setFormData}:InputDateProps) {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(e.target.name, e.target.value); 
+  };
+  
     return (
         <>
         <label>{field.label}</label>

@@ -13,11 +13,14 @@ interface Field {
 
 interface InputTextProps {
     field: Field;
-    handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     formData: { [key: string]: string | number };
+    setFormData: (name: string, value: string | number) => void
 }
 
-export default function InputText({field,handleInputChange, formData}:InputTextProps) {
+export default function InputText({field, formData,setFormData}:InputTextProps) {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(e.target.name, e.target.value); 
+  };
     return (
         <>
         <label>{field.label}</label>

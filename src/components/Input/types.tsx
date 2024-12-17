@@ -1,4 +1,4 @@
-export enum InputType {
+export enum EInputType {
     TEXT = 'text',
     DATE = 'date',
     SELECT = 'select',

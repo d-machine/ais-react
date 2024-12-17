@@ -1,9 +1,7 @@
-import styles from './EntryForm.module.css';
 import Table from '../Table/Table';
-import {useState} from 'react';
-import Modal from './SelectModal';
 import _ from "lodash";
 import { useFormStore } from '../../entryformStore';
+import { EInputType } from '../Input/types';
 import Form from '../Input/Index';
 
 
@@ -18,7 +16,7 @@ interface Dependency {
 }
 interface Field {
   name:string;
-  type:string;
+  type:EInputType;
   label:string;
   grid_column:string;
   dependencies:Dependency[];
@@ -38,7 +36,7 @@ const formConfig: FormCongif =
   "section": "metadata",
   "fields": [{
       "name": "entryNo",
-      "type": "text",//can be select
+      "type": EInputType.TEXT,//can be select
       "label": "Ent No",
       "grid_column": "span 10",
       "width": 200,
@@ -48,7 +46,7 @@ const formConfig: FormCongif =
       "input_width": 100
   }, {
       "name": "entryDate",
-      "type": "date",
+      "type": EInputType.DATE,
       "label": "Ent Date",
       "grid_column": "span 10",
       "width": 200,
@@ -58,7 +56,7 @@ const formConfig: FormCongif =
       "input_width": 100
   },{
       "name": "challanNo",
-      "type": "text",
+      "type": EInputType.TEXT,
       "label": "Challan No",
       "grid_column": "span 10",
       "width": 200,
@@ -68,7 +66,7 @@ const formConfig: FormCongif =
       "input_width": 100
   },{
       "name": "challanDate",
-      "type": "date",
+      "type": EInputType.DATE,
       "label": "Challan Date",
       "grid_column": "span 10",
       "width": 200,
@@ -79,7 +77,7 @@ const formConfig: FormCongif =
   }
   ,{
     "name":"log",
-    "type":"button",
+    "type":EInputType.BUTTON,
     "label":"Log",
     "grid_column": "span 5",
     "width":200,
@@ -91,7 +89,7 @@ const formConfig: FormCongif =
   
   ,{
       "name": "Process",
-      "type": "text",
+      "type": EInputType.TEXT,
       "label": "Process",
       "grid_column": "span 20",
       "width": 200,
@@ -101,7 +99,7 @@ const formConfig: FormCongif =
       "input_width": 300
   },{
     "name":"LotNo",
-    "type":"text",    
+    "type":EInputType.TEXT,    
     "label":"Lot No",
     "grid_column": "span 10",
     "width":200, 
@@ -111,7 +109,7 @@ const formConfig: FormCongif =
     "input_width":100
   },{
     "name":"Party",
-    "type":"select",
+    "type":EInputType.SELECT,
     "label":"Party",
     "grid_column": "span 20",
     "width":200,
@@ -121,7 +119,7 @@ const formConfig: FormCongif =
     "input_width":300
   },{
     "name":"Godown",
-    "type":"select",    
+    "type":EInputType.SELECT,    
     "label":"Godown",
     "grid_column": "span 20",
     "dependencies":[{"dependency":"Party",fields:[{ as:"party_id",key:"id" }]}], 
@@ -132,7 +130,7 @@ const formConfig: FormCongif =
     "input_width":300
   },{
     "name":"Transport",
-    "type":"text",
+    "type":EInputType.TEXT,
     "label":"Transport",
     "grid_column": "span 20",
     "width":200,    
@@ -142,7 +140,7 @@ const formConfig: FormCongif =
     "input_width":300
   },{
     "name":"Lrno.",
-    "type":"text",    
+    "type":EInputType.TEXT,    
     "label":"Lrno.",
     "grid_column": "span 10",
     "width":200, 
@@ -152,7 +150,7 @@ const formConfig: FormCongif =
     "input_width":100
   },{
     "name":"Lrdt.",
-    "type":"date",    
+    "type":EInputType.DATE,    
     "label":"Lrdt.",
     "grid_column": "span 10",
     "width":200,
@@ -162,7 +160,7 @@ const formConfig: FormCongif =
     "input_width":100
   },{
     "name":"Something",
-    "type":"text",    
+    "type":EInputType.TEXT,    
     "label":"Something",
     "grid_column": "span 10",
     "width":200,
@@ -172,7 +170,7 @@ const formConfig: FormCongif =
     "input_width":100
   },{
     "name":"Shade",
-    "type":"text",    
+    "type":EInputType.TEXT,    
     "label":"Shade",
     "grid_column": "span 10",
     "width":200,
@@ -182,7 +180,7 @@ const formConfig: FormCongif =
     "input_width":100
   },{
     "name":"Color",
-    "type":"text",    
+    "type":EInputType.TEXT,    
     "label":"Color",
     "grid_column": "span 10",
     "width":200, 
@@ -190,16 +188,20 @@ const formConfig: FormCongif =
     "select_query":"",
     to_show:"",    
     "input_width":100
+  },{
+    "name":"Submit",
+    "type":EInputType.BUTTON,
+    "label":"Submit",
+    "grid_column": "span 5",
+    "width":200,  
+    "dependencies":[],
+    "select_query":"",
+    to_show:"",    
+    "input_width":50
   }]
 }
 
 export default function EntryForm() {
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalName, setModalName] = useState('');
-  const [modalData, setModalData] = useState<Array<{ id: number ; name: string }>>([]);
-
 
   const {
     formData,
@@ -208,55 +210,17 @@ export default function EntryForm() {
     setSelectedValues,
   } = useFormStore();
 
-  
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(e.target.name, e.target.value); 
-  };
-
-  const handleSelect = (name: string, value: { id: string | number; name: string }) => {
-    setSelectedValues(name, value); 
-    setFormData(name, value.name); 
-  };
-  const submitForm=async()=>{
-    console.log(formData)
-  }
 
   return (
     <>
-      <div className={styles.parent}>
-      {
-          formConfig.fields.map((field) => (
-              <div key={field.name} className={styles.child} style={{ gridColumn: field.grid_column }}>
-                  <Form 
-                    key={field.name} 
-                    field={field} 
-                    handleInputChange={handleInputChange} 
-                    formData={formData}
-                    selectedValues={selectedValues}
-                    setModalData={setModalData} 
-                    setModalName={setModalName}
-                    setModalTitle={setModalTitle}
-                    setModalOpen={setModalOpen}
-                  />
-              </div>
-          ))
-        }
-  <button onClick={submitForm}>Submit</button>
-  
-  {
-  modalOpen &&
-  <Modal
-  onClose={() => setModalOpen(false)}
-  title={modalTitle}
-  data={modalData} 
-  fieldname={modalName}
-  onSelect={ (name: string, value: { id: string | number; name: string })=>handleSelect(name, value)}
-/>
-}
-
-</div>
-<Table />
+    <Form
+        fields={formConfig.fields}
+        formData={formData}
+        selectedValues={selectedValues}
+        setFormData={setFormData}
+        setSelectedValues={setSelectedValues}
+    />
+    <Table />
     </>
   );
 } 

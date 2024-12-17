@@ -1,6 +1,7 @@
-
-import styles from "../EntryForm/EntryForm.module.css"
+import Modal from "./SelectModal";
+import styles from "./SelectModal.module.css"
 import _ from "lodash";
+import { useState } from "react";
 interface DependencyField {
     as: string;
     key: string;
@@ -25,13 +26,17 @@ interface DependencyField {
 interface InputSelectProps {
     field:Field;
     selectedValues: { [key: string]: { id: string | number; name: string } };
-    setModalTitle: (title: string) => void;
-    setModalName: (name: string) => void;
-    setModalData: (data: Array<{ id: number; name: string }>) => void;
-    setModalOpen: (open: boolean) => void;
+    setSelectedValues: (name: string, value: { id: string | number; name: string }) => void;
+    setFormData: (name: string, value: string | number) => void
 }
 
-export default function InputSelect({field,selectedValues,setModalTitle,setModalName,setModalData,setModalOpen}:InputSelectProps) {
+export default function InputSelect({field,selectedValues,setSelectedValues,setFormData}:InputSelectProps) {
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalName, setModalName] = useState('');
+    const [modalData, setModalData] = useState<Array<{ id: number ; name: string }>>([]);
+
 const handleInputDoubleClick = async (field: Field) => {
     if (field.dependencies.length > 0) {
       const allDependenciesValid = validateDependencies(field.dependencies);
@@ -95,6 +100,11 @@ const handleInputDoubleClick = async (field: Field) => {
     return _dependenciesData;
   }
 
+  const handleSelect = (name: string, value: { id: string | number; name: string }) => {
+    setSelectedValues(name, value); 
+    setFormData(name, value.name); 
+  };
+
     return(
         <>
         <label>{field.label}</label>
@@ -107,6 +117,16 @@ const handleInputDoubleClick = async (field: Field) => {
             placeholder="Double Click"
             onDoubleClick={() => handleInputDoubleClick(field)}
         />
+          {
+          modalOpen &&
+          <Modal
+          onClose={() => setModalOpen(false)}
+          title={modalTitle}
+          data={modalData} 
+          fieldname={modalName}
+          onSelect={ (name: string, value: { id: string | number; name: string })=>handleSelect(name, value)}
+        />
+        }
         </>
     );
 }
