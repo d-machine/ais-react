@@ -1,26 +1,27 @@
-import  { useState } from "react";
-import TableHeader from "./TableHeader";
-import TableRow from "./TableRow";
-import ModalForm from "./Modal";
+import { useState } from "react";
+import clsx from 'clsx';
 import styles from "./Table.module.css";
+import ModalForm from "./Modal";
+
+// Type Definitions
+interface Field {
+  name: string;
+  type: string;
+  label: string;
+  minColumnWidth: string;
+  width: string;
+}
 
 interface TableConfig {
   section: string;
   width: string;
-  fields: {
-    name: string;
-    type: string;
-    label: string;
-    minColumnWidth: string;
-    width: string;
-  }[];
+  fields: Field[];
 }
 
-
-const tableConfig: TableConfig = {
+const TABLE_CONFIG: TableConfig = {
   section: "table-grid",
   width: "1200px",
-  fields :[
+  fields: [
     { name: "quality", type: "text", label: "Quality", minColumnWidth: "100px", width: "200px" },
     { name: "Recqty", type: "number", label: "Rec Qty", minColumnWidth: "100px", width: "150px" },
     { name: "Sno", type: "number", label: "S No", minColumnWidth: "100px", width: "100px" },
@@ -37,50 +38,69 @@ const tableConfig: TableConfig = {
     { name: "barcodeno", type: "number", label: "Barcode No", minColumnWidth: "100px", width: "150px" },
     { name: "Rack", type: "text", label: "Rack", minColumnWidth: "100px", width: "150px" }
   ]
-  
 };
-
 export default function Table() {
-
-  
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [rows, setRows] = useState<{ [key: string]: string | number }[]>([]);
 
-const [rows, setRows] = useState<
-    { [key: string]: string | number }[]
-  >([]);
-
-
-  const handleAddRow = (newRow: { [key: string]: string | number }) => {
-    setRows([...rows, newRow]);
+  const handleAddRow =(newRow: { [key: string]: string | number }) => {
+    setRows(prevRows => [...prevRows, { ...newRow, id: Date.now() }]);
   };
 
   return (
-    <div className={styles.tableContainer}>
-      <button className={styles.addButton} onClick={() => setIsModalOpen(true)}>
+    <div className={styles.tableWrapper}>
+      <button 
+        className={styles.addButton} 
+        onClick={() => setIsModalOpen(true)}
+      >
         Add Field
       </button>
-      <div className={styles.table}>
-        <TableHeader fields={tableConfig.fields} />
-
-        <div className={styles.tableBody}>
-          {rows.map((row) => (
-            <TableRow key={row.id} data={row} fields={tableConfig.fields} />
-          ))}
-        </div>
+      
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+        <thead>
+      <tr className={styles.headerRow}>
+        {TABLE_CONFIG.fields.map((field) => (
+          <th 
+            key={field.name} 
+            className={styles.headerCell} 
+            style={{ minWidth: field.minColumnWidth }}
+          >
+            {field.label}
+          </th>
+        ))}
+      </tr>
+    </thead>
+          <tbody>
+            {    rows.map((row) => (
+      <tr key={row.id} className={styles.row}>
+        {TABLE_CONFIG.fields.map((field) => (
+          <td 
+            key={field.name} 
+            className={clsx(
+              styles.cell, 
+              field.type === 'number' ? styles.cellRight : styles.cellLeft
+            )}
+          >
+            {row[field.name]}
+          </td>
+        ))}
+      </tr>
+    ))}
+          </tbody>
+        </table>
+        
+        {isModalOpen && (
+          <ModalForm
+            fields={TABLE_CONFIG.fields}
+            onClose={() => setIsModalOpen(false)}
+            onAdd={(newRow) => {
+              handleAddRow(newRow);
+              setIsModalOpen(false);
+            }}
+          />
+        )}
       </div>
-      {isModalOpen && (
-        <ModalForm
-
-        fields={tableConfig.fields}
-
-          onClose={() => setIsModalOpen(false)}
-          onAdd={(newRow) => {
-            handleAddRow(newRow);
-            setIsModalOpen(false);
-          }}
-        />
-      )}
     </div>
   );
 }
