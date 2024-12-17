@@ -7,6 +7,11 @@ interface FormState {
   setSelectedValues: (name: string, value: { id: string | number; name: string }) => void;
 }
 
+interface GridState{
+  rows: { [key: string]: string | number }[];
+  setRows:(row: { [key: string]: string | number }) => void
+}
+
 export const useFormStore = create<FormState>((set) => ({
   formData: {},
   selectedValues: {},
@@ -20,3 +25,10 @@ export const useFormStore = create<FormState>((set) => ({
   })),
 }));
 
+
+export const useGridStore = create<GridState>((set) => ({
+  rows: [],
+  setRows: (row) => set((state) => ({
+    rows: [...state.rows, row]
+  })),
+}));
