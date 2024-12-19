@@ -2,27 +2,30 @@ import { useState } from "react";
 import clsx from 'clsx';
 import styles from "./Table.module.css";
 import ModalForm from "./Modal";
+import { EGridTye } from "../Input/types";
 
 // Type Definitions
 interface Field {
   name: string;
-  type: string;
-  label: string;
-  minColumnWidth: string;
-  width: string;
+  type:EGridTye;
+  label: string;    
+  required: boolean;
+  readOnly: boolean;
+  columnWidth: number;
 }
 
 
 interface TableProps {
+  id:string,
   fields: Field[]
   rows:{[key:string]:string | number}[];
-  setRows: (row: { [key: string]: string | number }) => void
+  setRows: (id: string, row: { [key: string]: string | number }) => void
 }
-export default function Table({fields,rows,setRows}:TableProps) {
+export default function Table({id,fields,rows,setRows}:TableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleAddRow =(newRow: { [key: string]: string | number }) => {
-    setRows(newRow);
+  const handleAddRow =( newRow: { [key: string]: string | number }) => {
+    setRows(id,newRow);
   };
 
   return (
@@ -42,7 +45,7 @@ export default function Table({fields,rows,setRows}:TableProps) {
           <th 
             key={field.name} 
             className={styles.headerCell} 
-            style={{ minWidth: field.minColumnWidth }}
+            style={{ minWidth: field.columnWidth }}
           >
             {field.label}
           </th>

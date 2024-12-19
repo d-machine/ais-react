@@ -2,60 +2,63 @@ import Modal from "./SelectModal";
 import styles from "./SelectModal.module.css"
 import _ from "lodash";
 import { useState } from "react";
-interface DependencyField {
-    as: string;
-    key: string;
-  }
-  
-  interface Dependency {
-    dependency: string;
-    fields: DependencyField[];
-  }
-  interface Field {
-    name:string;
-    type:string;
-    label:string;
-    grid_column:string;
-    dependencies:Dependency[];
-    select_query: string;
-    to_show: string;
-    width:number;
-    input_width:number;
-  }
-
-interface InputSelectProps {
-    field:Field;
-    selectedValues: { [key: string]: { id: string | number; name: string } };
-    setSelectedValues: (name: string, value: { id: string | number; name: string }) => void;
-    setFormData: (name: string, value: string | number) => void
+import {  EInputType } from "./types";
+interface IDependencyField {
+  as: string;
+  key: string;
 }
 
-export default function InputSelect({field,selectedValues,setSelectedValues,setFormData}:InputSelectProps) {
+interface IDependency {
+  dependency: string;
+  fields: IDependencyField[];
+}
+interface IInput {
+  name:string;
+  label:string;
+  type:EInputType;
+  required: boolean;
+  readOnly: boolean;
+  grid_column:string;
+  dependencies?:IDependency[];
+  selectQuery?: string;
+  value?: string;
+  width:number;
+  input_width:number;
+}
+
+interface InputSelectProps {
+  id:string,
+    field:IInput;
+    selectedValues: { [key: string]: { id: string | number; name: string } };
+    setSelectedValues: (id : string,name: string, value: { id: string | number; name: string }) => void;
+    setFormData: (id:string,name: string, value: string | number) => void
+}
+
+export default function InputSelect({id,field,selectedValues,setSelectedValues,setFormData}:InputSelectProps) {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalName, setModalName] = useState('');
     const [modalData, setModalData] = useState<Array<{ id: number ; name: string }>>([]);
 
-const handleInputDoubleClick = async (field: Field) => {
-    if (field.dependencies.length > 0) {
-      const allDependenciesValid = validateDependencies(field.dependencies);
-      if (!allDependenciesValid) return;
-    }
-  
+const handleInputDoubleClick = async (field: IInput) => {
+  if (field.dependencies && field.dependencies.length > 0) {
+    const allDependenciesValid = validateDependencies(field.dependencies);
+    if (!allDependenciesValid) return;
+  }
     setModalTitle(field.label);
     setModalName(field.name);
   
-    const dependencyData = parseDependencies(field.dependencies, selectedValues);
+    const dependencyData = parseDependencies(field.dependencies || [], selectedValues);
     console.log(dependencyData, "dependencyData");
   
-    const data = await fetchData(field.name, field.select_query, dependencyData);
+    const data = await fetchData(field.name, field.selectQuery || "", dependencyData);
   
     setModalData(data);
     setModalOpen(true);
   };
   
-  const validateDependencies = (dependencies: Dependency[]) => {
+  const validateDependencies = (dependencies: IDependency[]) => {
     for (const dependency of dependencies) {
       const dependencyValue = selectedValues[dependency.dependency];
       if (!dependencyValue) {
@@ -86,7 +89,7 @@ const handleInputDoubleClick = async (field: Field) => {
   };
   
   function parseDependencies(
-    dependencies: Dependency[],
+    dependencies: IDependency[],
     data: { [key: string]: { id: string | number; name: string } }
   ) {
     const _dependenciesData: { [key: string]: string | number } = {};
@@ -101,8 +104,8 @@ const handleInputDoubleClick = async (field: Field) => {
   }
 
   const handleSelect = (name: string, value: { id: string | number; name: string }) => {
-    setSelectedValues(name, value); 
-    setFormData(name, value.name); 
+    setSelectedValues(id,name, value); 
+    setFormData(id,name, value.name); 
   };
 
     return(

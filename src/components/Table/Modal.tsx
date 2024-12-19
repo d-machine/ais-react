@@ -1,12 +1,14 @@
 import { useState } from "react";
 import styles from "./ModalForm.module.css";
+import { EGridTye } from "../Input/types";
 
 interface ModalFormProps {   fields: {
   name: string;
-  type: string | number;
-  label: string;
-  minColumnWidth: string;
-  width: string;
+  type:EGridTye;
+  label: string;    
+  required: boolean;
+  readOnly: boolean;
+  columnWidth: number;
 }[];
   onClose: () => void; 
   onAdd: (row: { [key: string]: string | number }) => void; }

@@ -1,34 +1,66 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
 interface FormState {
-  formData: { [key: string]: string | number };
-  selectedValues: { [key: string]: { id: string | number; name: string } };
-  setFormData: (name: string, value: string | number) => void;
-  setSelectedValues: (name: string, value: { id: string | number; name: string }) => void;
+  entries: { 
+    [key: string]: { 
+      metadata: { [key: string]: string | number }; 
+      selectedValues: { [key: string]: { id: string | number; name: string } }; 
+      rows: { [key: string]: string | number }[] 
+    } 
+  };
+  addEntry: (id: string) => void;
+  setFormData: (id: string, name: string, value: string | number) => void;
+  setSelectedValues: (id: string, name: string, value: { id: string | number; name: string }) => void;
+  setRows: (id: string, row: { [key: string]: string | number }) => void;
 }
 
-interface GridState{
-  rows: { [key: string]: string | number }[];
-  setRows:(row: { [key: string]: string | number }) => void
-}
+export const useStore = create<FormState>((set) => ({
+  entries: {},
 
-export const useFormStore = create<FormState>((set) => ({
-  formData: {},
-  selectedValues: {},
+  addEntry: (id) =>
+    set((state) => ({
+      entries: {
+        ...state.entries,
+        [id]: { metadata: {}, selectedValues: {}, rows: [] },
+      },
+    })),
 
-  setFormData: (name, value) => set((state) => ({
-    formData: { ...state.formData, [name]: value }
-  })),
-  
-  setSelectedValues: (name, value) => set((state) => ({
-    selectedValues: { ...state.selectedValues, [name]: value }
-  })),
-}));
+  setFormData: (id, name, value) =>
+    set((state) => ({
+      entries: {
+        ...state.entries,
+        [id]: {
+          ...state.entries[id],
+          metadata: {
+            ...state.entries[id]?.metadata,
+            [name]: value,
+          },
+        },
+      },
+    })),
 
+  setSelectedValues: (id, name, value) =>
+    set((state) => ({
+      entries: {
+        ...state.entries,
+        [id]: {
+          ...state.entries[id],
+          selectedValues: {
+            ...state.entries[id]?.selectedValues,
+            [name]: value,
+          },
+        },
+      },
+    })),
 
-export const useGridStore = create<GridState>((set) => ({
-  rows: [],
-  setRows: (row) => set((state) => ({
-    rows: [...state.rows, row]
-  })),
+  setRows: (id, row) =>
+    set((state) => ({
+      entries: {
+        ...state.entries,
+        [id]: {
+          ...state.entries[id],
+          rows: [...(state.entries[id]?.rows || []), row],
+        },
+      },
+    })),
 }));

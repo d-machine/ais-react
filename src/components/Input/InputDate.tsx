@@ -1,26 +1,41 @@
 import styles from "../EntryForm/EntryForm.module.css"
+import { EButtonType, EInputType } from "./types";
 
-interface Field {
-    name:string;
-    type:string;
-    label:string;
-    grid_column:string;
-    select_query: string;
-    to_show: string;
-    width:number;
-    input_width:number;
-  }
+interface IDependencyField {
+  as: string;
+  key: string;
+}
 
-interface InputDateProps {
-    field: Field;
+interface IDependency {
+  dependency: string;
+  fields: IDependencyField[];
+}
+interface IInput {
+  name:string;
+  label:string;
+  type:EInputType;
+  required: boolean;
+  readOnly: boolean;
+  grid_column:string;
+  dependencies?:IDependency[];
+  selectQuery?: string;
+  buttonType?: EButtonType;
+  value?: string;
+  width:number;
+  input_width:number;
+}
+
+interface InputDateProps { 
+  id:string,
+    field: IInput;
     formData: { [key: string]: string | number };
-    setFormData: (name: string, value: string | number) => void;
+    setFormData: (id:string,name: string, value: string | number) => void;
 }
 
 
-export default function InputDate({field, formData,setFormData}:InputDateProps) {
+export default function InputDate({id,field, formData,setFormData}:InputDateProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(e.target.name, e.target.value); 
+    setFormData(id,e.target.name, e.target.value); 
   };
   
     return (

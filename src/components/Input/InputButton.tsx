@@ -1,24 +1,38 @@
 import styles from "../EntryForm/EntryForm.module.css";
+import { EButtonType, EInputType } from "./types";
 
-interface Field {
-  name: string;
-  type: string;
-  label: string;
-  grid_column: string;
-  select_query: string;
-  to_show: string;
-  width: number;
-  input_width: number;
+interface IDependencyField {
+  as: string;
+  key: string;
+}
+
+interface IDependency {
+  dependency: string;
+  fields: IDependencyField[];
+}
+interface IInput {
+  name:string;
+  label:string;
+  type:EInputType;
+  required: boolean;
+  readOnly: boolean;
+  grid_column:string;
+  dependencies?:IDependency[];
+  selectQuery?: string;
+  buttonType?: EButtonType;
+  value?: string;
+  width:number;
+  input_width:number;
 }
 
 interface InputButtonProps {
-  field: Field;
+  field: IInput;
 }
 
 export default function InputButton({ field }: InputButtonProps) {
   return (
     <input type="button"
-    value={field.label}
+    value={field.value}
       className={styles.input}
       style={{ width: field.input_width, textAlign: "center" }}
     />

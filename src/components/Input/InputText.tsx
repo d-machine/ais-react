@@ -1,25 +1,40 @@
 import styles from "../EntryForm/EntryForm.module.css"
+import { EInputType } from "./types";
 
-interface Field {
-    name:string;
-    type:string;
-    label:string;
-    grid_column:string;
-    select_query: string;
-    to_show: string;
-    width:number;
-    input_width:number;
-  }
-
-interface InputTextProps {
-    field: Field;
-    formData: { [key: string]: string | number };
-    setFormData: (name: string, value: string | number) => void
+interface IDependencyField {
+  as: string;
+  key: string;
 }
 
-export default function InputText({field, formData,setFormData}:InputTextProps) {
+interface IDependency {
+  dependency: string;
+  fields: IDependencyField[];
+}
+interface IInput {
+  name:string;
+  label:string;
+  type:EInputType;
+  required: boolean;
+  readOnly: boolean;
+  grid_column:string;
+  dependencies?:IDependency[];
+  value?: string;
+  width:number;
+  input_width:number;
+}
+
+
+
+interface InputTextProps {
+  id:string;
+    field: IInput;
+    formData: { [key: string]: string | number };
+    setFormData: (id:string, name: string, value: string | number) => void
+}
+
+export default function InputText({id,field, formData,setFormData}:InputTextProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(e.target.name, e.target.value); 
+    setFormData(id,e.target.name, e.target.value); 
   };
     return (
         <>
