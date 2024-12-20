@@ -3,8 +3,7 @@ import _ from "lodash";
 import { useStore } from '../../store';
 import { EGridTye, EInputType,EButtonType, ESectionType } from '../Input/types';
 import MetaData from '../Input/Index';
-import { useEffect, useRef } from 'react';
-import { v4 as uuidv4 } from "uuid";
+import { useEffect} from 'react';
 
 interface IDependencyField {
   as: string;
@@ -68,29 +67,21 @@ type TForm = Array<IFieldsSection | ITableSection>;
 
 
 
-export default function EntryForm() {
+export default function EntryForm({formId}: {formId: string}) {
 
-  const uniqueId = useRef<string>(uuidv4());
-  console.log(uniqueId, "uniqueId");
-  
- 
 
-  useEffect(() => {
-    console.log(uniqueId.current, "uniqueId");
-    //const currentState = useStore.getState();
-   // console.log(currentState, "currentState");
-   
+  useEffect(() => {   
    const currentState = useStore.getState();
-   if (!currentState.entries[uniqueId.current]) {
-     currentState.addEntry(uniqueId.current);
+   if (!currentState.entries[formId]) {
+     currentState.addEntry(formId);
    }
     console.log(useStore.getState().entries, "useStore.getState().entries"); 
     console.log(currentState, "upcurrentState");
-  }, []);
+  }, [formId]);
          
 
   const storeActions = useStore((state) => state);
-  const storeData = useStore((state) => state.entries[uniqueId.current]);
+  const storeData = useStore((state) => state.entries[formId]);
 
     
 
@@ -103,14 +94,12 @@ export default function EntryForm() {
   ) as ITableSection;
 
   if (!storeData) {
-    return <div>Loading🎶🎶🎶</div>;
+    return <div>Loading...</div>;
   }
-
-
   return (
     <>
       <MetaData
-        id={uniqueId.current}
+        id={formId}
         fields={metadataConfig?.fields || []} 
         formData={storeData.metadata || {}}
         selectedValues={storeData.selectedValues}
@@ -118,12 +107,12 @@ export default function EntryForm() {
         setSelectedValues={storeActions.setSelectedValues}
       />
       <Table
-        id={uniqueId.current}
+        id={formId}
         fields={tableConfig?.columns || []} 
         rows={storeData.rows}
         setRows={storeActions.setRows}
       />
-    {uniqueId.current}
+      {formId}
       <button onClick={() => console.log(useStore.getState().entries, "useStore.getState().entries")}>Show store</button>
     </>
   );

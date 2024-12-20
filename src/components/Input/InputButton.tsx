@@ -1,4 +1,5 @@
-import styles from "../EntryForm/EntryForm.module.css";
+import { useStore } from "../../store";
+import styles from "./Input.module.css"
 import { EButtonType, EInputType } from "./types";
 
 interface IDependencyField {
@@ -26,13 +27,30 @@ interface IInput {
 }
 
 interface InputButtonProps {
+  id: string;
   field: IInput;
 }
 
-export default function InputButton({ field }: InputButtonProps) {
+export default function InputButton({id, field }: InputButtonProps) {
+
+  const storeData = useStore((state) => state.entries[id].metadata);
+  const handleClick=()=>{
+
+    
+    switch (field.buttonType) {
+      case EButtonType.ADD:
+          console.log(storeData, "storeData");
+          
+        break;
+    
+      default:
+        break;
+    }
+  }
   return (
     <input type="button"
     value={field.value}
+    onClick={handleClick}
       className={styles.input}
       style={{ width: field.input_width, textAlign: "center" }}
     />

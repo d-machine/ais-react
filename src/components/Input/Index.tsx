@@ -3,7 +3,7 @@ import InputSelect from "./InputSelect";
 import InputText from "./InputText";
 import InputDate from "./InputDate";
 import InputButton from "./InputButton";
-import styles from "../EntryForm/EntryForm.module.css"
+import styles from "./Input.module.css"
 
 interface IDependencyField {
     as: string;

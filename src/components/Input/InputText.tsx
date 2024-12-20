@@ -1,4 +1,4 @@
-import styles from "../EntryForm/EntryForm.module.css"
+import styles from "./Input.module.css"
 import { EInputType } from "./types";
 
 interface IDependencyField {

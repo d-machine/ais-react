@@ -21,6 +21,8 @@ export default function TabContainer({ tabs, defaultTabId }: TabContainerProps) 
 
   return (
     <div className={styles.tabContainer}>
+      <button onClick={()=>{console.log(tabs);
+      }}>open</button>
       <TabHeader
         tabs={tabs}
         activeTabId={activeTabId}
