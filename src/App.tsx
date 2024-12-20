@@ -11,18 +11,6 @@ const DEMO_TABS: Tab[] = [
     title: 'Entry Form',
     content: <EntryForm formId={"tab1"}/>,
     status:"ACTIVE"
-  },
-  {
-    id: 'tab2',
-    title: 'Second Tab',
-    content: <EntryForm formId={"tab2"}/>,
-    status:"OPEN"
-  },
-  {
-    id: 'tab3',
-    title: 'Third Tab',
-    content: <EntryForm formId={"tab3"}/>,
-    status:"CLOSE"
   }
 ];
 
@@ -32,6 +20,12 @@ function App() {
 
   const addTab = (formId:string,form_tab_map:{[key:string]:string}) => {
     if(formId in form_tab_map){
+      const _tabId = form_tab_map[formId];
+      const updatedTabs = tabs.map(tab => ({
+        ...tab,
+        status: tab.id === _tabId ? 'ACTIVE' :tab.status === 'CLOSE' ? 'CLOSE' : 'OPEN',
+      }));
+      setTabs(updatedTabs);
       return;
     }
     const newTabId = `tab${tabs.length + 1}`; 
@@ -56,7 +50,7 @@ function App() {
     <div className={styles.app}>
       <Header title="React Components Demo" addTab={addTab} />
       <main className={styles.content}>
-        <TabContainer tabs={tabs} />
+        <TabContainer tabs={tabs} onTabsUpdate={setTabs}/>
       </main>
     </div>
   );

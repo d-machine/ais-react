@@ -4,7 +4,7 @@ import styles from './Tabs.module.css';
 interface TabHeaderProps {
   tabs: Tab[];
   activeTabId: string;
-  onTabChange: (tabId: string) => void;
+  onTabChange: (tabId: string) => void; 
 }
 
 export default function TabHeader({ tabs, activeTabId, onTabChange }: TabHeaderProps) {
