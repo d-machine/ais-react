@@ -33,12 +33,26 @@ const MENU_ITEMS: MenuItem[] = [
     ]
   },{
     label: 'Forms',
-    children:[
-      {label:"Form1",action:()=>console.log("Form1")},
-      {label:"Form2",action:()=>console.log("Form2")},
-      {label:"Form3",action:()=>console.log("Form3")}
+    children: [
+      { label: 'Form1', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Form1', Form_tab_map) },
+      { label: 'Form2', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Form2', Form_tab_map) },
+      { label: 'Form3', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Form3', Form_tab_map) }
     ]
-  }
+  },{
+    label:'ItemMaster',
+    children:[
+      { label: 'ItemMaster1', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster1', Form_tab_map) },
+      { label: 'ItemMaster2', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster2', Form_tab_map) },
+      { label: 'ItemMaster3', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster3', Form_tab_map) }
+    ]
+},{
+  label:'BrandMaster',
+  children:[
+    { label: 'BrandMaster1', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('BrandMaster1', Form_tab_map) },
+    { label: 'BrandMaster2', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('BrandMaster2', Form_tab_map) },
+    { label: 'BrandMaster3', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('BrandMaster3', Form_tab_map) }
+  ]
+}
 ];
 
 const Form_tab_map:{[key:string]:string} = {};
@@ -79,9 +93,9 @@ export default function Menu({addTab}: {addTab: (formId:string,form_tab_map:{[ke
 
   const handleItemClick = (item: MenuItem) => {
     if (!item.children) {
-      const formId = item.label;
-      addTab( formId,Form_tab_map);
-      item.action?.();
+      // const formId = item.label;
+      // addTab( formId,Form_tab_map);
+      item.action?.(addTab);
       closeMenu();
     }
   };

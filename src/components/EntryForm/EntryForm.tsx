@@ -234,6 +234,18 @@ const formConfig: TForm = [
         selectQuery: "SELECT id,name FROM Godown WHERE party_id={party_id}",
       },
       {
+        name:"address",
+        type: EInputType.TEXT,
+        label: "Address",
+        required: false,
+        readOnly: false,
+        grid_column: "span 20",
+        width: 200,
+        input_width: 300,
+        dependencies: [],
+      }
+      ,
+      {
         name: "Transport",
         type: EInputType.TEXT,
         label: "Transport",

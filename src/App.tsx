@@ -4,6 +4,8 @@ import { Tab } from './components/tabs/types';
 import styles from './App.module.css';
 import EntryForm from './components/EntryForm/EntryForm';
 import { useState } from 'react';
+import ItemMaster from './components/EntryForm/ItemMaster';
+import BrandMaster from './components/EntryForm/BrandMaster';
 
 const DEMO_TABS: Tab[] = [
   {
@@ -11,6 +13,16 @@ const DEMO_TABS: Tab[] = [
     title: 'Entry Form',
     content: <EntryForm formId={"tab1"}/>,
     status:"ACTIVE"
+  },{
+    id: 'tab2',
+    title:'ItemMaster',
+    content:<ItemMaster formId={"tab2"}/>,
+    status:"OPEN"
+  },{
+    id: 'tab3',
+    title:'BrandMaster',
+    content:<BrandMaster formId={"tab3"}/>,
+    status:"OPEN"
   }
 ];
 
@@ -30,10 +42,24 @@ function App() {
     }
     const newTabId = `tab${tabs.length + 1}`; 
     form_tab_map[formId]=newTabId;
+
+    let content;
+    if (formId.startsWith('Form')) {
+      content = <EntryForm formId={newTabId} />;
+    } else if (formId.startsWith('ItemMaster')) {
+      content = <ItemMaster formId={newTabId} />;
+    } 
+    else if (formId.startsWith('BrandMaster')) {
+      content = <BrandMaster formId={newTabId} />;
+    }
+    else  {
+      content = <div>Unknown formId</div>;
+    }
+
     const newTab: Tab = {
       id: newTabId,
-      title: `New Tab ${tabs.length + 1}`,
-      content: <EntryForm formId={newTabId}/>,
+      title: `${formId}`,
+      content: content,
       status:"ACTIVE"
     };
     const activeTabIndex = tabs.findIndex(tab => tab.status === "ACTIVE");

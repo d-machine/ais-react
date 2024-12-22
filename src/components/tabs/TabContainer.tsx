@@ -18,6 +18,25 @@ export default function TabContainer({ tabs, onTabsUpdate }: TabContainerProps) 
     onTabsUpdate(updatedTabs); 
   };
 
+  const closeTab = (tabId: string) => {
+    const toCloseTab = tabs.find(tab => tab.id === tabId);
+    let updatedTabs;
+  
+    if (toCloseTab?.status === "ACTIVE") {
+      const toActiveTab = tabs.find(tab => tab.status === "OPEN");
+      updatedTabs = tabs.map(tab => ({
+        ...tab,
+        status: tab.id === tabId ? "CLOSE" : tab.id === toActiveTab?.id ? "ACTIVE" : tab.status
+      }));
+    } else {
+      updatedTabs = tabs.map(tab => ({
+        ...tab,
+        status: tab.id === tabId ? "CLOSE" : tab.status
+      }));
+    }
+    onTabsUpdate(updatedTabs);
+  };
+
   return (
     <div className={styles.tabContainer}>
       <button
@@ -27,7 +46,7 @@ export default function TabContainer({ tabs, onTabsUpdate }: TabContainerProps) 
       >
         Open
       </button>
-      <TabHeader tabs={tabs} activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} />
+      <TabHeader tabs={tabs} activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab}/>
       <div className={styles.tabContent}>{activeTab?.content}</div>
     </div>
   );
