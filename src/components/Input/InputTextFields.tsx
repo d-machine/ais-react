@@ -33,20 +33,21 @@ interface InputTextProps {
 }
 
 export default function InputText({id,field, formData,setFormData}:InputTextProps) {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(id,e.target.name, e.target.value); 
-  };
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setFormData(id, e.target.name, e.target.value);
+      };
     return (
         <>
         <label>{field.label}</label>
-        <input
-          className={styles.input}
+        <textarea
+          className={styles.textarea}
           name={field.name}
           value={formData[field.name] || ""}
-          style={{ width: field.input_width ,gridColumn:field.grid_column }}
-          type={field.type}
+          style={{ width: field.input_width }}
           onChange={handleInputChange}
-        />
+        >
+            {formData[field.name]}
+        </textarea>
       </>
     );
 }

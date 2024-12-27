@@ -43,7 +43,8 @@ const INPUT_MAP = {
     [EInputType.TEXT]: InputText,
     [EInputType.DATE]: InputDate,
     [EInputType.SELECT]: InputSelect,
-    [EInputType.BUTTON]:InputButton
+    [EInputType.BUTTON]:InputButton,
+    [EInputType.TEXTFIELD]:InputText
   } ;
 export default function Form({id,fields, formData,selectedValues,setSelectedValues,setFormData}:InputProps){
     return (

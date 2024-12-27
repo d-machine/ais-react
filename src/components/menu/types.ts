@@ -3,3 +3,4 @@ export interface MenuItem {
   children?: MenuItem[];
   action?: (...args: any[]) => void;
 }
+

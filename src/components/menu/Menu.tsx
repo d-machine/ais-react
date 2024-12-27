@@ -5,52 +5,26 @@ import styles from './Menu.module.css';
 
 const MENU_ITEMS: MenuItem[] = [
   {
-    label: 'File',
-    children: [
-      { 
-        label: 'New',
-        children: [
-          { label: 'Project', action: () => console.log('New Project') },
-          { label: 'File', action: () => console.log('New File') }
-        ]
-      },
-      { label: 'Open', action: () => console.log('Open') },
-      { label: 'Save', action: () => console.log('Save') }
-    ]
-  },
-  {
-    label: 'Edit',
-    children: [
-      { label: 'Undo', action: () => console.log('Undo') },
-      { label: 'Redo', action: () => console.log('Redo') }
-    ]
-  },
-  {
-    label: 'View',
-    children: [
-      { label: 'Zoom In', action: () => console.log('Zoom In') },
-      { label: 'Zoom Out', action: () => console.log('Zoom Out') }
-    ]
-  },{
-    label: 'Forms',
-    children: [
-      { label: 'Form1', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Form1', Form_tab_map) },
-      { label: 'Form2', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Form2', Form_tab_map) },
-      { label: 'Form3', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Form3', Form_tab_map) }
-    ]
-  },{
-    label:'ItemMaster',
+    label:'Party',
     children:[
-      { label: 'ItemMaster1', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster1', Form_tab_map) },
-      { label: 'ItemMaster2', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster2', Form_tab_map) },
-      { label: 'ItemMaster3', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster3', Form_tab_map) }
+      {label:'PartyMater',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('PartyMaster', Form_tab_map) },
+      {label:'PartyCategoryMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string })=> void) => addTab('PartyCategoryMaster', Form_tab_map)},
+      {label:'PartyTypeMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('PartyTypeMaster', Form_tab_map)}
     ]
-},{
-  label:'BrandMaster',
+  },{
+    label:'Inventory',
+    children:[
+      {label:'ItemMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster', Form_tab_map) },
+      {label:'ItemCategoryMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemCategoryMaster', Form_tab_map)},
+      {label:'ItemBrandMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) =>void) => addTab('ItemBrandMaster', Form_tab_map)},
+      ]
+  },{
+  label:'LocationMaster',
   children:[
-    { label: 'BrandMaster1', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('BrandMaster1', Form_tab_map) },
-    { label: 'BrandMaster2', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('BrandMaster2', Form_tab_map) },
-    { label: 'BrandMaster3', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('BrandMaster3', Form_tab_map) }
+    { label: 'Country', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Country', Form_tab_map) },
+    { label: 'State', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('State', Form_tab_map) },
+    { label: 'District', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('District', Form_tab_map) },
+    { label: 'City', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('City', Form_tab_map) }
   ]
 }
 ];

@@ -5,7 +5,14 @@ import styles from './App.module.css';
 import EntryForm from './components/EntryForm/EntryForm';
 import { useState } from 'react';
 import ItemMaster from './components/EntryForm/ItemMaster';
-import BrandMaster from './components/EntryForm/BrandMaster';
+import CountryMaster from './components/EntryForm/CountryMaster';
+import StateMaster from './components/EntryForm/StateMaster';
+import DistrictMaster from './components/EntryForm/DistrictMaster';
+import CityMaster from './components/EntryForm/CityMaster';
+import ItemCategoryMaster from './components/EntryForm/ItemCategoryMaster';
+import ItemBrandMaster from './components/EntryForm/ItemBrandMaster';
+import PartyCategoryMaster from './components/EntryForm/PartyCategoryMaster';
+import PartyTypeMaster from './components/EntryForm/PartyTypeMaster';
 
 const DEMO_TABS: Tab[] = [
   {
@@ -13,16 +20,6 @@ const DEMO_TABS: Tab[] = [
     title: 'Entry Form',
     content: <EntryForm formId={"tab1"}/>,
     status:"ACTIVE"
-  },{
-    id: 'tab2',
-    title:'ItemMaster',
-    content:<ItemMaster formId={"tab2"}/>,
-    status:"OPEN"
-  },{
-    id: 'tab3',
-    title:'BrandMaster',
-    content:<BrandMaster formId={"tab3"}/>,
-    status:"OPEN"
   }
 ];
 
@@ -44,14 +41,35 @@ function App() {
     form_tab_map[formId]=newTabId;
 
     let content;
-    if (formId.startsWith('Form')) {
+    if (formId.startsWith('PartyMaster')) {
       content = <EntryForm formId={newTabId} />;
-    } else if (formId.startsWith('ItemMaster')) {
+    } else if(formId.startsWith('PartyCategoryMaster')){
+      content=<PartyCategoryMaster formId={newTabId}/>;
+    }else if(formId.startsWith('PartyTypeMaster')){
+      content=<PartyTypeMaster formId={newTabId}/>;
+    }
+    else if (formId.startsWith('ItemMaster')) {
       content = <ItemMaster formId={newTabId} />;
     } 
-    else if (formId.startsWith('BrandMaster')) {
-      content = <BrandMaster formId={newTabId} />;
+    else if (formId.startsWith('ItemBrandMaster')) {
+      content = <ItemBrandMaster formId={newTabId} />;
     }
+    else if(formId.startsWith('ItemCategoryMaster')){
+      content=<ItemCategoryMaster formId={newTabId}/>;
+    }
+    else if(formId.startsWith('Country')){
+      content=<CountryMaster formId={newTabId}/>;
+    }
+    else if(formId.startsWith('State')){
+      content=<StateMaster formId={newTabId}/>;
+    }
+    else if(formId.startsWith('District')){
+      content=<DistrictMaster formId={newTabId}/>;
+    }
+    else if(formId.startsWith('City')){
+      content=<CityMaster formId={newTabId}/>;
+    }
+    
     else  {
       content = <div>Unknown formId</div>;
     }

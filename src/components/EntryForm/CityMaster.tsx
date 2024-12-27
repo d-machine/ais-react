@@ -35,7 +35,7 @@ interface IFieldsSection {
 }
 
 type TForm = Array<IFieldsSection>;
-export default function ItemMaster({formId}: {formId: string}) {
+export default function CityMaster({formId}: {formId: string}) {
 
   useEffect(() => {   
    const currentState = useStore.getState();
@@ -77,38 +77,38 @@ const formConfig: TForm = [
     section: "metadata",
     sectionType: ESectionType.FIELDS,
     fields: [
-        {
-        name: "itembrandid",
+      {
+        name: "citycode",
         type: EInputType.TEXT,
-        label: "Item Brand Id",
+        label: "City Code",
         required: false,
         readOnly: false,
         grid_column: "span 10",
         width: 200,
         input_width: 100,
         dependencies: [],
-        },
-      {
-        name: "itembrand",
-        type: EInputType.TEXT,
-        label: "Item Brand",
-        required: false,
-        readOnly: false,
-        grid_column: "span 20",
-        width: 200,
-        input_width: 300,
-        dependencies: [],
       },
       {
-        name:"itemCategory",
+        name:"cityname",
         type:EInputType.TEXT,
-        label:"Item Category",
+        label:"City Name",
         required: false,
         readOnly: false,
         grid_column: "span 20",
         width: 200,
         input_width: 300,
         dependencies: [],
+      },{
+        name: "statecode",
+        type: EInputType.SELECT,
+        label: "State Code",
+        required: false,
+        readOnly: false,
+        grid_column: "span 10",
+        width: 200,
+        input_width: 100,
+        dependencies: [],
+        selectQuery: "select id, code from state",
       },{
         name: "Submit",
         type: EInputType.BUTTON,

@@ -39,13 +39,6 @@ export default function TabContainer({ tabs, onTabsUpdate }: TabContainerProps) 
 
   return (
     <div className={styles.tabContainer}>
-      <button
-        onClick={() => {
-          console.log(tabs); 
-        }}
-      >
-        Open
-      </button>
       <TabHeader tabs={tabs} activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab}/>
       <div className={styles.tabContent}>{activeTab?.content}</div>
     </div>

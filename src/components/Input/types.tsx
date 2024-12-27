@@ -3,6 +3,7 @@ export enum EInputType {
     DATE = 'date',
     SELECT = 'select',
     BUTTON='button',
+    TEXTFIELD='textfield',
   }
 
 export enum ESectionType{
