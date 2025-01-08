@@ -3,7 +3,7 @@ import styles from './Header.module.css';
 
 interface HeaderProps {
   title: string;
-  addTab: (formId: string, form_tab_map: { [key: string]: string }) => void;
+  addTab: (formId: string) => void;
   children?: React.ReactNode;
 }
 

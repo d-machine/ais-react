@@ -31,10 +31,12 @@ interface InputSelectProps {
     field:IInput;
     selectedValues: { [key: string]: { id: string | number; name: string } };
     setSelectedValues: (id : string,name: string, value: { id: string | number; name: string }) => void;
-    setFormData: (id:string,name: string, value: string | number) => void
+    setFormData: (id:string,name: string, value: string | number) => void;
+    formData: { [key: string]: string | number };
+    
 }
 
-export default function InputSelect({id,field,selectedValues,setSelectedValues,setFormData}:InputSelectProps) {
+export default function InputSelect({id,field,selectedValues,formData,setSelectedValues,setFormData}:InputSelectProps) {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
@@ -112,7 +114,7 @@ const handleInputDoubleClick = async (field: IInput) => {
         <>
         <label>{field.label}</label>
         <input
-            value={selectedValues[field.name]?.name || ""}
+          value={formData[field.name] || ""}
             className={styles.input}
             style={{ width: field.input_width }}
             type="text"

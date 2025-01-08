@@ -7,31 +7,30 @@ const MENU_ITEMS: MenuItem[] = [
   {
     label:'Party',
     children:[
-      {label:'PartyMater',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('PartyMaster', Form_tab_map) },
-      {label:'PartyCategoryMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string })=> void) => addTab('PartyCategoryMaster', Form_tab_map)},
-      {label:'PartyTypeMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('PartyTypeMaster', Form_tab_map)}
+      {label:'PartyMater',action: (addTab: (formId: string) => void) => addTab('PartyMaster') },
+      {label:'PartyCategoryMaster',action: (addTab: (formId: string)=> void) => addTab('PartyCategoryMaster')},
+      {label:'PartyTypeMaster',action: (addTab: (formId: string) => void) => addTab('PartyTypeMaster')}
     ]
   },{
     label:'Inventory',
     children:[
-      {label:'ItemMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemMaster', Form_tab_map) },
-      {label:'ItemCategoryMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('ItemCategoryMaster', Form_tab_map)},
-      {label:'ItemBrandMaster',action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) =>void) => addTab('ItemBrandMaster', Form_tab_map)},
+      {label:'ItemMaster',action: (addTab: (formId: string) => void) => addTab('ItemMaster') },
+      {label:'ItemCategoryMaster',action: (addTab: (formId: string) => void) => addTab('ItemCategoryMaster')},
+      {label:'ItemBrandMaster',action: (addTab: (formId: string) =>void) => addTab('ItemBrandMaster')},
       ]
   },{
   label:'LocationMaster',
   children:[
-    { label: 'Country', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('Country', Form_tab_map) },
-    { label: 'State', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('State', Form_tab_map) },
-    { label: 'District', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('District', Form_tab_map) },
-    { label: 'City', action: (addTab: (formId: string, form_tab_map: { [key: string]: string }) => void) => addTab('City', Form_tab_map) }
+    { label: 'Country', action: (addTab: (formId: string) => void) => addTab('Country') },
+    { label: 'State', action: (addTab: (formId: string) => void) => addTab('State') },
+    { label: 'District', action: (addTab: (formId: string) => void) => addTab('District') },
+    { label: 'City', action: (addTab: (formId: string) => void) => addTab('City') }
   ]
 }
 ];
 
-const Form_tab_map:{[key:string]:string} = {};
 
-export default function Menu({addTab}: {addTab: (formId:string,form_tab_map:{[key:string]:string}) => void}) {
+export default function Menu({addTab}: {addTab: (formId:string) => void}) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
