@@ -66,3 +66,15 @@ button:active:not(.disabledButton) {
   cursor: not-allowed;
 }
 
+.entryListItem {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.entryListItem:hover {
+  background-color: #f0f0f0;
+}
+
+.selectedRow {
+  background-color: #d0f0d0; 
+}

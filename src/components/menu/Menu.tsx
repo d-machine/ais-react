@@ -3,30 +3,103 @@ import { MenuItem } from './types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
 
+// const MENU_ITEMS: MenuItem[] = [
+//   {
+//     label:'Party',
+//     children:[
+//       {label:'PartyMater',action: (addTab: (formId: string) => void) => addTab('PartyMaster') },
+//       {label:'PartyCategoryMaster',action: (addTab: (formId: string)=> void) => addTab('PartyCategoryMaster')},
+//       {label:'PartyTypeMaster',action: (addTab: (formId: string) => void) => addTab('PartyTypeMaster')}
+//     ]
+//   },{
+//     label:'Inventory',
+//     children:[
+//       {label:'ItemMaster',action: (addTab: (formId: string) => void) => addTab('ItemMaster') },
+//       {label:'ItemCategoryMaster',action: (addTab: (formId: string) => void) => addTab('ItemCategoryMaster')},
+//       {label:'ItemBrandMaster',action: (addTab: (formId: string) =>void) => addTab('ItemBrandMaster')},
+//       ]
+//   },{
+//   label:'LocationMaster',
+//   children:[
+//     { label: 'Country', action: (addTab: (formId: string) => void) => addTab('Country') },
+//     { label: 'State', action: (addTab: (formId: string) => void) => addTab('State') },
+//     { label: 'District', action: (addTab: (formId: string) => void) => addTab('District') },
+//     { label: 'City', action: (addTab: (formId: string) => void) => addTab('City') }
+//   ]
+// }
+// ];
+
 const MENU_ITEMS: MenuItem[] = [
   {
-    label:'Party',
-    children:[
-      {label:'PartyMater',action: (addTab: (formId: string) => void) => addTab('PartyMaster') },
-      {label:'PartyCategoryMaster',action: (addTab: (formId: string)=> void) => addTab('PartyCategoryMaster')},
-      {label:'PartyTypeMaster',action: (addTab: (formId: string) => void) => addTab('PartyTypeMaster')}
+    label: 'Administration',
+    children: [
+      { label: 'User Management', action: (addTab: (formId: string) => void) => addTab('UserManagement') },
+      { label: 'Role Management', action: (addTab: (formId: string) => void) => addTab('RoleManagement') },
+      { label: 'Access Grant Management', action: (addTab: (formId: string) => void) => addTab('AccessGrantManagement') },
+      { label: 'Resource Management', action: (addTab: (formId: string) => void) => addTab('ResourceManagement') }
     ]
-  },{
-    label:'Inventory',
-    children:[
-      {label:'ItemMaster',action: (addTab: (formId: string) => void) => addTab('ItemMaster') },
-      {label:'ItemCategoryMaster',action: (addTab: (formId: string) => void) => addTab('ItemCategoryMaster')},
-      {label:'ItemBrandMaster',action: (addTab: (formId: string) =>void) => addTab('ItemBrandMaster')},
-      ]
-  },{
-  label:'LocationMaster',
-  children:[
-    { label: 'Country', action: (addTab: (formId: string) => void) => addTab('Country') },
-    { label: 'State', action: (addTab: (formId: string) => void) => addTab('State') },
-    { label: 'District', action: (addTab: (formId: string) => void) => addTab('District') },
-    { label: 'City', action: (addTab: (formId: string) => void) => addTab('City') }
-  ]
-}
+  },
+  {
+    label: 'Master Data',
+    children: [
+      {
+        label: 'Geo Location',
+        children: [
+          { label: 'Country Master', action: (addTab: (formId: string) => void) => addTab('CountryMaster') },
+          { label: 'State Master', action: (addTab: (formId: string) => void) => addTab('StateMaster') },
+          { label: 'City Master', action: (addTab: (formId: string) => void) => addTab('CityMaster') },
+          { label: 'District Master', action: (addTab: (formId: string) => void) => addTab('DistrictMaster') }
+        ]
+      },
+      {
+        label: 'Warehouse Management',
+        children: [
+          { label: 'Rack Master', action: (addTab: (formId: string) => void) => addTab('RackMaster') }
+        ]
+      },
+      {
+        label: 'Party Management',
+        children: [
+          { label: 'Party Master', action: (addTab: (formId: string) => void) => addTab('PartyMaster') },
+          { label: 'Party Category Master', action: (addTab: (formId: string) => void) => addTab('PartyCategoryMaster') }
+        ]
+      },
+      {
+        label: 'Vendor Management',
+        children: [
+          { label: 'Vendor Master', action: (addTab: (formId: string) => void) => addTab('VendorMaster') }
+        ]
+      },
+      {
+        label: 'Item Management',
+        children: [
+          { label: 'Item Master', action: (addTab: (formId: string) => void) => addTab('ItemMaster') },
+          { label: 'Item Category Master', action: (addTab: (formId: string) => void) => addTab('ItemCategoryMaster') },
+          { label: 'Item Brand Master', action: (addTab: (formId: string) => void) => addTab('ItemBrandMaster') },
+          { label: 'UOM Master', action: (addTab: (formId: string) => void) => addTab('UOMMaster') },
+          { label: 'Unit Conversion Master', action: (addTab: (formId: string) => void) => addTab('UnitConversionMaster') }
+        ]
+      }
+    ]
+  },
+  {
+    label: 'Sales',
+    children: [
+      { label: 'Sales Order', action: (addTab: (formId: string) => void) => addTab('SalesOrder') },
+      { label: 'Picking List', action: (addTab: (formId: string) => void) => addTab('PickingList') },
+      { label: 'Dispatch', action: (addTab: (formId: string) => void) => addTab('Dispatch') },
+      { label: 'Sales Return', action: (addTab: (formId: string) => void) => addTab('SalesReturn') }
+    ]
+  },
+  {
+    label: 'Purchase',
+    children: [
+      { label: 'Purchase Order', action: (addTab: (formId: string) => void) => addTab('PurchaseOrder') },
+      { label: 'Inward', action: (addTab: (formId: string) => void) => addTab('Inward') },
+      { label: 'Putaway', action: (addTab: (formId: string) => void) => addTab('Putaway') },
+      { label: 'Purchase Return', action: (addTab: (formId: string) => void) => addTab('PurchaseReturn') }
+    ]
+  }
 ];
 
 
