@@ -1,57 +1,62 @@
-// UserManagement.tsx
+// RoleManagement.tsx
 import { useEffect, useState } from "react";
 import styles from "./user.module.css";
 import clsx from "clsx";
 import { useStore } from "../../store1";
-interface UserConfig {
-  applyAccessLevelRestrictions: boolean;
-  onLoad: string;
-  onLoadParams: string[];
-  queryFile: string;
-  pagenation: boolean;
-  filterable: boolean;
-  sortable: boolean;
+
+interface Section {
+  sectionType: "fields" | "table";
+  sectionName: string;
   applicableActions: string[];
-  actionConfig: {
-    [key: string]: ActionConfig;
+  actionConfig?: {
+    [actionName: string]: {
+      label: string;
+      onPress: string;
+      query?: string;
+      payload?: string[];
+      contextParams?: string[];
+      formConfig?: string;
+      onComplete?: string;
+    };
   };
-  columns: Column[];
+  fields?: Field[];
+  onLoad?: string; 
+  queryFile?: string;
+  pagenation?: boolean;
+  filterable?: boolean;
+  sortable?: boolean;
+  columns?: Column[]; 
 }
 
-interface ActionConfig {
+
+interface Field {
+  name: string;
   label: string;
-  onPress: string;
-  onPressParams?: string[];
-  formConfig?: string;
-  query?: string;
-  contextParams?: string[];
-  onComplete: string;
+  type: string;
+  required: boolean; 
 }
 
 interface Column {
   name: string;
   label: string;
-  width: number;
-  sortable: boolean;
-  filterType: string;
+  type: string; 
+  required: boolean; 
 }
 
-interface User {
-  username: string;
-  email: string;
-  full_name: string;
-  reports_to: string;
-  roles: string;
-  last_updated_by: string;
-  last_updated_at: string;
-}
+
+interface Roles{
+  resource: string;
+  access_type: string;
+  access_level:string;
+};
 
 
 interface EntryListProps {
-  userConfig: UserConfig;
+  formId:string;
+  userConfig: Section;
 }
 
-export default function UserManagement({ userConfig }: EntryListProps) {
+export default function RoleManagement({formId, userConfig }: EntryListProps) {
   const {
     addEntry,
     addRow,
@@ -62,7 +67,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
     addAfter,
   } = useStore();
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<Roles[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [rowKeys, setRowKeys] = useState<string[]>([]);
   const [hoveredValue, setHoveredValue] = useState<string | null>(null);
@@ -75,14 +80,14 @@ export default function UserManagement({ userConfig }: EntryListProps) {
         const url = `http://localhost:5000/${userConfig.onLoad}`;
         const response = await fetch(url);
         const fetchedData = await response.json();
-        addEntry(userConfig.onLoad);
-        fetchedData.forEach((entry: User) => {
+        addEntry(formId);
+        fetchedData.forEach((entry: Roles) => {
           const entryData = Object.fromEntries(
-            Object.keys(entry).map((key) => [key, entry[key as keyof User]])
+            Object.keys(entry).map((key) => [key, entry[key as keyof Roles]])
           );
-          addRow(userConfig.onLoad, entryData);
+          addRow(formId, entryData);
         });
-        setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+        setRowKeys(useStore.getState().entries[formId].rowKeys);
         setData(fetchedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -92,24 +97,20 @@ export default function UserManagement({ userConfig }: EntryListProps) {
     };
 
     const currentState = useStore.getState();
-    if (!currentState.entries[userConfig.onLoad]) {
+    if (!currentState.entries[formId]) {
       fetchData();
     } else {
-      const existingData: User[] = currentState.entries[userConfig.onLoad].rowKeys.map(
+      const existingData: Roles[] = currentState.entries[formId].rowKeys.map(
         (id) => {
-          const row = currentState.entries[userConfig.onLoad].rows[id].updatedData;
+          const row = currentState.entries[formId].rows[id].updatedData;
           return {
-            username: row.username,
-            email: row.email,
-            full_name: row.full_name,
-            reports_to: row.reports_to,
-            roles: row.roles,
-            last_updated_by: row.last_updated_by,
-            last_updated_at: row.last_updated_at,
-          } as User;
+            resource: row.resource,
+            access_type: row.access_type,
+            access_level:row.access_level
+          } as Roles;
         }
       );
-      setRowKeys(currentState.entries[userConfig.onLoad].rowKeys);
+      setRowKeys(currentState.entries[formId].rowKeys);
       setData(existingData);
       setIsLoading(false);
     }
@@ -126,11 +127,11 @@ export default function UserManagement({ userConfig }: EntryListProps) {
   ) => {
     useStore.setState((state) => {
       const updatedRows = {
-        ...state.entries[userConfig.onLoad].rows,
+        ...state.entries[formId].rows,
         [rowId]: {
-          ...state.entries[userConfig.onLoad].rows[rowId],
+          ...state.entries[formId].rows[rowId],
           updatedData: {
-            ...state.entries[userConfig.onLoad].rows[rowId].updatedData,
+            ...state.entries[formId].rows[rowId].updatedData,
             [columnName]: value,
           },
         },
@@ -139,8 +140,8 @@ export default function UserManagement({ userConfig }: EntryListProps) {
       return {
         entries: {
           ...state.entries,
-          [userConfig.onLoad]: {
-            ...state.entries[userConfig.onLoad],
+          [formId]: {
+            ...state.entries[formId],
             rows: updatedRows,
           },
         },
@@ -157,8 +158,8 @@ export default function UserManagement({ userConfig }: EntryListProps) {
       tdList.forEach((td)=>{
         td.classList.remove(styles.change);
       })
-      saveRow(userConfig.onLoad, selectedRow);
-      setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+      saveRow(formId, selectedRow);
+      setRowKeys(useStore.getState().entries[formId].rowKeys);
     }
   };
 
@@ -170,7 +171,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
   ) => {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
 
-    setHoveredValue(useStore.getState().entries[userConfig.onLoad].rows[rowId].originalData[columnName as keyof User] as string);
+    setHoveredValue(useStore.getState().entries[formId].rows[rowId].originalData[columnName as keyof Roles] as string);
     setHoveredPosition({
       top: rect.top - 20, // Position the span just above the cell
       left: rect.left + rect.width / 2, // Center it horizontally above the cell
@@ -187,7 +188,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
 
   return (
     <div className={styles.entryListContainer}>
-      <h2>User Management</h2>
+      <h2>Role Management</h2>
       {hoveredValue && hoveredPosition && (
         <span
           className={styles.hoveredValue}
@@ -208,8 +209,8 @@ export default function UserManagement({ userConfig }: EntryListProps) {
       <table className={styles.entryTable}>
         <thead>
           <tr>
-            {userConfig.columns.map((column) => (
-              <th key={column.name} style={{ width: `${column.width}px` }}>
+            {userConfig.columns?.map((column) => (
+              <th key={column.name} style={{ width: `400px` }}>
                 {column.label}
               </th>
             ))}
@@ -218,7 +219,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
         <tbody>
           {rowKeys.map((rowId) => {
             const entry =
-              useStore.getState().entries[userConfig.onLoad].rows[rowId].updatedData;
+              useStore.getState().entries[formId].rows[rowId].updatedData;
             return (
               <tr
                 key={rowId}
@@ -227,7 +228,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
                 })}
                 onClick={() => handleRowClick(rowId)}
               >
-                {userConfig.columns.map((column) => (
+                {userConfig.columns?.map((column) => (
                   <td key={column.name} className={styles.entryListCell}
                   onMouseEnter={(e) =>
                     handleMouseEnter(column.name, e, rowId) // Pass rowId here
@@ -235,8 +236,9 @@ export default function UserManagement({ userConfig }: EntryListProps) {
                   onMouseLeave={() => handleMouseLeave(rowId)}
                   >
                     <input
+                    style={{ width: "100%" }}
                         type="text"
-                        value={entry[column.name as keyof User] || ""}
+                        value={entry[column.name as keyof Roles] || ""}
                         onChange={(e) => {
                           const inputElement = e.target as HTMLInputElement;
                           // Add the class to the parent element (the <td> element)
@@ -250,50 +252,27 @@ export default function UserManagement({ userConfig }: EntryListProps) {
               </tr>
             );
           })}
-          {/* {data.map((entry, index) => (
-            <tr
-              key={entry.email}
-              className={clsx(styles.entryListItem, {
-                [styles.selectedRow]: selectedRow === entry.email,
-              })}
-              onClick={() => handleRowClick(entry.email)}
-            >
-              {userConfig.columns.map((column) => (
-                <td key={column.name}>
-                  <input
-                    type="text"
-                    value={entry[column.name as keyof User] || ''}
-                    onChange={(e) => handleInputChange(index, column.name, e.target.value)}
-                  />
-                </td>
-              ))}
-            </tr>
-          ))} */}
         </tbody>
       </table>
       <div className={styles.buttonContainer}>
         <button
           onClick={() => {
-            const newUser: User = {
-              username: "",
-              email: "",
-              full_name: "",
-              reports_to: "",
-              roles: "",
-              last_updated_by: "",
-              last_updated_at: new Date().toISOString(),
+            const newUser: Roles = {
+              resource: "",
+              access_type: "",
+              access_level: "",
             };
             setData([...data, newUser]);
             addRow(
-              userConfig.onLoad,
+              formId,
               Object.fromEntries(
                 Object.keys(newUser).map((key) => [
                   key,
-                  newUser[key as keyof User],
+                  newUser[key as keyof Roles],
                 ])
               )
             );
-            setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+            setRowKeys(useStore.getState().entries[formId].rowKeys);
           }}
         >
           Add New
@@ -302,8 +281,8 @@ export default function UserManagement({ userConfig }: EntryListProps) {
           disabled={!selectedRow}
           onClick={() => {
             if (selectedRow) {
-              deleteRow(userConfig.onLoad, selectedRow);
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+              deleteRow(formId, selectedRow);
+              setRowKeys(useStore.getState().entries[formId].rowKeys);
               setSelectedRow(null);
             }
           }}
@@ -320,12 +299,12 @@ export default function UserManagement({ userConfig }: EntryListProps) {
           disabled={!selectedRow}
           onClick={() => {
             if (selectedRow) {
-              resetRow(userConfig.onLoad, selectedRow);
+              resetRow(formId, selectedRow);
               const tdList=document.querySelectorAll(`tr.${selectedRow} td`);
               tdList.forEach((td)=>{
                 td.classList.remove(styles.change);
               })
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+              setRowKeys(useStore.getState().entries[formId].rowKeys);
             }
           }}
         >
@@ -333,8 +312,8 @@ export default function UserManagement({ userConfig }: EntryListProps) {
         </button>
         <button
           onClick={() => {
-            resetAllRows(userConfig.onLoad);
-            setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+            resetAllRows(formId);
+            setRowKeys(useStore.getState().entries[formId].rowKeys);
             const tdList=document.querySelectorAll('td');
             tdList.forEach((td)=>{
             td.classList.remove(styles.change);
@@ -347,26 +326,22 @@ export default function UserManagement({ userConfig }: EntryListProps) {
           disabled={!selectedRow}
           onClick={() => {
             if (selectedRow) {
-              const newUser: User = {
-                username: "",
-                email: "",
-                full_name: "",
-                reports_to: "",
-                roles: "",
-                last_updated_by: "",
-                last_updated_at: new Date().toISOString(),
+              const newUser: Roles = {
+                resource: "",
+                access_type: "",
+                access_level: "",
               };
               addAfter(
-                userConfig.onLoad,
+                formId,
                 Object.fromEntries(
                   Object.keys(newUser).map((key) => [
                     key,
-                    newUser[key as keyof User],
+                    newUser[key as keyof Roles],
                   ])
                 ),
                 selectedRow
               );
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+              setRowKeys(useStore.getState().entries[formId].rowKeys);
             }
           }}
         >

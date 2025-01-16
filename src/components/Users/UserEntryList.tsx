@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import styles from "./user.module.css";
 import clsx from "clsx";
-import { useStore } from "../../store1";
+import { useStore } from "../../store2";
+import UserMaster from "../EntryForm/UserMaster";
+
 interface UserConfig {
   applyAccessLevelRestrictions: boolean;
   onLoad: string;
@@ -49,18 +51,17 @@ interface User {
 
 interface EntryListProps {
   userConfig: UserConfig;
+    setModalContent: (content: React.ReactNode) => void;
+    setisopen: (isOpen: boolean) => void;
 }
 
-export default function UserManagement({ userConfig }: EntryListProps) {
+export default function UserEntryList({setModalContent,setisopen, userConfig }: EntryListProps) {
   const {
     addEntry,
     addRow,
     deleteRow,
-    saveRow,
-    resetRow,
-    resetAllRows,
-    addAfter,
   } = useStore();
+
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [data, setData] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,49 +120,10 @@ export default function UserManagement({ userConfig }: EntryListProps) {
     setSelectedRow((prev) => (prev === rowId ? null : rowId));
   };
 
-  const handleInputChange = (
-    rowId: string,
-    columnName: string,
-    value: string | number
-  ) => {
-    useStore.setState((state) => {
-      const updatedRows = {
-        ...state.entries[userConfig.onLoad].rows,
-        [rowId]: {
-          ...state.entries[userConfig.onLoad].rows[rowId],
-          updatedData: {
-            ...state.entries[userConfig.onLoad].rows[rowId].updatedData,
-            [columnName]: value,
-          },
-        },
-      };
 
-      return {
-        entries: {
-          ...state.entries,
-          [userConfig.onLoad]: {
-            ...state.entries[userConfig.onLoad],
-            rows: updatedRows,
-          },
-        },
-      };
-    });
-  };
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  const handleSave = () => {
-    if (selectedRow) {
-      const tdList=document.querySelectorAll(`tr.${selectedRow} td`);
-      tdList.forEach((td)=>{
-        td.classList.remove(styles.change);
-      })
-      saveRow(userConfig.onLoad, selectedRow);
-      setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
-    }
-  };
-
 
   const handleMouseEnter = (
     columnName: string,
@@ -172,19 +134,36 @@ export default function UserManagement({ userConfig }: EntryListProps) {
 
     setHoveredValue(useStore.getState().entries[userConfig.onLoad].rows[rowId].originalData[columnName as keyof User] as string);
     setHoveredPosition({
-      top: rect.top - 20, // Position the span just above the cell
-      left: rect.left + rect.width / 2, // Center it horizontally above the cell
+      top: rect.top - 20, 
+      left: rect.left + rect.width / 2,
     });
-    console.log("Hovered over row:", rowId); // You can access the rowId here
   };
-  
-  const handleMouseLeave = (rowId: string) => {
-    setHoveredValue(null);
-    setHoveredPosition(null);
-    console.log("Mouse left row:", rowId); // You can access the rowId here
-  };
-  
 
+  const handleAddNew = () => {  
+    const newUser: User = {
+      username: "",
+      email: "",
+      full_name: "",
+      reports_to: "",
+      roles: "",
+      last_updated_by: "",
+      last_updated_at: new Date().toISOString(),
+    };
+    setData([...data, newUser]);
+    const rowId=addRow(
+      userConfig.onLoad,
+      Object.fromEntries(
+        Object.keys(newUser).map((key) => [
+          key,
+          newUser[key as keyof User],
+        ])
+      )
+    );
+    setSelectedRow(rowId);
+    setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+    setModalContent(<UserMaster formId={rowId}/>)
+    setisopen(true);
+  }
   return (
     <div className={styles.entryListContainer}>
       <h2>User Management</h2>
@@ -230,71 +209,21 @@ export default function UserManagement({ userConfig }: EntryListProps) {
                 {userConfig.columns.map((column) => (
                   <td key={column.name} className={styles.entryListCell}
                   onMouseEnter={(e) =>
-                    handleMouseEnter(column.name, e, rowId) // Pass rowId here
+                    handleMouseEnter(column.name, e, rowId) 
                   }
-                  onMouseLeave={() => handleMouseLeave(rowId)}
+                  onMouseLeave={() => setHoveredValue(null)}
                   >
-                    <input
-                        type="text"
-                        value={entry[column.name as keyof User] || ""}
-                        onChange={(e) => {
-                          const inputElement = e.target as HTMLInputElement;
-                          // Add the class to the parent element (the <td> element)
-                          inputElement.parentElement?.classList.add(styles.change);
-                          handleInputChange(rowId, column.name, e.target.value);
-                        }}
-                        />
-
+                    {entry[column.name as keyof User] || ""}
                   </td>
                 ))}
               </tr>
             );
           })}
-          {/* {data.map((entry, index) => (
-            <tr
-              key={entry.email}
-              className={clsx(styles.entryListItem, {
-                [styles.selectedRow]: selectedRow === entry.email,
-              })}
-              onClick={() => handleRowClick(entry.email)}
-            >
-              {userConfig.columns.map((column) => (
-                <td key={column.name}>
-                  <input
-                    type="text"
-                    value={entry[column.name as keyof User] || ''}
-                    onChange={(e) => handleInputChange(index, column.name, e.target.value)}
-                  />
-                </td>
-              ))}
-            </tr>
-          ))} */}
         </tbody>
       </table>
       <div className={styles.buttonContainer}>
         <button
-          onClick={() => {
-            const newUser: User = {
-              username: "",
-              email: "",
-              full_name: "",
-              reports_to: "",
-              roles: "",
-              last_updated_by: "",
-              last_updated_at: new Date().toISOString(),
-            };
-            setData([...data, newUser]);
-            addRow(
-              userConfig.onLoad,
-              Object.fromEntries(
-                Object.keys(newUser).map((key) => [
-                  key,
-                  newUser[key as keyof User],
-                ])
-              )
-            );
-            setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
-          }}
+          onClick={handleAddNew}
         >
           Add New
         </button>
@@ -309,68 +238,6 @@ export default function UserManagement({ userConfig }: EntryListProps) {
           }}
         >
           Delete
-        </button>
-        <button
-          disabled={!selectedRow}
-          onClick={handleSave}
-        >
-          save
-        </button>
-        <button
-          disabled={!selectedRow}
-          onClick={() => {
-            if (selectedRow) {
-              resetRow(userConfig.onLoad, selectedRow);
-              const tdList=document.querySelectorAll(`tr.${selectedRow} td`);
-              tdList.forEach((td)=>{
-                td.classList.remove(styles.change);
-              })
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
-            }
-          }}
-        >
-          ResetRow
-        </button>
-        <button
-          onClick={() => {
-            resetAllRows(userConfig.onLoad);
-            setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
-            const tdList=document.querySelectorAll('td');
-            tdList.forEach((td)=>{
-            td.classList.remove(styles.change);
-      })
-          }}
-        >
-          ResetAll
-        </button>
-        <button
-          disabled={!selectedRow}
-          onClick={() => {
-            if (selectedRow) {
-              const newUser: User = {
-                username: "",
-                email: "",
-                full_name: "",
-                reports_to: "",
-                roles: "",
-                last_updated_by: "",
-                last_updated_at: new Date().toISOString(),
-              };
-              addAfter(
-                userConfig.onLoad,
-                Object.fromEntries(
-                  Object.keys(newUser).map((key) => [
-                    key,
-                    newUser[key as keyof User],
-                  ])
-                ),
-                selectedRow
-              );
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
-            }
-          }}
-        >
-          add After
         </button>
         <button onClick={() => console.log(useStore.getState())}>
           show store

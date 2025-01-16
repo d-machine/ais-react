@@ -1,6 +1,5 @@
 import  { useState } from 'react';
 import Header from './components/header/Header';
-import TabContainer from './components/tabs/TabContainer';
 import { Tab } from './components/tabs/types';
 import styles from './App.module.css';
 import EntryForm from './components/EntryForm/EntryForm';
@@ -12,11 +11,11 @@ import ItemCategoryMaster from './components/EntryForm/ItemCategoryMaster';
 import ItemBrandMaster from './components/EntryForm/ItemBrandMaster';
 import PartyCategoryMaster from './components/EntryForm/PartyCategoryMaster';
 import PartyTypeMaster from './components/EntryForm/PartyTypeMaster';
-// import EntryList from './Utilities/EntryList';
-import { useStore } from './store';
 import ItemMaster from './components/EntryForm/ItemMaster';
+import TabContainer from './components/tabs/TabContainer';
+import UserEntryList from './components/Users/UserEntryList';
 import Modal from './Utilities/Modal';
-import UserManagement from './components/Users/UserManagement';
+import RoleEntryList from './components/Users/RoleEntryList';
 
 const DEMO_TABS: Tab[] = [
 ];
@@ -27,12 +26,6 @@ function App() {
   const [tabs, setTabs] = useState(DEMO_TABS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
-
-  // const fetchData = async (url: string) => {
-  //   const response = await fetch(url);
-  //   const data = await response.json();
-  //   return data;
-  // };
 
   const addTab = async (formId: string) => {
     setIsModalOpen(false);
@@ -57,23 +50,11 @@ function App() {
     } else if (formId.startsWith('PartyTypeMaster')) {
       content = <PartyTypeMaster formId={newTabId} />;
     } else if (formId.startsWith('UserManagement')) {
-      // try {
-      //   const entries = await fetchData('http://localhost:5000/itemmaster');
-      //   console.log(entries, "data");
-      //   content = (
-      //     <EntryList
-      //     setModalContent={setModalContent}
-      //     setisopen={setIsModalOpen}
-      //       entries={entries}
-      //     />
-      //   );
-      // } catch (error) {
-      //   console.error('Error fetching item master data:', error);
-      //   content = <div>Error loading data</div>;
-      // }
-      content=<UserManagement userConfig={userConfig} setModalContent={setModalContent} setisopen={setIsModalOpen}/>
+      content=<UserEntryList setModalContent={setModalContent}
+      setisopen={setIsModalOpen} userConfig={userConfig} />
     }else if(formId.startsWith('RoleManagement')){
-      content = <UserManagement userConfig={roleConfig} setModalContent={setModalContent} setisopen={setIsModalOpen}/>
+      content = <RoleEntryList setModalContent={setModalContent}
+      setisopen={setIsModalOpen} userConfig={roleConfig} />
     }
     else if(formId.startsWith('NewItemMaster')){
       content = <ItemMaster formId={newTabId} />;
@@ -116,14 +97,13 @@ function App() {
       
       <Header title="React Components Demo" addTab={addTab} />
       <main className={styles.content}>
-        {isModalOpen ? (
+      {isModalOpen ? (
           <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>{modalContent}</Modal>
 
         ) : (
           <TabContainer tabs={tabs} onTabsUpdate={setTabs} />
         )}
       </main>
-      <button onClick={()=>useStore.getState()}>show store</button>
     </div>
   );
 }
