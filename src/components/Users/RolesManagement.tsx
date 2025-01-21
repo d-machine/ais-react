@@ -1,86 +1,118 @@
-// RoleManagement.tsx
+
 import { useEffect, useState } from "react";
-import styles from "./user.module.css";
+import styles from "./RoleManagement.module.css";
 import clsx from "clsx";
 import { useStore } from "../../store1";
 
 interface Section {
-  sectionType: "fields" | "table";
+  sectionType: string;
   sectionName: string;
+  queryReturnType: string;
+  query: string;
+  payload: string[];
   applicableActions: string[];
-  actionConfig?: {
-    [actionName: string]: {
-      label: string;
-      onPress: string;
-      query?: string;
-      payload?: string[];
-      contextParams?: string[];
-      formConfig?: string;
-      onComplete?: string;
-    };
-  };
+  actionConfig: ActionConfig;
   fields?: Field[];
-  onLoad?: string; 
-  queryFile?: string;
-  pagenation?: boolean;
-  filterable?: boolean;
-  sortable?: boolean;
-  columns?: Column[]; 
+  columns?: Column[];
+}
+interface ActionConfig {
+  [key: string]: Action;
 }
 
+interface Action {
+  label: string;
+  actionType: string;
+  query?: string;
+  queryReturnType?: string;
+  payload?: string[];
+  contextParams?: string[];
+  functionName?: string;
+  onSuccess?: string;
+  onFailure?: string;
+}
 
 interface Field {
   name: string;
   label: string;
   type: string;
-  required: boolean; 
+  required?: boolean;
+  query?: string;
+  disabled?: boolean;
 }
 
 interface Column {
   name: string;
   label: string;
-  type: string; 
-  required: boolean; 
+  type: string;
+  multi?: boolean;
+  selectConfig?: SelectConfig;
 }
 
+interface SelectConfig {
+  selectHandler: string;
+  currentSelection: Selection[];
+  selectParser: string;
+  columns: { id: string; name: string };
+  options: Option[];
+  fields_to_extract: Selection[];
+}
 
-interface Roles{
-  resource: string;
-  access_type: string;
-  access_level:string;
-};
+interface Selection {
+  key: string;
+  as: string;
+}
 
+interface Option {
+  id: string;
+  name: string;
+}
 
 interface EntryListProps {
-  formId:string;
+  formId: string;
   userConfig: Section;
 }
 
-export default function RoleManagement({formId, userConfig }: EntryListProps) {
-  const {
-    addEntry,
-    addRow,
-    deleteRow,
-    saveRow,
-    resetRow,
-    resetAllRows,
-    addAfter,
-  } = useStore();
+interface Roles {
+  resource: string;
+  access_type: string;
+  access_level: string;
+}
+
+export default function RoleManagement({ formId, userConfig }: EntryListProps) {
+  const { addRow, deleteRow, saveRow, resetRow, resetAllRows, addAfter } =
+    useStore();
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [data, setData] = useState<Roles[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [rowKeys, setRowKeys] = useState<string[]>([]);
   const [hoveredValue, setHoveredValue] = useState<string | null>(null);
-  const [hoveredPosition, setHoveredPosition] = useState<{ top: number, left: number } | null>(null); 
+  const [hoveredPosition, setHoveredPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const [modalData, setModalData] = useState<string[]>([]);
+
+  const [modal, setModal] = useState(false);
+
+  const [columnName, setColumnName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const url = `http://localhost:5000/${userConfig.onLoad}`;
-        const response = await fetch(url);
+
+        const query = userConfig.query;
+        console.log(query);
+
+        const response = await fetch("http://localhost:5000/execute_query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ query }),
+        });
         const fetchedData = await response.json();
-        addEntry(formId);
+        console.log(fetchedData);
         fetchedData.forEach((entry: Roles) => {
           const entryData = Object.fromEntries(
             Object.keys(entry).map((key) => [key, entry[key as keyof Roles]])
@@ -89,32 +121,25 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
         });
         setRowKeys(useStore.getState().entries[formId].rowKeys);
         setData(fetchedData);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false);
       }
     };
+    fetchData();
+  },[]);
 
-    const currentState = useStore.getState();
-    if (!currentState.entries[formId]) {
-      fetchData();
-    } else {
-      const existingData: Roles[] = currentState.entries[formId].rowKeys.map(
-        (id) => {
-          const row = currentState.entries[formId].rows[id].updatedData;
-          return {
-            resource: row.resource,
-            access_type: row.access_type,
-            access_level:row.access_level
-          } as Roles;
-        }
-      );
-      setRowKeys(currentState.entries[formId].rowKeys);
-      setData(existingData);
-      setIsLoading(false);
-    }
-  }, []);
+  const handledoubleclick = (rowId: string, columnName: string) => {
+    const row = useStore.getState().entries[formId].rows[rowId];
+    const columnVal= row.updatedData[columnName];
+    const dataarr = columnVal.toString().split(",");
+    setModalData(dataarr);
+    setSelectedRow(rowId);
+    setColumnName(columnName);
+    setModal(true);
+  };
 
   const handleRowClick = (rowId: string) => {
     setSelectedRow((prev) => (prev === rowId ? null : rowId));
@@ -154,39 +179,120 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
 
   const handleSave = () => {
     if (selectedRow) {
-      const tdList=document.querySelectorAll(`tr.${selectedRow} td`);
-      tdList.forEach((td)=>{
+      const tdList = document.querySelectorAll(`tr.${selectedRow} td`);
+      tdList.forEach((td) => {
         td.classList.remove(styles.change);
-      })
+      });
       saveRow(formId, selectedRow);
       setRowKeys(useStore.getState().entries[formId].rowKeys);
     }
   };
 
-
   const handleMouseEnter = (
     columnName: string,
     event: React.MouseEvent,
-    rowId: string 
+    rowId: string
   ) => {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
 
-    setHoveredValue(useStore.getState().entries[formId].rows[rowId].originalData[columnName as keyof Roles] as string);
+    setHoveredValue(
+      useStore.getState().entries[formId].rows[rowId].originalData[
+        columnName as keyof Roles
+      ] as string
+    );
     setHoveredPosition({
-      top: rect.top - 20, // Position the span just above the cell
-      left: rect.left + rect.width / 2, // Center it horizontally above the cell
+      top: rect.top - 20,
+      left: rect.left + rect.width / 2,
     });
-    console.log("Hovered over row:", rowId); // You can access the rowId here
   };
-  
-  const handleMouseLeave = (rowId: string) => {
+
+  const handleMouseLeave = () => {
     setHoveredValue(null);
     setHoveredPosition(null);
-    console.log("Mouse left row:", rowId); // You can access the rowId here
   };
-  
+
+  const handleModalClick = (
+    event: React.MouseEvent<HTMLTableCellElement, MouseEvent>,
+    name: string
+  ) => {
+    const target = event.currentTarget;
+    console.log("hi");
+
+    target.classList.toggle("selected-row");
+    setModalData((prevData) => {
+      const exists = prevData.includes(name);
+      if (exists) {
+        return prevData.filter((item) => item !== name);
+      } else {
+        return [...prevData, name];
+      }
+    });
+  };
+
+  const handleModalClose = () => {
+    setModal(false);
+    const str = modalData.join(",");
+    console.log(str);
+
+    if (selectedRow !== null && columnName !== null) {
+      handleInputChange(selectedRow, columnName, str);
+    }
+    modalData.length = 0;
+  };
+
+  if (modal) {
+    return (
+      <div className={styles.modal}>
+        <div className={styles.modal_content}>
+          <div className={styles.modal_header}>
+            <button
+              className={styles.close_button}
+              onClick={() => handleModalClose()}
+            >
+              X
+            </button>
+          </div>
+          <div className={styles.modal_body}>
+            <table>
+              <thead>
+                <tr>
+                  <th style={{ width: "100px" }}>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userConfig.columns
+                  ?.filter((column) => column.name === columnName)
+                  .map((column) =>
+                    column.selectConfig?.options?.map((option) => (
+                      <tr
+                        key={option.id}
+                        style={{ cursor: "pointer", padding: "10px" }}
+                      >
+                        <td
+                          style={{
+                            textAlign: "center",
+                            backgroundColor: modalData.includes(option.name) ? "red" : "white", 
+                          }}
+                          onClick={(event) => {
+                            console.log(option.name);
+                            handleModalClick(event, option.name);
+                          }}
+                        >
+                          {option.name}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
+
     <div className={styles.entryListContainer}>
       <h2>Role Management</h2>
       {hoveredValue && hoveredPosition && (
@@ -195,6 +301,7 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
           style={{
             top: `${hoveredPosition.top}px`,
             left: `${hoveredPosition.left}px`,
+            zIndex:"10000",
             position: "absolute",
             backgroundColor: "black",
             color: "white",
@@ -206,47 +313,62 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
           {hoveredValue}
         </span>
       )}
+      <div className={styles.tableWrapper}>
       <table className={styles.entryTable}>
-        <thead>
+        <thead >
           <tr>
             {userConfig.columns?.map((column) => (
-              <th key={column.name} style={{ width: `400px` }}>
+              <th className={styles.stick} key={column.name} style={{ width: `400px` }}>
                 {column.label}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           {rowKeys.map((rowId) => {
             const entry =
               useStore.getState().entries[formId].rows[rowId].updatedData;
             return (
               <tr
                 key={rowId}
-                className={clsx(`${rowId}`,styles.entryListItem, {
+                className={clsx(`${rowId}`, styles.entryListItem, {
                   [styles.selectedRow]: selectedRow === rowId,
                 })}
                 onClick={() => handleRowClick(rowId)}
               >
                 {userConfig.columns?.map((column) => (
-                  <td key={column.name} className={styles.entryListCell}
-                  onMouseEnter={(e) =>
-                    handleMouseEnter(column.name, e, rowId) // Pass rowId here
-                  }
-                  onMouseLeave={() => handleMouseLeave(rowId)}
+                  <td
+                    key={column.name}
+                    data-column={column.name}
+                    className={styles.entryListCell}
+                    onMouseEnter={(e) =>
+                      handleMouseEnter(column.name, e, rowId)
+                    }
+                    onMouseLeave={handleMouseLeave}
                   >
-                    <input
-                    style={{ width: "100%" }}
+                    {column.type === "TEXT" ? (
+                      <input
+                        style={{ width: "100%" }}
                         type="text"
                         value={entry[column.name as keyof Roles] || ""}
                         onChange={(e) => {
-                          const inputElement = e.target as HTMLInputElement;
-                          // Add the class to the parent element (the <td> element)
-                          inputElement.parentElement?.classList.add(styles.change);
+                          const td = e.target.closest("td");
+                          if (td) td.classList.add(styles.change);
                           handleInputChange(rowId, column.name, e.target.value);
                         }}
+                      />
+                    ) : column.type === "SELECT" ? (
+                      <input
+                        readOnly
+                        onDoubleClick={(e) => {
+                          handledoubleclick(rowId, column.name);
+                          console.log(e);
+                        }}
+                        style={{ width: "100%" }}
+                        type="text"
+                        value={entry[column.name as keyof Roles] || ""}
                         />
-
+                      ) : null}
                   </td>
                 ))}
               </tr>
@@ -254,6 +376,7 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
           })}
         </tbody>
       </table>
+      </div>
       <div className={styles.buttonContainer}>
         <button
           onClick={() => {
@@ -286,13 +409,10 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
               setSelectedRow(null);
             }
           }}
-        >
+          >
           Delete
         </button>
-        <button
-          disabled={!selectedRow}
-          onClick={handleSave}
-        >
+        <button disabled={!selectedRow} onClick={handleSave}>
           save
         </button>
         <button
@@ -300,10 +420,10 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
           onClick={() => {
             if (selectedRow) {
               resetRow(formId, selectedRow);
-              const tdList=document.querySelectorAll(`tr.${selectedRow} td`);
-              tdList.forEach((td)=>{
+              const tdList = document.querySelectorAll(`tr.${selectedRow} td`);
+              tdList.forEach((td) => {
                 td.classList.remove(styles.change);
-              })
+              });
               setRowKeys(useStore.getState().entries[formId].rowKeys);
             }
           }}
@@ -314,12 +434,12 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
           onClick={() => {
             resetAllRows(formId);
             setRowKeys(useStore.getState().entries[formId].rowKeys);
-            const tdList=document.querySelectorAll('td');
-            tdList.forEach((td)=>{
-            td.classList.remove(styles.change);
-      })
+            const tdList = document.querySelectorAll("td");
+            tdList.forEach((td) => {
+              td.classList.remove(styles.change);
+            });
           }}
-        >
+          >
           ResetAll
         </button>
         <button
@@ -352,5 +472,6 @@ export default function RoleManagement({formId, userConfig }: EntryListProps) {
         </button>
       </div>
     </div>
+
   );
 }

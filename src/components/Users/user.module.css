@@ -87,3 +87,47 @@
   .change{
     box-shadow: inset 0 0 10px 2px rgba(255, 165, 0, 0.8); 
  }
+
+
+
+
+ .modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal_content {
+  background-color: #fff;
+  padding: 20px;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal_header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close_button {
+  background-color: #ccc;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.close_button:hover {
+  background-color: #aaa;
+}
+
+.selected-row {
+  background-color: #0fa260; /* Example green shade */
+  transition: background-color 0.3s ease;
+}

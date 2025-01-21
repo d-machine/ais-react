@@ -3,32 +3,6 @@ import { MenuItem } from './types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
 
-// const MENU_ITEMS: MenuItem[] = [
-//   {
-//     label:'Party',
-//     children:[
-//       {label:'PartyMater',action: (addTab: (formId: string) => void) => addTab('PartyMaster') },
-//       {label:'PartyCategoryMaster',action: (addTab: (formId: string)=> void) => addTab('PartyCategoryMaster')},
-//       {label:'PartyTypeMaster',action: (addTab: (formId: string) => void) => addTab('PartyTypeMaster')}
-//     ]
-//   },{
-//     label:'Inventory',
-//     children:[
-//       {label:'ItemMaster',action: (addTab: (formId: string) => void) => addTab('ItemMaster') },
-//       {label:'ItemCategoryMaster',action: (addTab: (formId: string) => void) => addTab('ItemCategoryMaster')},
-//       {label:'ItemBrandMaster',action: (addTab: (formId: string) =>void) => addTab('ItemBrandMaster')},
-//       ]
-//   },{
-//   label:'LocationMaster',
-//   children:[
-//     { label: 'Country', action: (addTab: (formId: string) => void) => addTab('Country') },
-//     { label: 'State', action: (addTab: (formId: string) => void) => addTab('State') },
-//     { label: 'District', action: (addTab: (formId: string) => void) => addTab('District') },
-//     { label: 'City', action: (addTab: (formId: string) => void) => addTab('City') }
-//   ]
-// }
-// ];
-
 const MENU_ITEMS: MenuItem[] = [
   {
     label: 'Administration',

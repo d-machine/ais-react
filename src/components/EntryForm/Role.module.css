@@ -1,0 +1,60 @@
+.parent {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); /* 12 flexible columns for better alignment */
+    gap: 16px; /* Space between grid items */
+    max-width: 1200px;
+    margin: 0 auto; /* Center the grid */
+  }
+  
+  .child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    grid-column: span 12; /* Default full-row width */
+  }
+  
+  .child1 { grid-column: span 6; } /* Adjust spans as needed */
+  .child2 { grid-column: span 6; }
+  .child3 { grid-column: span 6; }
+  .child4 { grid-column: span 6; }
+  .child5 { grid-column: span 3; justify-content: center; }
+  .child6 { grid-column: span 12; }
+  .child7 { grid-column: span 6; }
+  .child8 { grid-column: span 12; }
+  .child9 { grid-column: span 12; }
+  .child10 { grid-column: span 12; }
+  .child11 { grid-column: span 6; }
+  .child12 { grid-column: span 6; }
+  .child13 { grid-column: span 6; }
+  .child14 { grid-column: span 6; }
+  .child15 { grid-column: span 6; }
+  
+  .input {
+    width: 100%; /* Ensure inputs span their container */
+    max-width: 300px; /* Limit the maximum width */
+  }
+  
+  .textarea {
+    resize: both;
+    overflow: auto;
+    width: 100%;
+    max-width: 500px;
+    min-height: 50px;
+  }
+  
+  .input1 { width: 200px; }
+  .input2 { width: 200px; }
+  .input3 { width: 200px; }
+  .input4 { width: 200px; }
+  .input5 { width: 100px; }
+  .input6 { width: 400px; }
+  .input7 { width: 200px; }
+  .input8 { width: 400px; }
+  .input9 { width: 400px; }
+  .input10 { width: 400px; }
+  .input11 { width: 200px; }
+  .input12 { width: 200px; }
+  .input13 { width: 200px; }
+  .input14 { width: 200px; }
+  .input15 { width: 200px; }
+  

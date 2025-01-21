@@ -55,7 +55,7 @@ export default function Form({id,fields, formData,selectedValues,setSelectedValu
                return (
                     <div key={field.name} className={styles.child} style={{ gridColumn: field.grid_column }}>
                         <INPUT 
-                        id={id}
+                        formId={id}
                           key={field.name} 
                           field={field} 
                           formData={formData}

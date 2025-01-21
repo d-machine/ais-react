@@ -13,8 +13,7 @@ import PartyCategoryMaster from './components/EntryForm/PartyCategoryMaster';
 import PartyTypeMaster from './components/EntryForm/PartyTypeMaster';
 import ItemMaster from './components/EntryForm/ItemMaster';
 import TabContainer from './components/tabs/TabContainer';
-import UserEntryList from './components/Users/UserEntryList';
-import Modal from './Utilities/Modal';
+
 import RoleEntryList from './components/Users/RoleEntryList';
 
 const DEMO_TABS: Tab[] = [
@@ -24,11 +23,8 @@ const form_tab_map: { [key: string]: string } = {};
 
 function App() {
   const [tabs, setTabs] = useState(DEMO_TABS);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<React.ReactNode>(null);
 
   const addTab = async (formId: string) => {
-    setIsModalOpen(false);
     if (formId in form_tab_map) {
       const _tabId = form_tab_map[formId];
       const updatedTabs = tabs.map(tab => ({
@@ -49,12 +45,22 @@ function App() {
       content = <PartyCategoryMaster formId={newTabId} />;
     } else if (formId.startsWith('PartyTypeMaster')) {
       content = <PartyTypeMaster formId={newTabId} />;
-    } else if (formId.startsWith('UserManagement')) {
-      content=<UserEntryList setModalContent={setModalContent}
-      setisopen={setIsModalOpen} userConfig={userConfig} />
-    }else if(formId.startsWith('RoleManagement')){
-      content = <RoleEntryList setModalContent={setModalContent}
-      setisopen={setIsModalOpen} userConfig={roleConfig} />
+    } 
+    // else if (formId.startsWith('UserManagement')) {
+    //   content=<UserEntryList  userConfig={userConfig} />
+    // }
+    else if(formId.startsWith('RoleManagement')){
+
+      try {
+        const list_config=await fetch("http://localhost:5000/list_config");
+        const list_config_data=await list_config.json();
+
+        content = <RoleEntryList list_config={list_config_data} />
+
+      } catch (error) {
+        console.log(error);
+        
+      }
     }
     else if(formId.startsWith('NewItemMaster')){
       content = <ItemMaster formId={newTabId} />;
@@ -97,12 +103,7 @@ function App() {
       
       <Header title="React Components Demo" addTab={addTab} />
       <main className={styles.content}>
-      {isModalOpen ? (
-          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>{modalContent}</Modal>
-
-        ) : (
           <TabContainer tabs={tabs} onTabsUpdate={setTabs} />
-        )}
       </main>
     </div>
   );
@@ -111,144 +112,4 @@ function App() {
 export default App;
 
 
-const userConfig = {
-  applyAccessLevelRestrictions: false,
-  onLoad: "users",
-  onLoadParams: ["resource_id", "list"],
-  queryFile: "list-query",
-  pagenation: true,
-  filterable: true,
-  sortable: true,
-  applicableActions: ["add", "edit", "changePassword", "delete"],
-  actionConfig: {
-    add: {
-      label: "Add New User",
-      onPress: "displayForm",
-      "form-config": "add",
-      onComplete: "refresh",
-    },
-    edit: {
-      label: "Edit User",
-      onPress: "dispayForm",
-      onPressParams: ["user_id"],
-      "form-config": "edit",
-      onComplete: "refresh",
-    },
-    changePassword: {
-      label: "Change Password",
-      onPress: "displayForm",
-      onPressParams: ["user_id"],
-      "form-config": "change-password",
-      onComplete: "refresh",
-    },
-    delete: {
-      label: "Delete User",
-      onPress: "executeQuery",
-      query: "CALL delete_user($1, $2)",
-      onPressParams: ["user_id"],
-      "context-params": ["current_user_id"],
-      onComplete: "refresh",
-    },
-  },
-  columns: [
-    {
-      name: "username",
-      label: "Username",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-    {
-      name: "email",
-      label: "Email",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-    {
-      name: "full_name",
-      label: "Full Name",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-    {
-      name: "reports_to",
-      label: "Reports To",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-    {
-      name: "roles",
-      label: "Roles",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-    {
-      name: "last_updated_by",
-      label: "Last Updated By",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-    {
-      name: "last_updated_at",
-      label: "Last Updated At",
-      width: 200,
-      sortable: true,
-      filterType: "string",
-    },
-  ],
-};
 
-
-const roleConfig={
-  "applyAccessLevelRestrictions": false,
-  "onLoad": "roles",
-  "onLoadParams": [],
-  "queryFile": "list-role",
-  "pagenation": true,
-  "filterable": true,
-  "sortable": true,
-  "applicableActions": ["add", "edit", "delete"],
-  "actionConfig": {
-    "add": {
-        "label": "Add New Role",
-        "onPress": "displayForm",
-        "formConfig": "add-role",
-        "onComplete": "refresh"
-    }, 
-    "edit": {
-        "label": "Edit Role",
-        "onPress": "displayForm",
-        "payload": ["role_id"],
-        "formConfig": "edit-role",
-        "onComplete": "refresh"
-    },
-    "delete": {
-        "label": "Delete Role",
-        "onPress": "executeQuery",
-        "query": "CALL delete_role($1)",
-        "payload": ["role_id"],
-        "onComplete": "refresh"
-    }
-  },
-  "columns": [
-    {
-      "name": "name",
-      "label": "Role Name",
-      "width": 200,
-      "sortable": true,
-      "filterType": "string"
-    },
-    {
-      "name": "description",
-      "label": "Description",
-      "width": 500,
-      "sortable": true,
-      "filterType": "string"
-    }
-  ]
-}
