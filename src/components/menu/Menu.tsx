@@ -3,11 +3,13 @@ import { useState, useRef, useEffect } from 'react';
 import { MenuItem } from './types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
-import accessToken from "../../../accesstoken"
+import accessToken from "../../../accesstoken";
+import useTabsStore from '../../useTabsStore';
 
-export default function Menu({ addTab }: { addTab: (formId: string,list_config_file:string) => void }) {
+export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const { addTab } = useTabsStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -16,11 +18,9 @@ export default function Menu({ addTab }: { addTab: (formId: string,list_config_f
       try {
         const response = await axios.post<MenuItem[]>('http://localhost:3000/api/generic/getMenu', {}, {
           headers: {
-            Authorization: `Bearer ${accessToken}`,  // Include token in Authorization header
+            Authorization: `Bearer ${accessToken}`,
           },
         });
-        console.log(response.data.children);
-        
         setMenuItems(response.data.children);
       } catch (error) {
         console.error('Error fetching menu:', error);
@@ -29,9 +29,6 @@ export default function Menu({ addTab }: { addTab: (formId: string,list_config_f
 
     fetchMenuData();
   }, []);
-  
-  // Format the data as required for the menu
-
 
   useEffect(() => {
     if (!isOpen) return;
@@ -64,7 +61,7 @@ export default function Menu({ addTab }: { addTab: (formId: string,list_config_f
 
   const handleItemClick = (item: any) => {
     if (!item.children) {
-      addTab((item.id).toString(),item.list_config_file);
+      addTab((item.id).toString(),item.name, item.list_config_file);
       closeMenu();
     }
   };
@@ -86,10 +83,7 @@ export default function Menu({ addTab }: { addTab: (formId: string,list_config_f
         <span className={styles.bar}></span>
       </button>
       {isOpen && (
-        <MenuList
-          items={menuItems}
-          onItemClick={handleItemClick}
-        />
+        <MenuList items={menuItems} onItemClick={handleItemClick} />
       )}
     </div>
   );

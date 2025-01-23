@@ -46,11 +46,12 @@ export interface TableConfig {
 
 interface EntryListProps {
   list: string;
+  name:string;
   list_config: TableConfig;
   
 }
 
-export default function EntryList({ list, list_config }: EntryListProps) {
+export default function EntryList({ list,name, list_config }: EntryListProps) {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -136,7 +137,7 @@ export default function EntryList({ list, list_config }: EntryListProps) {
           {modalContent}
         </Modal>
       ):( <div className={styles.entryListContainer}>
-        <h2>User Management</h2>
+        <h2>{name}</h2>
         <table className={styles.entryTable}>
           <thead>
             <tr>

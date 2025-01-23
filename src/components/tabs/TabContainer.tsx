@@ -1,45 +1,36 @@
 import { Tab } from './types';
 import TabHeader from './TabHeader';
 import styles from './Tabs.module.css';
+import useTabsStore from '../../useTabsStore';
 
 interface TabContainerProps {
   tabs: Tab[];
-  onTabsUpdate: (updatedTabs: Tab[]) => void; 
 }
 
-export default function TabContainer({ tabs, onTabsUpdate }: TabContainerProps) {
-  const activeTab = tabs.find(tab => tab.status === 'ACTIVE'); 
+export default function TabContainer({ tabs }: TabContainerProps) {
+  const { updateTabStatus } = useTabsStore();
+  const activeTab = tabs.find((tab) => tab.status === 'ACTIVE');
 
   const handleTabChange = (tabId: string) => {
-    const updatedTabs = tabs.map(tab => ({
-      ...tab,
-      status: tab.id === tabId ? 'ACTIVE' :tab.status === 'CLOSE' ? 'CLOSE' : 'OPEN', 
-    }));
-    onTabsUpdate(updatedTabs); 
+    updateTabStatus(tabId, 'ACTIVE');
   };
 
   const closeTab = (tabId: string) => {
-    const toCloseTab = tabs.find(tab => tab.id === tabId);
-    let updatedTabs;
-  
-    if (toCloseTab?.status === "ACTIVE") {
-      const toActiveTab = tabs.find(tab => tab.status === "OPEN");
-      updatedTabs = tabs.map(tab => ({
-        ...tab,
-        status: tab.id === tabId ? "CLOSE" : tab.id === toActiveTab?.id ? "ACTIVE" : tab.status
-      }));
+    const toCloseTab = tabs.find((tab) => tab.id === tabId);
+    if (toCloseTab?.status === 'ACTIVE') {
+      const toActiveTab = tabs.find((tab) => tab.status === 'OPEN');
+      updateTabStatus(tabId, 'CLOSE');
+      if (toActiveTab) {
+        updateTabStatus(toActiveTab.id, 'ACTIVE');
+      }
     } else {
-      updatedTabs = tabs.map(tab => ({
-        ...tab,
-        status: tab.id === tabId ? "CLOSE" : tab.status
-      }));
+      updateTabStatus(tabId, 'CLOSE');
     }
-    onTabsUpdate(updatedTabs);
   };
 
   return (
     <div className={styles.tabContainer}>
-      <TabHeader tabs={tabs} activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab}/>
+      <TabHeader tabs={tabs} activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab} />
       <div className={styles.tabContent}>{activeTab?.content}</div>
     </div>
   );
