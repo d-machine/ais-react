@@ -74,7 +74,7 @@ interface EntryListProps {
 
 interface Roles {
   resource: string;
-  access_type: string;
+  access_types: string;
   access_level: string;
 }
 
@@ -132,8 +132,17 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
   },[]);
 
   const handledoubleclick = (rowId: string, columnName: string) => {
+    console.log(rowId, columnName);
+    
     const row = useStore.getState().entries[formId].rows[rowId];
-    const columnVal= row.updatedData[columnName];
+    const columnVal = row.updatedData[columnName];
+    
+    if (columnVal === undefined) {
+      console.error(`Column ${columnName} does not exist in row ${rowId}`);
+      return;
+    }
+    
+    console.log(columnVal);
     const dataarr = columnVal.toString().split(",");
     setModalData(dataarr);
     setSelectedRow(rowId);
@@ -382,7 +391,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
           onClick={() => {
             const newUser: Roles = {
               resource: "",
-              access_type: "",
+              access_types: "",
               access_level: "",
             };
             setData([...data, newUser]);
@@ -448,7 +457,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
             if (selectedRow) {
               const newUser: Roles = {
                 resource: "",
-                access_type: "",
+                access_types: "",
                 access_level: "",
               };
               addAfter(

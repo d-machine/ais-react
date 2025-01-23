@@ -39,7 +39,7 @@ interface Field {
   
 
 interface InputSelectProps {
-    formid:string,
+    id:string,
     field:Field;
     selectedValues: { [key: string]: { id: string | number; name: string } };
     setSelectedValues: (id : string,name: string, value: { id: string | number; name: string }) => void;
@@ -48,7 +48,7 @@ interface InputSelectProps {
     
 }
 
-export default function InputSelect({formid,field,formData,setSelectedValues,setFormData}:InputSelectProps) {
+export default function InputSelect({id,field,formData,setSelectedValues,setFormData}:InputSelectProps) {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
@@ -111,8 +111,8 @@ const handleInputDoubleClick = async (field: Field) => {
   // }
 
   const handleSelect = (name: string, value: { id: string | number; name: string }) => {
-    setSelectedValues(formid,name, value); 
-    setFormData(formid,name, value.name); 
+    setSelectedValues(id,name, value); 
+    setFormData(id,name, value.name); 
   };
 
     return(

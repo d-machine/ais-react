@@ -1,86 +1,173 @@
 
-import InputSelect from "./InputSelect";
+//import InputSelect from "./InputSelect";
+import styles1 from "../Users/user.module.css";
 import InputText from "./InputText";
 import styles from "./Input.module.css"
+import InputPassword from "./InputPassowrd";
+import InputSelect from "./InputSelect";
+import InputTextArea from "./InputTextArea";
+import { EFieldType } from "./types";
 
-// interface IDependencyField {
-//     as: string;
-//     key: string;
-//   }
-  
-//   interface IDependency {
-//     dependency: string;
-//     fields: IDependencyField[];
-//   }
-//   interface IInput {
-//     name:string;
-//     label:string;
-//     type:EInputType;
-//     required: boolean;
-//     readOnly: boolean;
-//     grid_column:string;
-//     dependencies?:IDependency[];
-//     selectQuery?: string;
-//     buttonType?: EButtonType;
-//     value?: string;
-//     width:number;
-//     input_width:number;
-//   }
-  
+interface Section {
+  sectionType: string;
+  sectionName: string;
+  queryReturnType: string;
+  query: string;
+  payload: string[];
+  applicableActions: string[];
+  actionConfig: ActionConfig;
+  fields?: Field[];
+  columns?: Column[];
+}
+interface ActionConfig {
+  [key: string]: Action;
+}
 
+interface Action {
+  label: string;
+  actionType: string;
+  query?: string;
+  queryReturnType?: string;
+  payload?: string[];
+  contextParams?: string[];
+  functionName?: string;
+  onSuccess?: string;
+  onFailure?: string;
+}
 
 interface Field {
-name: string;
-label: string;
-type: string;
-required?: boolean;
-query?: string;
-disabled?: boolean;
+  name: string;
+  label: string;
+  type: EFieldType;
+  required?: boolean;
+  query?: string;
+  disabled?: boolean;
+}
+
+interface Column {
+  name: string;
+  label: string;
+  type: string;
+  multi?: boolean;
+  selectConfig?: SelectConfig;
+}
+
+interface SelectConfig {
+  selectHandler: string;
+  currentSelection: Selection[];
+  selectParser: string;
+  columns: { id: string; name: string };
+  options: Option[];
+  fields_to_extract: Selection[];
+}
+
+interface Selection {
+  key: string;
+  as: string;
+}
+
+interface Option {
+  id: string;
+  name: string;
 }
 
 
+const INPUT_MAP = {
+  [EFieldType.PASSWORD]: InputPassword,
+  [EFieldType.TEXT]: InputText,
+  [EFieldType.text]: InputText,
+  [EFieldType.SELECT]: InputSelect,
+  [EFieldType.TEXTAREA]: InputTextArea,
+};
 
 interface InputProps{
     formId:string;
-    fields:Field[];
+    section:Section;
     formData: { [key: string]: string | number };
     selectedValues: { [key: string]: { id: string | number; name: string } };
     setSelectedValues: (id: string,name: string, value: { id: string | number; name: string }) => void;
     setFormData: (id:string,name: string, value: string | number) => void;
 }
 
-export default function Form({formId,fields,formData,selectedValues,setSelectedValues,setFormData}:InputProps){
+export default function Form({formId,section,formData,selectedValues,setSelectedValues,setFormData}:InputProps){
     return (
+      <>
         <div className={styles.parent}>
         {
-            fields.map((field) => {
-               return (
-                    <div key={field.name} className={styles.child} style={{ gridColumn:"span 20"}}>
-                      {field.type==="TEXT" || field.type=="TEXTAREA"?(
-                          <InputText 
-                          id={formId}
-                            key={field.name} 
-                            field={field} 
-                            formData={formData}
-                            setFormData={setFormData}
-                          />
-                      ):field.type==="SELECT"?(
-                        <InputSelect 
-                          formid={formId}
-                            key={field.name} 
-                            field={field} 
-                            formData={formData}
-                            selectedValues={selectedValues}
-                            setFormData={setFormData}
-                            setSelectedValues={setSelectedValues}
-                          />
-                      ):null}
-                    </div>
+            section.fields?.map((field) => {
+              const InputComponent = INPUT_MAP[field.type];
+              return (
+                <div key={field.name}  
+                className={styles.child} 
+                style={{ gridColumn:"span 20",border:"2px red solid",gap:"10px"}}>
+                <InputComponent
+                key={field.name}
+                id={formId}
+                field={field}
+                formData={formData}
+                setFormData={setFormData}
+                selectedValues={selectedValues}
+                setSelectedValues={setSelectedValues}
+              />
+                  </div>
                 )
             }
                 )
-          }
+              }
         </div>
+        <div className={styles1.buttonContainer}>
+              {section.applicableActions.map((actionKey, index) => {
+                const action = section.actionConfig[actionKey as keyof typeof section.actionConfig];
+                return (
+                  <button
+                    key={index}
+                    className={styles1.actionButton}
+                    onClick={() => {
+                      if (action.onSuccess === "exitAndComplete") {
+                        console.log("Exiting and completing...");
+                      } else if (action.onFailure === "showErrorSnackbar") {
+                        console.error("Error encountered.");
+                      } else {
+                        console.log(`Executing action: ${action.label}`);
+                      }
+                    }}
+                    >
+                    { action.label }
+                  </button>
+                );
+              })}
+      </div>
+        </>
     );
 }
 
+
+
+
+              // {field.type==="PASSWORD"?(<InputPassword 
+              //   id={formId}
+              //   key={field.name} 
+              //   field={field} 
+              //   formData={formData}
+              //   setFormData={setFormData}
+              //   />):field.type==="TEXT" || field.type==="text"?(<InputText 
+              //     id={formId}
+              //     key={field.name} 
+              //     field={field} 
+              //     formData={formData}
+              //     setFormData={setFormData}
+              //     />):field.type==="SELECT"?(<InputSelect 
+              //       formid={formId}
+              //       key={field.name} 
+              //       field={field} 
+              //       formData={formData}
+              //       selectedValues={selectedValues}
+              //       setFormData={setFormData}
+              //       setSelectedValues={setSelectedValues}
+              //       />):field.type==="TEXTAREA"?(<InputTextArea
+              //         id={formId}
+              //         key={field.name} 
+              //         field={field} 
+              //         formData={formData}
+              //         setFormData={setFormData}
+              //         />):null}

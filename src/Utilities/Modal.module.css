@@ -12,12 +12,16 @@
 }
 
 .modalContent {
+  margin: auto;
+  position: relative;
+  border: 2px red solid;
   background: white;
   padding: 20px;
   border-radius: 8px;
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  padding: 30px;
+  width: 90%;
+  height: 90%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

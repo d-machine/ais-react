@@ -1,10 +1,10 @@
-export enum EInputType {
-    TEXT = 'text',
-    DATE = 'date',
-    SELECT = 'select',
-    BUTTON='button',
-    TEXTFIELD='textfield',
-  }
+export enum EFieldType {
+  PASSWORD = 'PASSWORD',
+  TEXT = 'TEXT',
+  text = 'text',
+  SELECT = 'SELECT',
+  TEXTAREA = 'TEXTAREA',
+}
 
 export enum ESectionType{
     FIELDS='fields',

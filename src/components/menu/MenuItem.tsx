@@ -42,7 +42,7 @@ export default function MenuItemComponent({ item, onItemClick }: MenuItemProps) 
         className={`${styles.menuItem} ${hasChildren ? styles.hasChildren : ''}`}
         onClick={handleClick}
       >
-        {item.label}
+        {item.name}
       </button>
       {hasChildren && isOpen && (
         <MenuList

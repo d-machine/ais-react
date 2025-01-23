@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "../../store1";
 import RoleManagement from "../Users/RolesManagement";
 import Form from "../Input/newIndex";
+import { EFieldType } from "../Input/types";
 // import styles1 from "../Input/SelectModal.module.css";
 
 interface Section {
@@ -35,7 +36,7 @@ interface Action {
 interface Field {
   name: string;
   label: string;
-  type: string;
+  type: EFieldType;
   required?: boolean;
   query?: string;
   disabled?: boolean;
@@ -82,6 +83,8 @@ export default function RoleMaster({ addConfig, formId }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    console.log(addConfig);
+    
     const currentState = useStore.getState();
     if (!currentState.entries[formId]) {
       addEntry(formId);
@@ -89,29 +92,24 @@ export default function RoleMaster({ addConfig, formId }: Props) {
     setIsLoading(false);
   }, [formId]);
 
-  // const fetchData = async (select_query: string) => {
-  //   const response = await fetch(`http://localhost:5000/get_admin`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(select_query),
-  //   });
-  //   return await response.json();
-  // };
-
-
-
   if (isLoading) return <div>Loading...</div>;
 
-
-
+  
   return (
     <>
-
-        <Form selectedValues={useStore.getState().entries[formId].selectedValues} setSelectedValues={setSelectedValues} setFormData={setFormData} formData={useStore.getState().entries[formId].metadata} formId={formId} fields={addConfig.sections[0].fields}/>
-
-      <RoleManagement formId={formId} userConfig={addConfig.sections[1]} />
+      <Form
+        selectedValues={useStore.getState().entries[formId]?.selectedValues || {}}
+        setSelectedValues={setSelectedValues}
+        setFormData={setFormData}
+        formData={useStore.getState().entries[formId]?.metadata || {}}
+        formId={formId}
+        section={addConfig[0]}
+      />
+      {addConfig.length > 1 ? (
+        <RoleManagement formId={formId} userConfig={addConfig[1]} />
+      ) : null}
     </>
   );
+  
 }
+

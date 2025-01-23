@@ -1,0 +1,2 @@
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTczNzYyNjgxNSwiZXhwIjoxNzM3NjcwMDE1fQ.cYE3BABhChkyxNT1RlVsNLqQzm_fLGo7y0xSbJWbGkM';
+export default accessToken;

@@ -1,38 +1,23 @@
 import styles from "./Input.module.css"
-import { EInputType } from "./types";
 
-interface IDependencyField {
-  as: string;
-  key: string;
-}
+interface Field {
+  name: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  query?: string;
+  disabled?: boolean;
+  }
+  
 
-interface IDependency {
-  dependency: string;
-  fields: IDependencyField[];
-}
-interface IInput {
-  name:string;
-  label:string;
-  type:EInputType;
-  required: boolean;
-  readOnly: boolean;
-  grid_column:string;
-  dependencies?:IDependency[];
-  value?: string;
-  width:number;
-  input_width:number;
-}
-
-
-
-interface InputTextProps {
+interface InputTextArea {
   id:string;
-    field: IInput;
+    field: Field;
     formData: { [key: string]: string | number };
     setFormData: (id:string, name: string, value: string | number) => void
 }
 
-export default function InputText({id,field, formData,setFormData}:InputTextProps) {
+export default function InputTextArea({id,field, formData,setFormData}:InputTextArea) {
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData(id, e.target.name, e.target.value);
       };
