@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import styles from "./RoleManagement.module.css";
 import clsx from "clsx";
-import { useStore } from "../../store1";
+import { useAddStore } from "../../useAddStore";
 
 interface Section {
   sectionType: string;
@@ -80,7 +80,7 @@ interface Roles {
 
 export default function RoleManagement({ formId, userConfig }: EntryListProps) {
   const { addRow, deleteRow, saveRow, resetRow, resetAllRows, addAfter } =
-    useStore();
+    useAddStore();
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [data, setData] = useState<Roles[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,7 +119,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
           );
           addRow(formId, entryData);
         });
-        setRowKeys(useStore.getState().entries[formId].rowKeys);
+        setRowKeys(useAddStore.getState().entries[formId].rowKeys);
         setData(fetchedData);
 
       } catch (error) {
@@ -134,7 +134,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
   const handledoubleclick = (rowId: string, columnName: string) => {
     console.log(rowId, columnName);
     
-    const row = useStore.getState().entries[formId].rows[rowId];
+    const row = useAddStore.getState().entries[formId].rows[rowId];
     const columnVal = row.updatedData[columnName];
     
     if (columnVal === undefined) {
@@ -159,7 +159,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
     columnName: string,
     value: string | number
   ) => {
-    useStore.setState((state) => {
+    useAddStore.setState((state) => {
       const updatedRows = {
         ...state.entries[formId].rows,
         [rowId]: {
@@ -193,7 +193,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
         td.classList.remove(styles.change);
       });
       saveRow(formId, selectedRow);
-      setRowKeys(useStore.getState().entries[formId].rowKeys);
+      setRowKeys(useAddStore.getState().entries[formId].rowKeys);
     }
   };
 
@@ -205,7 +205,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
 
     setHoveredValue(
-      useStore.getState().entries[formId].rows[rowId].originalData[
+      useAddStore.getState().entries[formId].rows[rowId].originalData[
         columnName as keyof Roles
       ] as string
     );
@@ -303,7 +303,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
   return (
 
     <div className={styles.entryListContainer}>
-      <h2>Role Management</h2>
+      <h2>{userConfig.sectionName}</h2>
       {hoveredValue && hoveredPosition && (
         <span
           className={styles.hoveredValue}
@@ -336,7 +336,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
         <tbody >
           {rowKeys.map((rowId) => {
             const entry =
-              useStore.getState().entries[formId].rows[rowId].updatedData;
+              useAddStore.getState().entries[formId].rows[rowId].updatedData;
             return (
               <tr
                 key={rowId}
@@ -404,7 +404,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
                 ])
               )
             );
-            setRowKeys(useStore.getState().entries[formId].rowKeys);
+            setRowKeys(useAddStore.getState().entries[formId].rowKeys);
           }}
         >
           Add New
@@ -414,7 +414,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
           onClick={() => {
             if (selectedRow) {
               deleteRow(formId, selectedRow);
-              setRowKeys(useStore.getState().entries[formId].rowKeys);
+              setRowKeys(useAddStore.getState().entries[formId].rowKeys);
               setSelectedRow(null);
             }
           }}
@@ -433,7 +433,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
               tdList.forEach((td) => {
                 td.classList.remove(styles.change);
               });
-              setRowKeys(useStore.getState().entries[formId].rowKeys);
+              setRowKeys(useAddStore.getState().entries[formId].rowKeys);
             }
           }}
         >
@@ -442,7 +442,7 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
         <button
           onClick={() => {
             resetAllRows(formId);
-            setRowKeys(useStore.getState().entries[formId].rowKeys);
+            setRowKeys(useAddStore.getState().entries[formId].rowKeys);
             const tdList = document.querySelectorAll("td");
             tdList.forEach((td) => {
               td.classList.remove(styles.change);
@@ -470,13 +470,13 @@ export default function RoleManagement({ formId, userConfig }: EntryListProps) {
                 ),
                 selectedRow
               );
-              setRowKeys(useStore.getState().entries[formId].rowKeys);
+              setRowKeys(useAddStore.getState().entries[formId].rowKeys);
             }
           }}
         >
           add After
         </button>
-        <button onClick={() => console.log(useStore.getState())}>
+        <button onClick={() => console.log(useAddStore.getState())}>
           show store
         </button>
       </div>

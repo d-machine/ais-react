@@ -1,14 +1,14 @@
-import { Tab } from './types';
+import useTabsStore from '../../useTabsStore';
 import styles from './Tabs.module.css';
 
 interface TabHeaderProps {
-  tabs: Tab[];
   activeTabId: string;
   onTabChange: (tabId: string) => void; 
   closeTab:(tabId:string)=>void;
 }
 
-export default function TabHeader({closeTab, tabs, activeTabId, onTabChange }: TabHeaderProps) {
+export default function TabHeader({closeTab, activeTabId, onTabChange }: TabHeaderProps) {
+  const {tabs} = useTabsStore();
   return (
 <div className={styles.tabHeader}>
   {tabs.map(tab => 

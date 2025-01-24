@@ -28,7 +28,6 @@ export default function InputTextArea({id,field, formData,setFormData}:InputText
           className={styles.textarea}
           name={field.name}
           value={formData[field.name] || ""}
-          style={{ width: field.input_width }}
           onChange={handleInputChange}
         >
             {formData[field.name]}

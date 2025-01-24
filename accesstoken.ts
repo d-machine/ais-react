@@ -1,2 +1,2 @@
-const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTczNzYyNjgxNSwiZXhwIjoxNzM3NjcwMDE1fQ.cYE3BABhChkyxNT1RlVsNLqQzm_fLGo7y0xSbJWbGkM';
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTczNzcwODY3OCwiZXhwIjoxNzM3NzUxODc4fQ.JJS9FY0-TiqTR5GeLtCjNYjVilHGR9upkL5aFYW4ERI';
 export default accessToken;

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import styles from "./user.module.css";
 import clsx from "clsx";
-import { useStore } from "../../store1";
+import { useAddStore } from "../../useAddStore";
 interface UserConfig {
   applyAccessLevelRestrictions: boolean;
   onLoad: string;
@@ -60,7 +60,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
     resetRow,
     resetAllRows,
     addAfter,
-  } = useStore();
+  } = useAddStore();
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [data, setData] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,7 +82,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
           );
           addRow(userConfig.onLoad, entryData);
         });
-        setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+        setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
         setData(fetchedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -91,7 +91,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
       }
     };
 
-    const currentState = useStore.getState();
+    const currentState = useAddStore.getState();
     if (!currentState.entries[userConfig.onLoad]) {
       fetchData();
     } else {
@@ -124,7 +124,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
     columnName: string,
     value: string | number
   ) => {
-    useStore.setState((state) => {
+    useAddStore.setState((state) => {
       const updatedRows = {
         ...state.entries[userConfig.onLoad].rows,
         [rowId]: {
@@ -158,7 +158,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
         td.classList.remove(styles.change);
       })
       saveRow(userConfig.onLoad, selectedRow);
-      setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+      setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
     }
   };
 
@@ -170,7 +170,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
   ) => {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
 
-    setHoveredValue(useStore.getState().entries[userConfig.onLoad].rows[rowId].originalData[columnName as keyof User] as string);
+    setHoveredValue(useAddStore.getState().entries[userConfig.onLoad].rows[rowId].originalData[columnName as keyof User] as string);
     setHoveredPosition({
       top: rect.top - 20, // Position the span just above the cell
       left: rect.left + rect.width / 2, // Center it horizontally above the cell
@@ -218,7 +218,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
         <tbody>
           {rowKeys.map((rowId) => {
             const entry =
-              useStore.getState().entries[userConfig.onLoad].rows[rowId].updatedData;
+              useAddStore.getState().entries[userConfig.onLoad].rows[rowId].updatedData;
             return (
               <tr
                 key={rowId}
@@ -293,7 +293,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
                 ])
               )
             );
-            setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+            setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
           }}
         >
           Add New
@@ -303,7 +303,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
           onClick={() => {
             if (selectedRow) {
               deleteRow(userConfig.onLoad, selectedRow);
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+              setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
               setSelectedRow(null);
             }
           }}
@@ -325,7 +325,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
               tdList.forEach((td)=>{
                 td.classList.remove(styles.change);
               })
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+              setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
             }
           }}
         >
@@ -334,7 +334,7 @@ export default function UserManagement({ userConfig }: EntryListProps) {
         <button
           onClick={() => {
             resetAllRows(userConfig.onLoad);
-            setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+            setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
             const tdList=document.querySelectorAll('td');
             tdList.forEach((td)=>{
             td.classList.remove(styles.change);
@@ -366,13 +366,13 @@ export default function UserManagement({ userConfig }: EntryListProps) {
                 ),
                 selectedRow
               );
-              setRowKeys(useStore.getState().entries[userConfig.onLoad].rowKeys);
+              setRowKeys(useAddStore.getState().entries[userConfig.onLoad].rowKeys);
             }
           }}
         >
           add After
         </button>
-        <button onClick={() => console.log(useStore.getState())}>
+        <button onClick={() => console.log(useAddStore.getState())}>
           show store
         </button>
       </div>

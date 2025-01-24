@@ -1,14 +1,10 @@
-import { Tab } from './types';
 import TabHeader from './TabHeader';
 import styles from './Tabs.module.css';
 import useTabsStore from '../../useTabsStore';
 
-interface TabContainerProps {
-  tabs: Tab[];
-}
 
-export default function TabContainer({ tabs }: TabContainerProps) {
-  const { updateTabStatus } = useTabsStore();
+export default function TabContainer() {
+  const { updateTabStatus,tabs } = useTabsStore();
   const activeTab = tabs.find((tab) => tab.status === 'ACTIVE');
 
   const handleTabChange = (tabId: string) => {
@@ -30,7 +26,7 @@ export default function TabContainer({ tabs }: TabContainerProps) {
 
   return (
     <div className={styles.tabContainer}>
-      <TabHeader tabs={tabs} activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab} />
+      <TabHeader activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab} />
       <div className={styles.tabContent}>{activeTab?.content}</div>
     </div>
   );

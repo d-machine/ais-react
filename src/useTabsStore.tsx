@@ -48,7 +48,7 @@ const useTabsStore = create<TabsState>((set, get) => ({
 
     const newTab: Tab = {
       id: newTabId,
-      title: `${formId}`,
+      title: name,
       content: content,
       status: 'ACTIVE',
     };

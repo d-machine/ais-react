@@ -21,6 +21,7 @@ export default function Menu() {
             Authorization: `Bearer ${accessToken}`,
           },
         });
+        // @ts-expect-error - response data is an array
         setMenuItems(response.data.children);
       } catch (error) {
         console.error('Error fetching menu:', error);
@@ -59,6 +60,7 @@ export default function Menu() {
     buttonRef.current?.blur();
   };
 
+  
   const handleItemClick = (item: any) => {
     if (!item.children) {
       addTab((item.id).toString(),item.name, item.list_config_file);

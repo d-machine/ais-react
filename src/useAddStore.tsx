@@ -23,12 +23,12 @@ interface GridState {
   resetAllRows: (entryId: string) => void;
   setFormData: (id: string, name: string, value: string | number) => void;
   setSelectedValues: (id: string, name: string, value: { id: string | number; name: string }) => void;
-
+  fillform: (entryId: string, data: { [key: string]: string | number }) => void;
   resetRow: (entryId: string, rowId: string) => void; 
   addAfter: (entryId: string,rowData: { [key: string]: string | number }, rowId: string) => void; 
 }
 
-export const useStore = create<GridState>((set) => ({
+export const useAddStore = create<GridState>((set) => ({
   entries: {},
   addEntry: (entryId) =>
     set((state) => ({
@@ -43,6 +43,18 @@ export const useStore = create<GridState>((set) => ({
       },
     })),
 
+    fillform: (entryId, data) =>
+    set((state) => ({
+      entries: {
+        ...state.entries,
+        [entryId]: {
+          metadata: data,
+          selectedValues:{},
+          rows: {},
+          rowKeys: [],
+        },
+      },
+    })),
     setFormData: (id, name, value) =>
       set((state) => ({
         entries: {
@@ -137,7 +149,7 @@ export const useStore = create<GridState>((set) => ({
               ...state.entries[entryId].rows,
               [rowId]: {
                 originalData: originalData,
-                updatedData: originalData, // Reset the updated data
+                updatedData: originalData, 
               },
             },
           },

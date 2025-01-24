@@ -92,6 +92,7 @@ interface InputProps{
 export default function Form({formId,section,formData,selectedValues,setSelectedValues,setFormData}:InputProps){
     return (
       <>
+        <h2>{section.sectionName}</h2>
         <div className={styles.parent}>
         {
             section.fields?.map((field) => {
@@ -141,33 +142,3 @@ export default function Form({formId,section,formData,selectedValues,setSelected
     );
 }
 
-
-
-
-              // {field.type==="PASSWORD"?(<InputPassword 
-              //   id={formId}
-              //   key={field.name} 
-              //   field={field} 
-              //   formData={formData}
-              //   setFormData={setFormData}
-              //   />):field.type==="TEXT" || field.type==="text"?(<InputText 
-              //     id={formId}
-              //     key={field.name} 
-              //     field={field} 
-              //     formData={formData}
-              //     setFormData={setFormData}
-              //     />):field.type==="SELECT"?(<InputSelect 
-              //       formid={formId}
-              //       key={field.name} 
-              //       field={field} 
-              //       formData={formData}
-              //       selectedValues={selectedValues}
-              //       setFormData={setFormData}
-              //       setSelectedValues={setSelectedValues}
-              //       />):field.type==="TEXTAREA"?(<InputTextArea
-              //         id={formId}
-              //         key={field.name} 
-              //         field={field} 
-              //         formData={formData}
-              //         setFormData={setFormData}
-              //         />):null}

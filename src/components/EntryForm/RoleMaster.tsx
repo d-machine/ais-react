@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useStore } from "../../store1";
+import { useAddStore } from "../../useAddStore";
 import RoleManagement from "../Users/RolesManagement";
 import Form from "../Input/newIndex";
 import { EFieldType } from "../Input/types";
-// import styles1 from "../Input/SelectModal.module.css";
 
 interface Section {
   sectionType: string;
@@ -68,24 +67,19 @@ interface Option {
   id: string;
   name: string;
 }
-
-interface Root {
-  sections: Section[];
-}
-
 interface Props {
-  addConfig: Root;
+  addConfig: Section[];
   formId: string;
 }
 
 export default function RoleMaster({ addConfig, formId }: Props) {
-  const { addEntry, setFormData, setSelectedValues } = useStore();
+  const { addEntry, setFormData, setSelectedValues } = useAddStore();
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    console.log(addConfig);
+
     
-    const currentState = useStore.getState();
+    const currentState = useAddStore.getState();
     if (!currentState.entries[formId]) {
       addEntry(formId);
     }
@@ -98,10 +92,10 @@ export default function RoleMaster({ addConfig, formId }: Props) {
   return (
     <>
       <Form
-        selectedValues={useStore.getState().entries[formId]?.selectedValues || {}}
+        selectedValues={useAddStore.getState().entries[formId]?.selectedValues || {}}
         setSelectedValues={setSelectedValues}
         setFormData={setFormData}
-        formData={useStore.getState().entries[formId]?.metadata || {}}
+        formData={useAddStore.getState().entries[formId]?.metadata || {}}
         formId={formId}
         section={addConfig[0]}
       />
