@@ -4,6 +4,7 @@ import styles from './user.module.css';
 import clsx from 'clsx';
 import RoleMaster from '../EntryForm/RoleMaster';
 import Modal from '../../Utilities/Modal';
+import { useSnackbar } from '../../Utilities/useSnackBar';
 import accessToken from '../../../accesstoken';
 import useEntryListStore from '../../useEntryListStore';
 import { useAddStore } from '../../useAddStore';
@@ -18,21 +19,21 @@ interface EntryListProps {
 
 export default function EntryList({ list, name, list_config }: EntryListProps) {
   const { entries, initData, setData, isLoading, setLoading, selectedRow, setSelectedRow } = useEntryListStore();
-  const {addEntry,fillform}=useAddStore();
+  const { addEntry, fillform } = useAddStore();
+  const { showSnackbar, SnackbarComponent } = useSnackbar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
 
   const fetchData = async (url: string, config: string) => {
-    console.log(name); 
+    console.log(name);
     initData(name);
     try {
       setLoading(true);
-      if(config==="list-roles"){
-        const response=await axios.get('http://localhost:4500/roles');
+      if (config === 'list-roles') {
+        const response = await axios.get('http://localhost:4500/roles');
         console.log(name, response.data);
         setData(name, response.data || []);
-      }
-      else{
+      } else {
         const response = await axios.post(
           url,
           { configFile: config },
@@ -43,11 +44,10 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
           }
         );
         console.log(name, response.data);
-      setData(name, response.data || []);
+        setData(name, response.data || []);
       }
-      
-      
     } catch (error) {
+      showSnackbar('Error fetching data');
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
@@ -69,12 +69,12 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const handleAction = async (actionKey: string) => {
     const action = list_config.actionConfig[actionKey as keyof typeof list_config.actionConfig];
     console.log(action.formConfig);
-    
+
     if (action.actionType === 'DISPLAY_FORM') {
       try {
         const response = await axios.post(
           'http://localhost:3000/api/generic/getConfig',
-          { configFile: list_config.actionConfig["add"].formConfig },
+          { configFile: list_config.actionConfig['add'].formConfig },
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -83,22 +83,21 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         );
         const addConfigData = response.data;
         console.log(addConfigData);
-        
-        if(actionKey === 'edit') {
-          console.log("clicked edit");
-          
-          const id=entries[name].data[selectedRow][action.payload? action.payload[0]:"randomId"];
+
+        if (actionKey === 'edit') {
+          console.log('clicked edit');
+          const id = entries[name].data[selectedRow][action.payload ? action.payload[0] : 'randomId'];
           addEntry(id);
-          fillform(id,entries[name].data[selectedRow]);
+          fillform(id, entries[name].data[selectedRow]);
           setModalContent(<RoleMaster formId={id} addConfig={addConfigData} />);
-        }
-        else if(actionKey === 'add') {
-          const id=random().toString(36).substring(2, 11);
+        } else if (actionKey === 'add') {
+          const id = random().toString(36).substring(2, 11);
           addEntry(id);
           setModalContent(<RoleMaster formId={id} addConfig={addConfigData} />);
         }
         setIsModalOpen(true);
       } catch (error) {
+        showSnackbar('Error fetching form config');
         console.error('Error fetching form config:', error);
       }
     } else if (action.actionType === 'EXECUTE_QUERY') {
@@ -111,6 +110,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
           });
           refreshData();
         } catch (error) {
+          showSnackbar('Error executing query');
           console.error('Error executing query:', error);
         } finally {
           setLoading(false);
@@ -123,6 +123,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
 
   return (
     <>
+      <SnackbarComponent />
       {isModalOpen ? (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           {modalContent}
