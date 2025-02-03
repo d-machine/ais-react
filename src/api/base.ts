@@ -48,7 +48,7 @@ export const axiosInstance = axios.create({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function postApiCall(url: string, data: any, isAuthRequired: boolean) {
+export function postApiCall(url: string, data: any, isAuthRequired: boolean=true) {
   if (isAuthRequired) {
     return axiosInstance.post(url, data);
   } else {

@@ -1,13 +1,20 @@
 
 .entryListContainer {
-    padding: 20px;
     background-color: #fff;
     max-width: 100%;
     overflow-x: auto;
   }
 
+  h2{
+    height: 30px;
+    font: optional;
+    overflow: hidden;
+  }
+
   .tableWrapper {
-    max-height: 400px; 
+    max-width: 100%;
+    overflow-x: auto;
+    max-height: 210px; 
     overflow-y: auto;  
     border: 1px solid #ddd;
     position: relative;
@@ -29,7 +36,7 @@
     top: 0;          
 
     background-color: #f7f7f7;
-    z-index: 2;
+    z-index: 0;
     border: 1px solid #ddd;
     padding: 10px;
   }
@@ -59,6 +66,7 @@
   }
   
   .buttonContainer {
+    height: 37px;
     margin-top: 20px;
     display: flex;
     gap: 15px;
@@ -124,6 +132,7 @@
   }
   
   .modal_content {
+    z-index: 3;
     background-color: #f9f9f9;
     padding: 20px;
     width: 350px;

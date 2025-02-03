@@ -100,7 +100,7 @@ export default function Form({formId,section,formData,selectedValues,setSelected
               return (
                 <div key={field.name}  
                 className={styles.child} 
-                style={{ gridColumn:"span 20",border:"2px red solid",gap:"10px"}}>
+                style={{ gridColumn:"span 20",gap:"10px"}}>
                 <InputComponent
                 key={field.name}
                 id={formId}

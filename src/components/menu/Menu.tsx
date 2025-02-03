@@ -1,11 +1,9 @@
-import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { MenuItem } from './types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
-import accessToken from "../../../accesstoken";
 import useTabsStore from '../../useTabsStore';
-
+import { postApiCall } from '../../api/base';
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -13,15 +11,10 @@ export default function Menu() {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        const response = await axios.post<MenuItem[]>('http://localhost:3000/api/generic/getMenu', {}, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        // @ts-expect-error - response data is an array
+        const response = await postApiCall('/api/generic/getMenu', {}, true);
         setMenuItems(response.data.children);
       } catch (error) {
         console.error('Error fetching menu:', error);
@@ -60,7 +53,7 @@ export default function Menu() {
     buttonRef.current?.blur();
   };
 
-  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleItemClick = (item: any) => {
     if (!item.children) {
       addTab((item.id).toString(),item.name, item.list_config_file);

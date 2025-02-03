@@ -24,6 +24,8 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
 
+
+
   const fetchData = async (url: string, config: string) => {
     console.log(name);
     initData(name);
@@ -130,7 +132,8 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         </Modal>
       ) : (
         <div className={styles.entryListContainer}>
-          <h2>{name}</h2>
+          <h2 className={styles.title}>{name}</h2>
+          <div className={styles.tableWrapper}>
           <table className={styles.entryTable}>
             <thead>
               <tr>
@@ -159,6 +162,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
               ))}
             </tbody>
           </table>
+          </div>
           <div className={styles.buttonContainer}>
             {list_config.applicableActions.map((actionKey, index) => {
               const action = list_config.actionConfig[actionKey as keyof typeof list_config.actionConfig];
