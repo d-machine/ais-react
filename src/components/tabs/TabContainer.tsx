@@ -28,8 +28,8 @@ export default function TabContainer() {
     <div className={styles.tabContainer}>
       <TabHeader activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab} />
       <div className={styles.tabContent}>
-        {tabs.map((tab) => (
-          <div className={styles.tabContentChild} style={{visibility: tab.status === 'ACTIVE' ? 'visible' : 'hidden'}}>{tab?.content}</div>
+        {tabs.map((tab,index) => (
+          <div key={index} className={styles.tabContentChild} style={{visibility: tab.status === 'ACTIVE' ? 'visible' : 'hidden'}}>{tab?.content}</div>
         ))}
       </div>
       {/* <div className={styles.tabContent} style={{visibility:'visible'}}>{activeTab?.content}</div> */}

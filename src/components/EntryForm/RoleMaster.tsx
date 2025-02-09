@@ -70,9 +70,10 @@ import Form from "../Input/newIndex";
 interface Props {
   addConfig: any[];
   formId: string;
+  setIsModalOpen: (value: boolean) => void;
 }
 
-export default function RoleMaster({ addConfig, formId }: Props) {
+export default function RoleMaster({ addConfig, formId ,setIsModalOpen}: Props) {
   const { addEntry, setFormData, setSelectedValues } = useAddStore();
   const [isLoading, setIsLoading] = useState(true);
   
@@ -103,6 +104,7 @@ export default function RoleMaster({ addConfig, formId }: Props) {
         overflowY: "auto" // Enable vertical scrolling
       }}>
       <Form
+        setIsModalOpen={setIsModalOpen}
         selectedValues={useAddStore.getState().entries[formId]?.selectedValues || {}}
         setSelectedValues={setSelectedValues}
         setFormData={setFormData}

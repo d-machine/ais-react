@@ -1,6 +1,6 @@
 import axios from "axios";
 import { logIn, logOut } from "../store/auth/actions";
-import { getRefreshToken } from "../store/auth/selectors";
+import { getRefreshToken, getToken } from "../store/auth/selectors";
 import useAuthStore from "../store/auth/store";
 import { _isNil } from "../utils/aisLodash";
 
@@ -33,7 +33,10 @@ export async function refreshTokenApiCall(refreshToken: string) {
 
 export async function logoutApiCall() {
   try {
-    await axios.post(`${BASE_URL}/api/auth/logout`);
+    const token = getToken(useAuthStore.getState());
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    await axios.post(`${BASE_URL}/api/auth/logout`, {}, { headers });
+    //await axios.post(`${BASE_URL}/api/auth/logout`);
     logOut();
   } catch (error: unknown) {
     alert((error as { message: string }).message);

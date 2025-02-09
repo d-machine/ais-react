@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { Tab } from './components/tabs/types';
-import axios from 'axios';
+// import axios from 'axios';
 import EntryList from './components/Users/EntryList';
-import accessToken from '../accesstoken';
-
+// import accessToken from '../accesstoken';
+import { postApiCall } from './api/base';
 interface TabsState {
   tabs: Tab[];
   formTabMap: { [key: string]: string };
@@ -32,11 +32,10 @@ const useTabsStore = create<TabsState>((set, get) => ({
     let content;
     if (formId === '6' || formId === '7') {
       try {
-        const response = await axios.post(
-          'http://localhost:3000/api/generic/getConfig',
-          { configFile: listConfigFile },
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
+        console.log('listConfigFile', listConfigFile);
+        
+        const response=await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile: listConfigFile }, true);
+        console.log('response', response.data);
         content = <EntryList name={name} list_config={response.data} list={listConfigFile} />;
       } catch (error) {
         console.error('Error fetching menu:', error);

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Header from './components/header/Header';
 import TabContainer from './components/tabs/TabContainer';
 import styles from './App.module.css';
-import { loginApiCall, refreshTokenApiCall } from './api/base';
+import { loginApiCall, logoutApiCall, refreshTokenApiCall } from './api/base';
 import useAuthStore from './store/auth/store';
 
 function App() {
@@ -48,6 +48,10 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    logoutApiCall();
+  };
+
   if (!authInitialized && refreshToken) {
     return (
       <div className={styles.loading}>
@@ -89,10 +93,19 @@ function App() {
               <button className={styles.loginButton} type="submit">Login</button>
               {errorMessage && <p className={styles.error}>{errorMessage}</p>}
             </form>
-          </div>):(<><Header title="React Components Demo" />
+          </div>):
+          (
+          <>
+        <Header title="React Components Demo">
+        <button className={styles.logoutButton} onClick={handleLogout}>
+          Logout
+        </button>
+      </Header>
       <main className={styles.content}>
         <TabContainer />
-      </main></>)
+      </main>
+      </>
+      )
       }
 
     </div>

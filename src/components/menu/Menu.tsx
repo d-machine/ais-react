@@ -14,7 +14,7 @@ export default function Menu() {
  useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        const response = await postApiCall('/api/generic/getMenu', {}, true);
+        const response = await postApiCall('http://localhost:3000/api/generic/getMenu', {}, true);
         setMenuItems(response.data.children);
       } catch (error) {
         console.error('Error fetching menu:', error);

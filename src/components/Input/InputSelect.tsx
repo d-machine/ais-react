@@ -1,46 +1,22 @@
-// import Modal from "./SelectModal";
 import { useState } from "react";
 import styles from "./SelectModal.module.css"
-// import _ from "lodash";
 import Modal from "./SelectModal";
-// import { useState } from "react";
-// import {  EInputType } from "./types";
-// interface IDependencyField {
-//   as: string;
-//   key: string;
-// }
+import { postApiCall } from "../../api/base";
 
-// interface IDependency {
-//   dependency: string;
-//   fields: IDependencyField[];
-// }
-// interface IInput {
-//   name:string;
-//   label:string;
-//   type:EInputType;
-//   required: boolean;
-//   readOnly: boolean;
-//   grid_column:string;
-//   dependencies?:IDependency[];
-//   selectQuery?: string;
-//   value?: string;
-//   width:number;
-//   input_width:number;
-// }
 
-interface Field {
-  name: string;
-  label: string;
-  type: string;
-  required?: boolean;
-  query?: string;
-  disabled?: boolean;
-  }
+// interface Field {
+//   name: string;
+//   label: string;
+//   type: string;
+//   required?: boolean;
+//   query?: string;
+//   disabled?: boolean;
+//   }
   
 
 interface InputSelectProps {
     id:string,
-    field:Field;
+    field:any;
     selectedValues: { [key: string]: { id: string | number; name: string } };
     setSelectedValues: (id : string,name: string, value: { id: string | number; name: string }) => void;
     setFormData: (id:string,name: string, value: string | number) => void;
@@ -54,66 +30,43 @@ export default function InputSelect({id,field,formData,setSelectedValues,setForm
     const [modalTitle, setModalTitle] = useState('');
     const [modalName, setModalName] = useState('');
     const [modalData, setModalData] = useState<Array<{ id: number ; name: string }>>([]);
+    const [modalFields, setModalFields] = useState<Array<{ key: string; as: string }>>([]);
 
-const handleInputDoubleClick = async (field: Field) => {
-  // if (field.dependencies && field.dependencies.length > 0) {
-  //   const allDependenciesValid = validateDependencies(field.dependencies);
-  //   if (!allDependenciesValid) return;
-  // }
-    setModalTitle(field.label);
-    setModalName(field.name);
+    const handleInputDoubleClick = async () => {
+      setModalTitle(field.label);
+      setModalName(field.name);
   
-    // const dependencyData = parseDependencies(field.dependencies || [], selectedValues);
-    // console.log(dependencyData, "dependencyData");
+      const data = await fetchData();
+      console.log(data);
+      
+      setModalData(data);
+      setModalFields(field.selectConfig.fields_to_extract || []); 
+      setModalOpen(true);
+    };
   
-    const data = await fetchData();
-  
-    setModalData(data);
-    setModalOpen(true);
-  // };
-  
-  // const validateDependencies = (dependencies: IDependency[]) => {
-  //   for (const dependency of dependencies) {
-  //     const dependencyValue = selectedValues[dependency.dependency];
-  //     if (!dependencyValue) {
-  //       alert(`Please select a value for ${dependency.dependency}`);
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  };
-  
-  const fetchData = async (
-  ) => {
-    const response = await fetch(
-      `http://localhost:5000/get_admin`,
-      {
-        method: "GET",
+    const fetchData = async () => {
+      try {
+        const response = await postApiCall("/api/generic/executeQuery", { configFile: field.selectConfig.resource }, true);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
       }
-    );
-    const data = await response.json();
-    return data;
-  };
-  
-  // function parseDependencies(
-  //   dependencies: IDependency[],
-  //   data: { [key: string]: { id: string | number; name: string } }
-  // ) {
-  //   const _dependenciesData: { [key: string]: string | number } = {};
+    };
 
-  //   _.forEach(dependencies, ({ dependency, fields }) => {
-  //     const dependencyData = data?.[dependency];
-  //     _.forEach(fields, (field) => {
-  //       _dependenciesData[field.as] = _.get(dependencyData, field.key);
-  //     });
-  //   });
-  //   return _dependenciesData;
-  // }
+    const handleSelect = (name: string, value: any) => {
+      console.log(value);
+      console.log(modalFields);
+      
+      
+      setSelectedValues(id, name, value);
+      setFormData(id, name, value[modalFields[0]?.key] || ""); // Use extracted name field
+    };
 
-  const handleSelect = (name: string, value: { id: string | number; name: string }) => {
-    setSelectedValues(id,name, value); 
-    setFormData(id,name, value.name); 
-  };
+  // const handleSelect = (name: string, value: { id: string | number; name: string }) => {
+  //   setSelectedValues(id,name, value); 
+  //   setFormData(id,name, value.name); 
+  // };
 
     return(
         <>
@@ -132,9 +85,11 @@ const handleInputDoubleClick = async (field: Field) => {
           <Modal
           onClose={() => setModalOpen(false)}
           title={modalTitle}
-          data={modalData} 
+          data={modalData}
           fieldname={modalName}
-          onSelect={ (name: string, value: { id: string | number; name: string })=>handleSelect(name, value)}
+          onSelect={handleSelect}
+          fields={modalFields}
+          isMulti={field.multi || false} // Handle multi-select cases
         />
         }
         </>

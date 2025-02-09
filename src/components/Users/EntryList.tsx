@@ -5,16 +5,15 @@ import clsx from 'clsx';
 import RoleMaster from '../EntryForm/RoleMaster';
 import Modal from '../../Utilities/Modal';
 import { useSnackbar } from '../../Utilities/useSnackBar';
-import accessToken from '../../../accesstoken';
 import useEntryListStore from '../../useEntryListStore';
 import { useAddStore } from '../../useAddStore';
-import { TableConfig } from './types';
 import { random } from 'lodash';
+import { postApiCall } from '../../api/base';
 
 interface EntryListProps {
   list: string;
   name: string;
-  list_config: TableConfig;
+  list_config: any;
 }
 
 export default function EntryList({ list, name, list_config }: EntryListProps) {
@@ -31,23 +30,10 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     initData(name);
     try {
       setLoading(true);
-      if (config === 'list-roles') {
-        const response = await axios.get('http://localhost:4500/roles');
+        const response=await postApiCall(url, { configFile: config,fetchquery: list_config.query}, true);
         console.log(name, response.data);
         setData(name, response.data || []);
-      } else {
-        const response = await axios.post(
-          url,
-          { configFile: config },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        console.log(name, response.data);
-        setData(name, response.data || []);
-      }
+        console.log(entries[name]);
     } catch (error) {
       showSnackbar('Error fetching data');
       console.error('Error fetching data:', error);
@@ -56,15 +42,18 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     }
   };
 
-  const refreshData = () => {
-    fetchData('http://localhost:3000/api/generic/executeQuery', list);
+  const refreshData = () => {    
+    fetchData('/api/generic/executeQuery', list);
   };
 
   useEffect(() => {
+    console.log(list_config.actionConfig['add'].formConfig,'this is it');
     refreshData();
-  }, [name]);
+  }, [name,isModalOpen]);
 
   const handleRowClick = (rowId: number) => {
+    console.log(rowId);
+    
     setSelectedRow(selectedRow === rowId ? -1 : rowId);
   };
 
@@ -74,28 +63,23 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
 
     if (action.actionType === 'DISPLAY_FORM') {
       try {
-        const response = await axios.post(
-          'http://localhost:3000/api/generic/getConfig',
-          { configFile: list_config.actionConfig['add'].formConfig },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const response = await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile: list_config.actionConfig['add'].formConfig }, true);
+
         const addConfigData = response.data;
-        console.log(addConfigData);
+        console.log(addConfigData, 'addConfigData');
 
         if (actionKey === 'edit') {
           console.log('clicked edit');
           const id = entries[name].data[selectedRow][action.payload ? action.payload[0] : 'randomId'];
           addEntry(id);
+          console.log(selectedRow);
+          
           fillform(id, entries[name].data[selectedRow]);
-          setModalContent(<RoleMaster formId={id} addConfig={addConfigData} />);
+          setModalContent(<RoleMaster setIsModalOpen={setIsModalOpen} formId={id} addConfig={addConfigData} />);
         } else if (actionKey === 'add') {
           const id = random().toString(36).substring(2, 11);
           addEntry(id);
-          setModalContent(<RoleMaster formId={id} addConfig={addConfigData} />);
+          setModalContent(<RoleMaster setIsModalOpen={setIsModalOpen} formId={id} addConfig={addConfigData} />);
         }
         setIsModalOpen(true);
       } catch (error) {
@@ -103,20 +87,12 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         console.error('Error fetching form config:', error);
       }
     } else if (action.actionType === 'EXECUTE_QUERY') {
-      if (action.query) {
-        try {
-          setLoading(true);
-          await axios.post('http://localhost:5000/delete_role', {
-            query: action.query,
-            payload: [selectedRow],
-          });
-          refreshData();
-        } catch (error) {
-          showSnackbar('Error executing query');
-          console.error('Error executing query:', error);
-        } finally {
-          setLoading(false);
-        }
+      try{const key = action.queryInfo.payload[0] ;
+      const payload = [entries[name].data[selectedRow][key]];
+      const response  = await postApiCall('http://localhost:3000/api/generic/executeQuery', { configFile:"list-users", payload,path :action.queryInfo.path,fetchquery:action.queryInfo.query }, true);
+      console.log(response);}
+      catch(error){
+        console.error('Error fetching form config:', error);
       }
     }
   };

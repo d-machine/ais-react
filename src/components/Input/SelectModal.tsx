@@ -1,14 +1,16 @@
-import styles from './SelectModal.module.css';
+import styles from "./SelectModal.module.css";
 
 interface ModalProps {
   onClose: () => void;
   title: string;
   fieldname: string;
-  data: Array<{ id: string | number; name: string }>;
-  onSelect: (name: string, value: { id: string | number; name: string }) => void;
+  data: Array<any>;
+  onSelect: (name: string, value: any) => void;
+  fields: Array<{ key: string; as: string }>; // Dynamic column mapping
+  isMulti: boolean;
 }
 
-const Modal = ({  onClose, title,fieldname, data, onSelect }:ModalProps) => {
+const Modal = ({ onClose, title, fieldname, data, onSelect, fields, isMulti }: ModalProps) => {
   return (
     <div className={styles.modalBackdrop}>
       <div className={styles.modal}>
@@ -17,20 +19,27 @@ const Modal = ({  onClose, title,fieldname, data, onSelect }:ModalProps) => {
           <thead>
             <tr>
               <th>Select</th>
-              <th>Name</th>
+              {fields.map((field) => (
+                <th key={field.as}>{field.as}</th> // Render dynamic columns
+              ))}
             </tr>
           </thead>
           <tbody>
             {data.map((item) => (
-              <tr key={item.id}>
+              <tr key={item[fields[0].key]}>
                 <td>
                   <input
-                    type="radio"
-                    name="selection"
-                    onChange={() => {onSelect(fieldname, item) ; onClose();}}
+                    type={isMulti ? "checkbox" : "radio"} // Toggle between radio and checkbox
+                    name={isMulti ? `${fieldname}_selection` : "selection"}
+                    onChange={() => {
+                      onSelect(fieldname, item);
+                      if (!isMulti) onClose();
+                    }}
                   />
                 </td>
-                <td>{item.name}</td>
+                {fields.map((field) => (
+                  <td key={field.as}>{item[field.key]}</td> // Render dynamic values
+                ))}
               </tr>
             ))}
           </tbody>

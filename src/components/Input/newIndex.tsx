@@ -7,6 +7,9 @@ import InputPassword from "./InputPassowrd";
 import InputSelect from "./InputSelect";
 import InputTextArea from "./InputTextArea";
 import { EFieldType } from "./types";
+import { useAddStore } from "../../useAddStore";
+import { postApiCall } from "../../api/base";
+
 
 interface Section {
   sectionType: string;
@@ -82,14 +85,51 @@ const INPUT_MAP = {
 
 interface InputProps{
     formId:string;
-    section:Section;
+    section:any;
+    setIsModalOpen: (value: boolean) => void;
     formData: { [key: string]: string | number };
     selectedValues: { [key: string]: { id: string | number; name: string } };
     setSelectedValues: (id: string,name: string, value: { id: string | number; name: string }) => void;
     setFormData: (id:string,name: string, value: string | number) => void;
 }
 
-export default function Form({formId,section,formData,selectedValues,setSelectedValues,setFormData}:InputProps){
+
+export default function Form({formId,section,formData,selectedValues,setSelectedValues,setFormData,setIsModalOpen}:InputProps){
+    const {entries} = useAddStore();
+
+    const handleOnClick = async (actionKey: string) => {
+      console.log(section);
+      
+      const action = section.actionConfig[actionKey];
+      if (!action || action.actionType !== "EXECUTE_QUERY") return;
+  
+      try {
+          console.log(entries[formId].metadata);
+          
+          const payload = action.queryInfo.payload?.map(key => entries[formId].metadata[key] ?? "undefined") || [];
+          const response = await postApiCall(
+              "api/generic/executeQuery",
+              {
+                  configFile: 'add-user',
+                  fetchquery: action.queryInfo.query,
+                  payload,
+                  path:action.queryInfo.path
+              },
+              true
+          );
+  
+          console.log("API Response:", response);
+      } catch (error) {
+          console.error("Unexpected error during API call:", error);
+      }finally{
+        setIsModalOpen(false);
+          console.log("API call completed");
+          
+      }
+  };
+  
+    
+
     return (
       <>
         <h2>{section.sectionName}</h2>
@@ -123,15 +163,7 @@ export default function Form({formId,section,formData,selectedValues,setSelected
                   <button
                     key={index}
                     className={styles1.actionButton}
-                    onClick={() => {
-                      if (action.onSuccess === "exitAndComplete") {
-                        console.log("Exiting and completing...");
-                      } else if (action.onFailure === "showErrorSnackbar") {
-                        console.error("Error encountered.");
-                      } else {
-                        console.log(`Executing action: ${action.label}`);
-                      }
-                    }}
+                    onClick={()=>handleOnClick(actionKey)}
                     >
                     { action.label }
                   </button>
