@@ -1,8 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './RoleManagement.module.css';
+import styles from './Management.module.css';
 import { useAddStore } from '../../useAddStore';
-import { Column } from './RoleMangementTypes';
+import { Column } from './MangementTypes';
 
 interface RoleTableProps {
   formId: string;
@@ -16,7 +16,7 @@ interface RoleTableProps {
   handledoubleclick: (rowId: string, columnName: string) => void;
 }
 
-const RoleTable: React.FC<RoleTableProps> = ({
+const Table: React.FC<RoleTableProps> = ({
   formId,
   rowKeys,
   columns,
@@ -87,4 +87,4 @@ const RoleTable: React.FC<RoleTableProps> = ({
   );
 };
 
-export default RoleTable;
+export default Table;

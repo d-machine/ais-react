@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import styles from "./RoleManagement.module.css";
 import clsx from "clsx";
 import { useAddStore } from "../../useAddStore";
-import { Section } from "./RoleMangementTypes";
+import { Section } from "./MangementTypes";
 
 
 interface EntryListProps {
@@ -396,7 +396,7 @@ import { useEffect, useState } from "react";
 import styles from "./RoleManagement.module.css";
 import clsx from "clsx";
 import { useAddStore } from "../../useAddStore";
-import { Section } from "./RoleMangementTypes";
+import { Section } from "./MangementTypes";
 
 
 interface EntryListProps {

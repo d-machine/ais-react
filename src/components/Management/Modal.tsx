@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './RoleManagement.module.css';
-import { Section } from './RoleMangementTypes';
+import styles from './Management.module.css';
+import { Section } from './MangementTypes';
 
 interface RoleModalProps {
   modalData: string[];
@@ -10,7 +10,7 @@ interface RoleModalProps {
   handleModalClose: () => void;
 }
 
-const RoleModal: React.FC<RoleModalProps> = ({
+const Modal: React.FC<RoleModalProps> = ({
   modalData,
   columnName,
   userConfig,
@@ -58,4 +58,4 @@ const RoleModal: React.FC<RoleModalProps> = ({
   );
 };
 
-export default RoleModal;
+export default Modal;

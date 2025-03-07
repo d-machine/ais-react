@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './EntryList.module.css';
 import { useStore } from '../store';
-import ItemMaster from '../components/EntryForm/ItemMaster';
+import ItemMaster from '../components/LeftOvers/ItemMaster';
 
 interface ItemMaster {
   id: number;

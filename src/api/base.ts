@@ -10,6 +10,7 @@ export async function loginApiCall(username: string, password: string) {
   try {
     const response = await axios.post(`${BASE_URL}/api/auth/login`, { username, password });
     const { token, refreshToken } = response.data;
+    console.log(token, refreshToken);
     setAuthorizationHeader(token);
     logIn(token, refreshToken);
   } catch (error: unknown) {
@@ -53,8 +54,11 @@ export const axiosInstance = axios.create({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function postApiCall(url: string, data: any, isAuthRequired: boolean=true) {
   if (isAuthRequired) {
+    console.log("postApiCall");
     return axiosInstance.post(url, data);
   } else {
+    console.log("postApi");
+    
     return axios.post(url, data);
   }
 }

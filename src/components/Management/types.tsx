@@ -35,3 +35,29 @@ export interface ActionConfig {
     };
     columns: Column[];
   }
+
+  export enum ESortOrder {
+    ASC = "asc",
+    DESC = "desc",
+  }
+  
+  export enum EFilterOperator {
+    EQUAL = "EQUAL",
+    NOT_EQUAL = "NOT_EQUAL",
+    GREATER_THAN = "GREATER_THAN",
+    LESS_THAN = "LESS_THAN",
+    GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL",
+    LESS_THAN_OR_EQUAL = "LESS_THAN_OR_EQUAL",
+    IN = "IN",
+    NOT_IN = "NOT_IN",
+    BETWEEN = "BETWEEN",
+    NOT_BETWEEN = "NOT_BETWEEN",
+    CONTAINS = "CONTAINS",
+    NOT_CONTAINS = "NOT_CONTAINS",
+    STARTS_WITH = "STARTS_WITH",
+    NOT_STARTS_WITH = "NOT_STARTS_WITH",
+    ENDS_WITH = "ENDS_WITH",
+    NOT_ENDS_WITH = "NOT_ENDS_WITH",
+    IS_NULL = "IS_NULL",
+    IS_NOT_NULL = "IS_NOT_NULL",
+  }

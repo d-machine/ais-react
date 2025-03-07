@@ -32,8 +32,6 @@ export default function TabContainer() {
           <div key={index} className={styles.tabContentChild} style={{visibility: tab.status === 'ACTIVE' ? 'visible' : 'hidden'}}>{tab?.content}</div>
         ))}
       </div>
-      {/* <div className={styles.tabContent} style={{visibility:'visible'}}>{activeTab?.content}</div> */}
-
     </div>
   );
 }

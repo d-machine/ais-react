@@ -4,6 +4,7 @@ import MenuList from './MenuList';
 import styles from './Menu.module.css';
 import useTabsStore from '../../useTabsStore';
 import { postApiCall } from '../../api/base';
+import authStore from '../../store/auth/store';
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -13,11 +14,17 @@ export default function Menu() {
 
  useEffect(() => {
     const fetchMenuData = async () => {
+      console.log(authStore.getState().token,"tokens");
+      
       try {
         const response = await postApiCall('http://localhost:3000/api/generic/getMenu', {}, true);
         setMenuItems(response.data.children);
+        console.log("pass");
+        
       } catch (error) {
         console.error('Error fetching menu:', error);
+        console.log("fail");
+        
       }
     };
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Tab } from './components/tabs/types';
 // import axios from 'axios';
-import EntryList from './components/Users/EntryList';
+import EntryList from './components/Management/EntryList';
 // import accessToken from '../accesstoken';
 import { postApiCall } from './api/base';
 interface TabsState {
