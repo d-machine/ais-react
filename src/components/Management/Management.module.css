@@ -204,3 +204,11 @@
     background-color: #bdc3c7;
   }
   
+  .modal_body input[type="checkbox"],
+  .modal_body input[type="radio"] {
+    cursor: pointer;
+  }
+  
+  .modal_body td {
+    padding: 5px;
+  }

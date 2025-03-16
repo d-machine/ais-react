@@ -7,7 +7,7 @@ interface Row {
 
 interface Entry {
   metadata: { [key: string]: string | number };
-  selectedValues: { [key: string]: { id: string | number; name: string } };
+  selectedValues: { [key: string | number]: { id: string | number; name: string } };
   rows: { [rowId: string]: Row }; 
   rowKeys: string[];
 }
@@ -26,6 +26,8 @@ interface GridState {
   fillform: (entryId: string, data: { [key: string]: string | number }) => void;
   resetRow: (entryId: string, rowId: string) => void; 
   addAfter: (entryId: string,rowData: { [key: string]: string | number }, rowId: string) => void; 
+  updateRowField: (entryId: string, rowId: string, columnName: string, value: string | number) => void;
+
 }
 
 export const useAddStore = create<GridState>((set) => ({
@@ -201,5 +203,30 @@ export const useAddStore = create<GridState>((set) => ({
           },
         },
       };
-    })
+    }),
+    updateRowField: (entryId, rowId, columnName, value) =>
+      set((state) => {
+        // Parse numeric values if appropriate
+        const parsedValue = 
+          typeof value === "string" && !isNaN(Number(value)) ? Number(value) : value;
+        
+        return {
+          entries: {
+            ...state.entries,
+            [entryId]: {
+              ...state.entries[entryId],
+              rows: {
+                ...state.entries[entryId].rows,
+                [rowId]: {
+                  ...state.entries[entryId].rows[rowId],
+                  updatedData: {
+                    ...state.entries[entryId].rows[rowId].updatedData,
+                    [columnName]: parsedValue, 
+                  },
+                },
+              },
+            },
+          },
+        };
+      }),
 }));

@@ -1,8 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
+import React, { memo } from 'react';
+// import clsx from 'clsx';
 import styles from './Management.module.css';
-import { useAddStore } from '../../useAddStore';
+// import { useAddStore } from '../../useAddStore';
 import { Column } from './MangementTypes';
+import TableRow from './TableRow';
 
 interface RoleTableProps {
   formId: string;
@@ -27,64 +28,44 @@ const Table: React.FC<RoleTableProps> = ({
   handleInputChange,
   handledoubleclick,
 }) => {
+  // Use useMemo to prevent unnecessary recalculation of column widths
+  const columnWidths = React.useMemo(() => {
+    return columns.map(column => ({ name: column.name, width: '400px' }));
+  }, [columns]);
+
   return (
     <table className={styles.entryTable}>
       <thead>
         <tr>
-          {columns?.map((column) => (
-            <th className={styles.stick} key={column.name} style={{ width: `400px` }}>
+          {columns?.map((column, index) => (
+            <th 
+              className={styles.stick} 
+              key={column.name} 
+              style={{ width: columnWidths[index].width }}
+            >
               {column.label}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {rowKeys.map((rowId) => {
-          const entry = useAddStore.getState().entries[formId].rows[rowId].updatedData;
-          return (
-            <tr
-              key={rowId}
-              className={clsx(`${rowId}`, styles.entryListItem, {
-                [styles.selectedRow]: selectedRow === rowId,
-              })}
-              onClick={() => handleRowClick(rowId)}
-            >
-              {columns?.map((column) => (
-                <td
-                  key={column.name}
-                  data-column={column.name}
-                  className={styles.entryListCell}
-                  onMouseEnter={(e) => handleMouseEnter(column.name, e, rowId)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  {column.type === 'TEXT' ? (
-                    <input
-                      style={{ width: '100%' }}
-                      type='text'
-                      value={entry[column.name] || ''}
-                      onChange={(e) => {
-                        const td = e.target.closest('td');
-                        if (td) td.classList.add(styles.change);
-                        handleInputChange(rowId, column.name, e.target.value);
-                      }}
-                    />
-                  ) : column.type === 'SELECT' ? (
-                    <input
-                      readOnly
-                      onDoubleClick={() => handledoubleclick(rowId, column.name)}
-                      style={{ width: '100%' }}
-                      type='text'
-                      value={entry[column.name] || ''}
-                    />
-                  ) : null}
-                </td>
-              ))}
-            </tr>
-          );
-        })}
+        {rowKeys.map((rowId) => (
+          <TableRow
+            key={rowId}
+            rowId={rowId}
+            formId={formId}
+            columns={columns}
+            isSelected={selectedRow === rowId}
+            handleRowClick={handleRowClick}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
+            handleInputChange={handleInputChange}
+            handledoubleclick={handledoubleclick}
+          />
+        ))}
       </tbody>
     </table>
   );
 };
 
-export default Table;
+export default memo(Table);

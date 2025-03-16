@@ -57,7 +57,7 @@ export default function Master({configFile, addConfig, formId ,setIsModalOpen}: 
           flex: "1 1 60%", 
           minHeight: 0, 
         }}>
-        <Management formId={formId} userConfig={addConfig[1]} />
+        <Management configFile={configFile} formId={formId} userConfig={addConfig[1]} />
       </div>
       ) : null}
     </div>

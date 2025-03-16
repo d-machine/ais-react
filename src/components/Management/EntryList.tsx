@@ -44,11 +44,17 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const { showSnackbar, SnackbarComponent } = useSnackbar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
+  
+  // Filter state
   const [filterColumn, setFilterColumn] = useState<string>('');
   const [filterValue, setFilterValue] = useState<string>('');
   const [filterOperator, setFilterOperator] = useState<EFilterOperator>(EFilterOperator.CONTAINS);
+  const [activeFilters, setActiveFilters] = useState<IFilterInfo[]>([]);
+  
+  // Sort state
   const [sortField, setSortField] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<ESortOrder>(ESortOrder.ASC);
+  const [activeSorts, setActiveSorts] = useState<ISortInfo[]>([]);
 
   const fetchData = async (url: string, config: string, fetchQuery?: IFetchQuery) => {
     console.log(name);
@@ -69,12 +75,32 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
       setLoading(false);
     }
   };
-  const refreshData = () => {
-    fetchData('/api/generic/executeQuery', list);
+
+  // Function to create combined fetch query using current filters and sorts
+  const createFetchQuery = (): IFetchQuery => {
+    const query: IFetchQuery = {};
+    
+    if (activeFilters.length > 0) {
+      query.filtersData = activeFilters;
+    }
+    
+    if (activeSorts.length > 0) {
+      query.sortData = activeSorts;
+    }
+    
+    return query;
   };
+
+  const refreshData = () => {
+    // Always use the current filter and sort settings when refreshing
+    const fetchQuery = createFetchQuery();
+    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+  };
+
   useEffect(() => {
     refreshData();
   }, [name, isModalOpen]);
+
   const handleRowClick = (rowId: number) => {
     setSelectedRow(selectedRow === rowId ? -1 : rowId);
   };
@@ -114,60 +140,103 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         const key = action.queryInfo.payload[0];
         const payload = [entries[name].data[selectedRow][key]];
         const response = await postApiCall('http://localhost:3000/api/generic/executeQuery', {
-          configFile: "list-users",
+          configFile: action.formConfig,
           payload,
           path: action.queryInfo.path,
           fetchquery: action.queryInfo.query,
         }, true);
         console.log(response);
+        refreshData();
+        setSelectedRow(-1);
+        showSnackbar('Operation completed successfully');
       } catch (error) {
         console.error('Error executing query:', error);
+        showSnackbar('Error executing operation');
       }
     }
   };
+
   const handleFilterApply = () => {
     if (filterColumn && filterValue) {
-      const filtersData: IFilterInfo[] = [{
+      // Create the new filter
+      const newFilter: IFilterInfo = {
         field: filterColumn,
         value: filterValue,
         operator: filterOperator,
-      }];
-      const fetchQuery: IFetchQuery = {
-        filtersData,
-        sortData: sortField ? [{ field: sortField, order: sortOrder }] : undefined, // Preserve current sort
       };
+      
+      // Update active filters (replace if same column, otherwise add)
+      const updatedFilters = activeFilters.filter(f => f.field !== filterColumn);
+      updatedFilters.push(newFilter);
+      setActiveFilters(updatedFilters);
+      
+      // Create fetch query with both filters and sorts
+      const fetchQuery: IFetchQuery = {
+        filtersData: updatedFilters,
+        sortData: activeSorts.length > 0 ? activeSorts : undefined,
+      };
+      
       fetchData('/api/generic/executeQuery', list, fetchQuery);
-    } else {
-      fetchData('/api/generic/executeQuery', list); // Fetch unfiltered and unsorted data if incomplete
     }
   };
 
   const handleClearFilter = () => {
+    // Clear filter form state
     setFilterColumn('');
     setFilterValue('');
     setFilterOperator(EFilterOperator.CONTAINS);
-    // Optionally reset sort if desired, but we'll keep it for now
-    fetchData('/api/generic/executeQuery', list); // Fetch unfiltered data, maintaining sort if any
+    setActiveFilters([]);
+    
+    // Only include sort data if it exists
+    const fetchQuery: IFetchQuery = {};
+    if (activeSorts.length > 0) {
+      fetchQuery.sortData = activeSorts;
+    }
+    
+    // Fetch data with just sort parameters (or no parameters if no sorts)
+    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   const handleSort = (field: string) => {
     console.log('Sorting by:', field);
-    setSortField(field);
-    const newOrder =
+    
+    // Determine the new sort order
+    const newOrder = 
       sortField === field && sortOrder === ESortOrder.ASC
         ? ESortOrder.DESC
         : ESortOrder.ASC;
+    
+    // Update sort state
+    setSortField(field);
     setSortOrder(newOrder);
-    const sortData: ISortInfo[] = [{ field, order: newOrder }];
+    
+    // Create or update sort info
+    const newSort: ISortInfo = { field, order: newOrder };
+    setActiveSorts([newSort]); // Only one sort field supported at a time
+    
+    // Create fetch query with both filters and the new sort
     const fetchQuery: IFetchQuery = {
-      sortData,
-      filtersData: filterColumn && filterValue ? [{
-        field: filterColumn,
-        value: filterValue,
-        operator: filterOperator,
-      }] : undefined,
+      sortData: [newSort],
+      filtersData: activeFilters.length > 0 ? activeFilters : undefined,
     };
+    
     fetchData('/api/generic/executeQuery', list, fetchQuery);
+  };
+
+  const handleClearSort = () => {
+    // Clear sort state
+    setSortField('');
+    setSortOrder(ESortOrder.ASC);
+    setActiveSorts([]);
+    
+    // Create fetch query with just filters (if any)
+    const fetchQuery: IFetchQuery = {};
+    if (activeFilters.length > 0) {
+      fetchQuery.filtersData = activeFilters;
+    }
+    
+    // Fetch data with just filter parameters (or no parameters if no filters)
+    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -222,8 +291,27 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
               <button onClick={handleClearFilter} className={clsx(styles.actionButton, styles.disabledButton)}>
                 Clear Filter
               </button>
+              {activeSorts.length > 0 && (
+                <button onClick={handleClearSort} className={styles.actionButton}>
+                  Clear Sort
+                </button>
+              )}
             </div>
+            
+            {/* Active Filters Display */}
+            {activeFilters.length > 0 && (
+              <div className={styles.activeFilters}>
+                <p>Active Filters:</p>
+                {activeFilters.map((filter, index) => (
+                  <span key={index} className={styles.filterBadge}>
+                    {list_config.columns.find((col: any) => col.name === filter.field)?.label}: 
+                    {filter.operator} "{filter.value}"
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
+          
           <div className={styles.tableWrapper}>
             <table className={styles.entryTable}>
               <thead>

@@ -4,14 +4,16 @@ import Table from './Table';
 import Modal from './Modal';
 import styles from './Management.module.css';
 import { postApiCall } from '../../api/base';
+import { Column } from './MangementTypes';
 
 interface RoleManagementProps {
+  configFile: string;
   formId: string;
   userConfig: any;
 }
 
-export default function Management({ formId, userConfig }: RoleManagementProps) {
-  const { addRow, deleteRow, saveRow, resetRow, resetAllRows } = useAddStore();
+export default function Management({configFile, formId, userConfig }: RoleManagementProps) {
+  const { addRow ,deleteRow,updateRowField} = useAddStore();
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any[]>([]);
@@ -24,22 +26,37 @@ export default function Management({ formId, userConfig }: RoleManagementProps) 
   const [columnName, setColumnName] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      console.log(userConfig);
-      
-      try {
-        setIsLoading(true);
-        const response=await postApiCall('/api/generic/executeQuery', { configFile: userConfig,fetchquery: userConfig.queryInfo.query,payload:{},}, true);
-        const fetchedData = await response.data;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        fetchedData.forEach((entry: any) => addRow(formId, entry));
-        setRowKeys(useAddStore.getState().entries[formId].rowKeys);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
+    console.log(configFile);
+    
+// In the fetchData function in Management.tsx
+const fetchData = async () => {
+  const path = userConfig.queryInfo.path;
+  try {
+    setIsLoading(true);
+    const response = await postApiCall('/api/generic/executeQuery', { configFile, payload: [formId], path }, true);
+    const fetchedData = await response.data;
+    
+    // Clear existing rows first to prevent duplication
+    useAddStore.setState((state) => ({
+      entries: {
+        ...state.entries,
+        [formId]: {
+          ...state.entries[formId],
+          rows: {},
+          rowKeys: []
+        }
       }
-    };
+    }));
+    
+    // Then add the fresh data
+    fetchedData.forEach((entry) => addRow(formId, entry));
+    setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
     fetchData();
   }, [formId, userConfig.query]);
 
@@ -59,54 +76,36 @@ export default function Management({ formId, userConfig }: RoleManagementProps) 
   };
 
   const handleInputChange = (rowId: string, columnName: string, value: string | number) => {
-    useAddStore.setState((state) => {
-      const updatedRows = {
-        ...state.entries[formId].rows,
-        [rowId]: {
-          ...state.entries[formId].rows[rowId],
-          updatedData: {
-            ...state.entries[formId].rows[rowId].updatedData,
-            [columnName]: value,
-          },
-        },
-      };
-      return {
-        entries: {
-          ...state.entries,
-          [formId]: {
-            ...state.entries[formId],
-            rows: updatedRows,
-          },
-        },
-      };
-    });
+    updateRowField(formId, rowId, columnName, value);
   };
+  
+
+
 
   const handledoubleclick = (rowId: string, columnName: string) => {
-    console.log(rowId);
-    
     const row = useAddStore.getState().entries[formId].rows[rowId];
-    const columnVal = row.updatedData[columnName];
-    if (columnVal === undefined) {
-      console.error(`Column ${columnName} does not exist in row ${rowId}`);
-      return;
-    }
-    const dataarr = columnVal.toString().split(',');
-    setModalData(dataarr);
+    if (!row) return;
+    const columnVal = row.updatedData[columnName] ?? row.originalData[columnName] ?? '';
+    const dataArr = columnVal.toString().split(',');
+    setModalData(dataArr.filter(Boolean));
     setSelectedRow(rowId);
     setColumnName(columnName);
     setModal(true);
   };
 
-  const handleModalClick = (event: React.MouseEvent<HTMLTableCellElement, MouseEvent>, name: string) => {
-    const target = event.currentTarget;
-    target.classList.toggle('selected-row');
+  const handleModalClick = (name: string, isChecked: boolean) => {
+    const column = userConfig.columns.find((col:Column) => col.name === columnName);
+    const isMulti = column?.multi ?? true;
+
     setModalData((prevData) => {
-      const exists = prevData.includes(name);
-      if (exists) {
-        return prevData.filter((item) => item !== name);
+      if (isMulti) {
+        if (isChecked) {
+          return [...prevData, name];
+        } else {
+          return prevData.filter((item) => item !== name);
+        }
       } else {
-        return [...prevData, name];
+        return isChecked ? [name] : [];
       }
     });
   };
@@ -114,23 +113,125 @@ export default function Management({ formId, userConfig }: RoleManagementProps) 
   const handleModalClose = () => {
     setModal(false);
     const str = modalData.join(',');
-    if (selectedRow !== null && columnName !== null) {
+    if (selectedRow && columnName) {
       handleInputChange(selectedRow, columnName, str);
     }
-    modalData.length = 0;
+    setModalData([]);
   };
 
-  const handleSave = () => {
-    if (selectedRow) {
-      const tdList = document.querySelectorAll(`tr.${selectedRow} td`);
-      tdList.forEach((td) => td.classList.remove(styles.change));
-      saveRow(formId, selectedRow);
-      setRowKeys(useAddStore.getState().entries[formId].rowKeys);
-    }
-  };
 
+
+  
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  async function  handleAction (actionKey: string)  {
+    console.log(actionKey);
+    console.log(userConfig.actionConfig[actionKey]);
+    console.log(formId);
+    
+    
+    if(actionKey==="ADD"){
+      console.log(userConfig.columns);
+      const newEntry: { [name: string]: string } = {
+      };
+
+      userConfig.columns.forEach((column: { name: string }) => {
+        newEntry[column.name] = "";
+      });
+
+      setData([...data, newEntry]);
+      addRow(
+        formId,
+        Object.fromEntries(
+          Object.keys(newEntry).map((key) => [
+            key,
+            newEntry[key],
+          ])
+        )
+      );
+      setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+    }
+    else if(actionKey==="SAVE"){
+      const configFile=userConfig.actionConfig[actionKey].configFile;
+      console.log(configFile);
+      
+      const selectData=useAddStore.getState().entries[formId].rows[selectedRow? selectedRow : useAddStore.getState().entries[formId].rowKeys[0]].updatedData;
+      console.log(selectData);
+      
+      const payload=[formId];
+      //payload.push(selectData.);
+      const valuesArray = Object.values(selectData);
+      console.log(userConfig.actionConfig[actionKey].queryInfo.path);
+      valuesArray.unshift(formId);
+      console.log(valuesArray);
+      
+      const response = await postApiCall("/api/generic/executeQuery", { configFile: configFile, payload: valuesArray,path:userConfig.actionConfig[actionKey].queryInfo.path }, true);
+      console.log(response.data, "response");
+      
+      if (response.data?.id) {
+        useAddStore.setState((state) => ({
+            entries: {
+                ...state.entries,
+                [formId]: {
+                    ...state.entries[formId],
+                    rows: {
+                        ...state.entries[formId].rows,
+                        [selectedRow]: {
+                            originalData: {
+                                ...state.entries[formId].rows[selectedRow].originalData,
+                                claim_id: response.data.id
+                            },
+                            updatedData: {
+                                ...state.entries[formId].rows[selectedRow].updatedData,
+                                claim_id: response.data.id
+                            }
+                        }
+                    }
+                }
+            }
+        }));
+    }
+
+    console.log(useAddStore.getState().entries[formId].rows);
+    
+
+      console.log(payload);
+      console.log(formId);
+      
+      console.log(selectedRow);
+      
+    }
+    else if(actionKey==="DELETE"){
+      const configFile=userConfig.actionConfig[actionKey].configFile;
+      console.log(configFile);
+      
+      console.log(selectedRow);
+      const path=userConfig.actionConfig[actionKey].queryInfo.path;
+      console.log(path);
+      
+      const selectedData=useAddStore.getState().entries[formId].rows[selectedRow? selectedRow : useAddStore.getState().entries[formId].rowKeys[0]].updatedData;
+      console.log(selectedData);
+      const id=userConfig.actionConfig[actionKey].queryInfo.payload[0];
+      console.log(id);
+      
+      const payload=[selectedData[id]];
+      console.log(payload);
+      try {
+        const response=await postApiCall("/api/generic/executeQuery", { configFile: configFile, payload: payload,path:path }, true);
+        console.log(response.data);
+
+        deleteRow(formId,selectedRow);
+        setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+
+      } catch (error) {
+        console.log(error);
+          
+      }
+      
+      
+    }
   }
 
   return (
@@ -184,12 +285,25 @@ export default function Management({ formId, userConfig }: RoleManagementProps) 
                 <button
                   key={index}
                   className={styles.actionButton}
+                  onClick={() => handleAction(actionKey)}
                 >
                   {action.label}
                 </button>
               );
             })}
       </div>
+<button 
+  onClick={() => {
+    const storeData = useAddStore.getState().entries[formId];
+    console.log("Store data for form:", formId);
+    console.log("Row keys:", storeData.rowKeys);
+    storeData.rowKeys.forEach(key => {
+      console.log(`Row ${key}:`, storeData.rows[key]);
+    });
+  }}
+>
+  Debug Store Data
+</button>
     </div>
   );
 }
