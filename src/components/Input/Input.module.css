@@ -32,6 +32,14 @@
     max-width: 100%;
   }
 
+  .textarea {
+    resize: both;
+    overflow: auto; 
+    width: 100%; 
+    max-width: 500px; 
+    min-height: 50px; 
+  }
+  
 .input1 { width: 100px; }
 .input2 { width: 100px; }
 .input3 { width: 100px; }

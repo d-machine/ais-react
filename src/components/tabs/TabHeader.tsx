@@ -1,24 +1,29 @@
-import { Tab } from './types';
+import useTabsStore from '../../useTabsStore';
 import styles from './Tabs.module.css';
 
 interface TabHeaderProps {
-  tabs: Tab[];
   activeTabId: string;
-  onTabChange: (tabId: string) => void;
+  onTabChange: (tabId: string) => void; 
+  closeTab:(tabId:string)=>void;
 }
 
-export default function TabHeader({ tabs, activeTabId, onTabChange }: TabHeaderProps) {
+export default function TabHeader({closeTab, activeTabId, onTabChange }: TabHeaderProps) {
+  const {tabs} = useTabsStore();
   return (
-    <div className={styles.tabHeader}>
-      {tabs.map(tab => (
-        <button
-          key={tab.id}
-          className={`${styles.tab} ${tab.id === activeTabId ? styles.active : ''}`}
-          onClick={() => onTabChange(tab.id)}
-        >
-          {tab.title}
-        </button>
-      ))}
-    </div>
+<div className={styles.tabHeader}>
+  {tabs.map(tab => 
+    tab.status === "CLOSE" ? null : (
+      <button
+        key={tab.id}
+        className={`${styles.tab} ${tab.id === activeTabId ? styles.active : ''}`}
+        onClick={() => onTabChange(tab.id)}
+        onDoubleClick={() => closeTab(tab.id)}
+      >
+        {tab.title}
+      </button>
+    )
+  )}
+</div>
+
   );
 }

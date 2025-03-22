@@ -1,33 +1,36 @@
-import { useState, useEffect } from 'react';
-import { Tab } from './types';
 import TabHeader from './TabHeader';
 import styles from './Tabs.module.css';
+import useTabsStore from '../../useTabsStore';
 
-interface TabContainerProps {
-  tabs: Tab[];
-  defaultTabId?: string;
-}
 
-export default function TabContainer({ tabs, defaultTabId }: TabContainerProps) {
-  const [activeTabId, setActiveTabId] = useState(defaultTabId || tabs[0]?.id || '');
+export default function TabContainer() {
+  const { updateTabStatus,tabs } = useTabsStore();
+  const activeTab = tabs.find((tab) => tab.status === 'ACTIVE');
 
-  useEffect(() => {
-    if (!activeTabId && tabs.length > 0) {
-      setActiveTabId(tabs[0].id);
+  const handleTabChange = (tabId: string) => {
+    updateTabStatus(tabId, 'ACTIVE');
+  };
+
+  const closeTab = (tabId: string) => {
+    const toCloseTab = tabs.find((tab) => tab.id === tabId);
+    if (toCloseTab?.status === 'ACTIVE') {
+      const toActiveTab = tabs.find((tab) => tab.status === 'OPEN');
+      updateTabStatus(tabId, 'CLOSE');
+      if (toActiveTab) {
+        updateTabStatus(toActiveTab.id, 'ACTIVE');
+      }
+    } else {
+      updateTabStatus(tabId, 'CLOSE');
     }
-  }, [tabs, activeTabId]);
-
-  const activeTab = tabs.find(tab => tab.id === activeTabId);
+  };
 
   return (
     <div className={styles.tabContainer}>
-      <TabHeader
-        tabs={tabs}
-        activeTabId={activeTabId}
-        onTabChange={setActiveTabId}
-      />
+      <TabHeader activeTabId={activeTab?.id || ''} onTabChange={handleTabChange} closeTab={closeTab} />
       <div className={styles.tabContent}>
-        {activeTab?.content}
+        {tabs.map((tab,index) => (
+          <div key={index} className={styles.tabContentChild} style={{visibility: tab.status === 'ACTIVE' ? 'visible' : 'hidden'}}>{tab?.content}</div>
+        ))}
       </div>
     </div>
   );

@@ -2,42 +2,34 @@ import { useState, useRef, useEffect } from 'react';
 import { MenuItem } from './types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
-
-const MENU_ITEMS: MenuItem[] = [
-  {
-    label: 'File',
-    children: [
-      { 
-        label: 'New',
-        children: [
-          { label: 'Project', action: () => console.log('New Project') },
-          { label: 'File', action: () => console.log('New File') }
-        ]
-      },
-      { label: 'Open', action: () => console.log('Open') },
-      { label: 'Save', action: () => console.log('Save') }
-    ]
-  },
-  {
-    label: 'Edit',
-    children: [
-      { label: 'Undo', action: () => console.log('Undo') },
-      { label: 'Redo', action: () => console.log('Redo') }
-    ]
-  },
-  {
-    label: 'View',
-    children: [
-      { label: 'Zoom In', action: () => console.log('Zoom In') },
-      { label: 'Zoom Out', action: () => console.log('Zoom Out') }
-    ]
-  }
-];
-
+import useTabsStore from '../../useTabsStore';
+import { postApiCall } from '../../api/base';
+import authStore from '../../store/auth/store';
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const { addTab } = useTabsStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+ useEffect(() => {
+    const fetchMenuData = async () => {
+      console.log(authStore.getState().token,"tokens");
+      
+      try {
+        const response = await postApiCall('http://localhost:3000/api/generic/getMenu', {}, true);
+        setMenuItems(response.data.children);
+        console.log("pass");
+        
+      } catch (error) {
+        console.error('Error fetching menu:', error);
+        console.log("fail");
+        
+      }
+    };
+
+    fetchMenuData();
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -68,9 +60,10 @@ export default function Menu() {
     buttonRef.current?.blur();
   };
 
-  const handleItemClick = (item: MenuItem) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleItemClick = (item: any) => {
     if (!item.children) {
-      item.action?.();
+      addTab((item.id).toString(),item.name, item.list_config_file);
       closeMenu();
     }
   };
@@ -81,7 +74,7 @@ export default function Menu() {
 
   return (
     <div className={styles.menuContainer} ref={menuRef}>
-      <button 
+      <button
         ref={buttonRef}
         className={`${styles.menuButton} ${isOpen ? styles.open : ''}`}
         onClick={toggleMenu}
@@ -92,11 +85,8 @@ export default function Menu() {
         <span className={styles.bar}></span>
       </button>
       {isOpen && (
-        <MenuList 
-          items={MENU_ITEMS} 
-          onItemClick={handleItemClick}
-        />
+        <MenuList items={menuItems} onItemClick={handleItemClick} />
       )}
     </div>
   );
-} 
+}

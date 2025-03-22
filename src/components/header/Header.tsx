@@ -13,10 +13,8 @@ export default function Header({ title, children }: HeaderProps) {
         <Menu />
         <h1>{title}</h1>
         <div className={styles.divider} />
-        <div className={styles.rightSection}>
-          {children}
-        </div>
+        <div className={styles.rightSection}>{children}</div>
       </div>
     </header>
   );
-} 
+}
