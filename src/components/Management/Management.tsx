@@ -292,18 +292,6 @@ const fetchData = async () => {
               );
             })}
       </div>
-<button 
-  onClick={() => {
-    const storeData = useAddStore.getState().entries[formId];
-    console.log("Store data for form:", formId);
-    console.log("Row keys:", storeData.rowKeys);
-    storeData.rowKeys.forEach(key => {
-      console.log(`Row ${key}:`, storeData.rows[key]);
-    });
-  }}
->
-  Debug Store Data
-</button>
     </div>
   );
 }

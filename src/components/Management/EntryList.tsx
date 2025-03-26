@@ -8,29 +8,8 @@ import useEntryListStore from '../../useEntryListStore';
 import { useAddStore } from '../../useAddStore';
 import { random } from 'lodash';
 import { postApiCall } from '../../api/base';
-import { EFilterOperator, ESortOrder } from './types';
+import { EFilterOperator, ESortOrder, IFetchQuery, IFilterInfo, ISortInfo } from './types';
 
-export interface ISortInfo {
-  field: string;
-  order: ESortOrder;
-}
-
-export interface IPaginationInfo {
-  offset: number;
-  limit: number;
-}
-
-export interface IFilterInfo {
-  field: string;
-  value: string;
-  operator?: EFilterOperator;
-}
-
-export interface IFetchQuery {
-  sortData?: ISortInfo[];
-  paginationData?: IPaginationInfo;
-  filtersData?: IFilterInfo[];
-}
 
 interface EntryListProps {
   list: string;

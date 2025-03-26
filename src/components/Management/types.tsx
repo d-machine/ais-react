@@ -61,3 +61,26 @@ export interface ActionConfig {
     IS_NULL = "IS_NULL",
     IS_NOT_NULL = "IS_NOT_NULL",
   }
+
+
+  export interface ISortInfo {
+    field: string;
+    order: ESortOrder;
+  }
+  
+  export interface IPaginationInfo {
+    offset: number;
+    limit: number;
+  }
+  
+  export interface IFilterInfo {
+    field: string;
+    value: string;
+    operator?: EFilterOperator;
+  }
+  
+  export interface IFetchQuery {
+    sortData?: ISortInfo[];
+    paginationData?: IPaginationInfo;
+    filtersData?: IFilterInfo[];
+  }
