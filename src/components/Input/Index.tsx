@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 //import InputSelect from "./InputSelect";
 import styles1 from "../Users/user.module.css";
@@ -21,7 +22,7 @@ const INPUT_MAP = {
 
 interface InputProps{
   configFile:string;
-    formId:string;
+    formId:string | number;
     section:any;
     setIsModalOpen: (value: boolean) => void;
     formData: { [key: string]: string | number };

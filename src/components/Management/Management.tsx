@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useAddStore } from '../../useAddStore';
 import Table from './Table';
@@ -8,7 +9,7 @@ import { Column } from './MangementTypes';
 
 interface RoleManagementProps {
   configFile: string;
-  formId: string;
+  formId: string | number;
   userConfig: any;
 }
 
@@ -49,7 +50,7 @@ const fetchData = async () => {
     }));
     
     // Then add the fresh data
-    fetchedData.forEach((entry) => addRow(formId, entry));
+    fetchedData.forEach((entry: any) => addRow(formId, entry));
     setRowKeys(useAddStore.getState().entries[formId].rowKeys);
   } catch (error) {
     console.error('Error fetching data:', error);

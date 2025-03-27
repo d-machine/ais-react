@@ -12,21 +12,23 @@ interface Entry {
   rowKeys: string[];
 }
 
+type EntryId = string | number;
+
 interface GridState {
   entries: {
-    [entryId: string]: Entry; 
+    [entryId: EntryId]: Entry; 
   };
-  addEntry: (entryId: string) => void; 
-  addRow: (entryId: string, rowData: { [key: string]: string | number }) => void; 
-  deleteRow: (entryId: string, rowId: string) => void;
-  saveRow: (entryId: string, rowId: string) => void; 
-  resetAllRows: (entryId: string) => void;
+  addEntry: (entryId: EntryId) => void; 
+  addRow: (entryId: EntryId, rowData: { [key: string]: string | number }) => void; 
+  deleteRow: (entryId: EntryId, rowId: string) => void;
+  saveRow: (entryId: EntryId, rowId: string) => void; 
+  resetAllRows: (entryId: EntryId) => void;
   setFormData: (id: string, name: string, value: string | number) => void;
   setSelectedValues: (id: string, name: string, value: { id: string | number; name: string }) => void;
-  fillform: (entryId: string, data: { [key: string]: string | number }) => void;
-  resetRow: (entryId: string, rowId: string) => void; 
-  addAfter: (entryId: string,rowData: { [key: string]: string | number }, rowId: string) => void; 
-  updateRowField: (entryId: string, rowId: string, columnName: string, value: string | number) => void;
+  fillform: (entryId: EntryId, data: { [key: string]: string | number }) => void;
+  resetRow: (entryId: EntryId, rowId: string) => void; 
+  addAfter: (entryId: EntryId,rowData: { [key: string]: string | number }, rowId: string) => void; 
+  updateRowField: (entryId: EntryId, rowId: string, columnName: string, value: string | number) => void;
 
 }
 

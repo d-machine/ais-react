@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import styles from './user.module.css';
+import styles from './EntryList.module.css';
 import clsx from 'clsx';
 import Master from '../EntryForm/Master';
 import Modal from '../../Utilities/Modal';
@@ -9,6 +10,7 @@ import { useAddStore } from '../../useAddStore';
 import { random } from 'lodash';
 import { postApiCall } from '../../api/base';
 import { EFilterOperator, ESortOrder, IFetchQuery, IFilterInfo, ISortInfo } from './types';
+import { fetchData } from './fetchData';
 
 
 interface EntryListProps {
@@ -35,27 +37,6 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const [sortOrder, setSortOrder] = useState<ESortOrder>(ESortOrder.ASC);
   const [activeSorts, setActiveSorts] = useState<ISortInfo[]>([]);
 
-  const fetchData = async (url: string, config: string, fetchQuery?: IFetchQuery) => {
-    console.log(name);
-    console.log('fetchQuery', fetchQuery);
-    initData(name);
-    try {
-      setLoading(true);
-      const response = await postApiCall(url, {
-        configFile: config,
-        fetchQuery,
-      }, true);
-      console.log(name, response.data);
-      setData(name, response.data || []);
-    } catch (error) {
-      showSnackbar('Error fetching data');
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Function to create combined fetch query using current filters and sorts
   const createFetchQuery = (): IFetchQuery => {
     const query: IFetchQuery = {};
     
@@ -71,11 +52,21 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   };
 
   const refreshData = () => {
-    // Always use the current filter and sort settings when refreshing
     const fetchQuery = createFetchQuery();
-    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+    fetchData(
+      '/api/generic/executeQuery',
+      list,
+      setData,
+      initData,
+      setLoading,
+      showSnackbar,
+      name,
+      Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined,
+    );
   };
 
+
+  
   useEffect(() => {
     refreshData();
   }, [name, isModalOpen]);
@@ -155,7 +146,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         sortData: activeSorts.length > 0 ? activeSorts : undefined,
       };
       
-      fetchData('/api/generic/executeQuery', list, fetchQuery);
+      fetchData('/api/generic/executeQuery', list, setData, initData, setLoading, showSnackbar, name, fetchQuery);
     }
   };
 
@@ -173,7 +164,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     }
     
     // Fetch data with just sort parameters (or no parameters if no sorts)
-    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+    fetchData('/api/generic/executeQuery', list, setData, initData, setLoading, showSnackbar, name, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   const handleSort = (field: string) => {
@@ -199,7 +190,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
       filtersData: activeFilters.length > 0 ? activeFilters : undefined,
     };
     
-    fetchData('/api/generic/executeQuery', list, fetchQuery);
+    fetchData('/api/generic/executeQuery', list,setData, initData, setLoading, showSnackbar, name, fetchQuery);
   };
 
   const handleClearSort = () => {
@@ -215,7 +206,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     }
     
     // Fetch data with just filter parameters (or no parameters if no filters)
-    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+    fetchData('/api/generic/executeQuery', list,setData, initData, setLoading, showSnackbar, name, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -276,19 +267,6 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
                 </button>
               )}
             </div>
-            
-            {/* Active Filters Display */}
-            {activeFilters.length > 0 && (
-              <div className={styles.activeFilters}>
-                <p>Active Filters:</p>
-                {activeFilters.map((filter, index) => (
-                  <span key={index} className={styles.filterBadge}>
-                    {list_config.columns.find((col: any) => col.name === filter.field)?.label}: 
-                    {filter.operator} "{filter.value}"
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
           
           <div className={styles.tableWrapper}>

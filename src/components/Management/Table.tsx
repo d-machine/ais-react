@@ -6,7 +6,7 @@ import { Column } from './MangementTypes';
 import TableRow from './TableRow';
 
 interface RoleTableProps {
-  formId: string;
+  formId: string | number;
   rowKeys: string[];
   columns: Column[];
   handleRowClick: (rowId: string) => void;

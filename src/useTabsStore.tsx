@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { Tab } from './components/tabs/types';
-// import axios from 'axios';
 import EntryList from './components/Management/EntryList';
-// import accessToken from '../accesstoken';
 import { postApiCall } from './api/base';
 interface TabsState {
   tabs: Tab[];
@@ -30,7 +28,6 @@ const useTabsStore = create<TabsState>((set, get) => ({
     const newTabId = `tab${tabs.length + 1}`;
     formTabMap[formId] = newTabId;
     let content;
-    if (formId === '6' || formId === '7') {
       try {
         console.log('listConfigFile', listConfigFile);
         
@@ -41,9 +38,6 @@ const useTabsStore = create<TabsState>((set, get) => ({
         console.error('Error fetching menu:', error);
         content = <div>Error fetching content</div>;
       }
-    } else {
-      content = <div>Unknown formId</div>;
-    }
 
     const newTab: Tab = {
       id: newTabId,

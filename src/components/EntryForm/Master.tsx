@@ -4,8 +4,9 @@ import Management from "../Management/Management";
 import Form from "../Input/Index";
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   addConfig: any[];
-  formId: string;
+  formId: string | number;
   setIsModalOpen: (value: boolean) => void;
   configFile: string;
 }

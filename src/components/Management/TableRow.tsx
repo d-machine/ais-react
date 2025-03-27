@@ -6,7 +6,7 @@ import { Column } from './MangementTypes';
 
 interface TableRowProps {
   rowId: string;
-  formId: string;
+  formId: string | number;
   columns: Column[];
   isSelected: boolean;
   handleRowClick: (rowId: string) => void;
