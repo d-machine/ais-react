@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import styles from './EntryList.module.css';
-import clsx from 'clsx';
 import Master from '../EntryForm/Master';
 import Modal from '../../Utilities/Modal';
 import { useSnackbar } from '../../Utilities/useSnackBar';
 import useEntryListStore from '../../useEntryListStore';
 import { useAddStore } from '../../useAddStore';
 import { random } from 'lodash';
-import { postApiCall } from '../../api/base';
-import { EFilterOperator, ESortOrder, IFetchQuery, IFilterInfo, ISortInfo } from './types';
 import { fetchData } from './fetchData';
-
+import { EFilterOperator, ESortOrder, IFilterInfo, ISortInfo } from './types';
+import ActionBar from './ActionBar';
+import FilterComponent from './FilterComponenet';
+import DataTable from './DataTable';
+import { postApiCall } from '../../api/base';
 
 interface EntryListProps {
   list: string;
@@ -37,8 +38,8 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const [sortOrder, setSortOrder] = useState<ESortOrder>(ESortOrder.ASC);
   const [activeSorts, setActiveSorts] = useState<ISortInfo[]>([]);
 
-  const createFetchQuery = (): IFetchQuery => {
-    const query: IFetchQuery = {};
+  const createFetchQuery = (): any => {
+    const query: any = {};
     
     if (activeFilters.length > 0) {
       query.filtersData = activeFilters;
@@ -65,8 +66,6 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     );
   };
 
-
-  
   useEffect(() => {
     refreshData();
   }, [name, isModalOpen]);
@@ -76,137 +75,113 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   };
 
   const handleAction = async (actionKey: string) => {
-    const action = list_config.actionConfig[actionKey as keyof typeof list_config.actionConfig];
-    if (action.actionType === 'DISPLAY_FORM') {
-      try {
-        const configFile = list_config.actionConfig[actionKey].formConfig;
+    try {
+      const action = list_config.actionConfig[actionKey as keyof typeof list_config.actionConfig];
+      if (!action) return;
+  
+      if (action.actionType === 'DISPLAY_FORM') {
+        const configFile = action.formConfig;
         const response = await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile }, true);
         const addConfigData = response.data;
-        console.log(addConfigData[0].queryInfo.path);
         
         if (actionKey === 'edit') {
-          console.log(action,"action");
-          const id = entries[name].data[selectedRow][action.payload ? action.payload[0] : 'id'];
-          console.log(id);
-          console.log(action.formConfig,[id],addConfigData[0].queryInfo.path);
-          const data1=await postApiCall('http://localhost:3000/api/generic/executeQuery', {
-          configFile:action.formConfig,payload:[id],path:addConfigData[0].queryInfo.path} ,true);
-          console.log(data1.data);
+          const id = entries[name].data[selectedRow][action.payload?.[0] || 'id'];
+          const dataResponse = await postApiCall('http://localhost:3000/api/generic/executeQuery', {
+            configFile: action.formConfig,
+            payload: [id],
+            path: addConfigData[0].queryInfo.path,
+          }, true);
+  
           addEntry(id);
-          fillform(id, data1.data);
-          setModalContent(<Master configFile={configFile} setIsModalOpen={setIsModalOpen} formId={id} addConfig={addConfigData} />);
+          fillform(id, dataResponse.data);
+          setModalContent(
+            <Master configFile={configFile} setIsModalOpen={setIsModalOpen} formId={id} addConfig={addConfigData} />
+          );
         } else if (actionKey === 'add') {
           const id = entries[name].data.length + random(1000, 9999);
           addEntry(id);
-          setModalContent(<Master configFile={configFile} setIsModalOpen={setIsModalOpen} formId={id} addConfig={addConfigData} />);
+          setModalContent(
+            <Master configFile={configFile} setIsModalOpen={setIsModalOpen} formId={id} addConfig={addConfigData} />
+          );
         }
+        
         setIsModalOpen(true);
-      } catch (error) {
-        showSnackbar('Error fetching form config');
-        console.error('Error fetching form config:', error);
-      }
-    } else if (action.actionType === 'EXECUTE_QUERY') {
-      try {
+      } else if (action.actionType === 'EXECUTE_QUERY') {
         const key = action.queryInfo.payload[0];
         const payload = [entries[name].data[selectedRow][key]];
-        const response = await postApiCall('http://localhost:3000/api/generic/executeQuery', {
+        
+        await postApiCall('http://localhost:3000/api/generic/executeQuery', {
           configFile: action.formConfig,
           payload,
           path: action.queryInfo.path,
           fetchquery: action.queryInfo.query,
         }, true);
-        console.log(response);
+        
         refreshData();
         setSelectedRow(-1);
         showSnackbar('Operation completed successfully');
-      } catch (error) {
-        console.error('Error executing query:', error);
-        showSnackbar('Error executing operation');
       }
+    } catch (error) {
+      showSnackbar('An error occurred while processing the request');
+      console.error('Error:', error);
     }
   };
+  
+
 
   const handleFilterApply = () => {
     if (filterColumn && filterValue) {
-      // Create the new filter
       const newFilter: IFilterInfo = {
         field: filterColumn,
         value: filterValue,
         operator: filterOperator,
       };
-      
-      // Update active filters (replace if same column, otherwise add)
       const updatedFilters = activeFilters.filter(f => f.field !== filterColumn);
       updatedFilters.push(newFilter);
       setActiveFilters(updatedFilters);
-      
-      // Create fetch query with both filters and sorts
-      const fetchQuery: IFetchQuery = {
+      const fetchQuery: any = {
         filtersData: updatedFilters,
         sortData: activeSorts.length > 0 ? activeSorts : undefined,
       };
-      
       fetchData('/api/generic/executeQuery', list, setData, initData, setLoading, showSnackbar, name, fetchQuery);
     }
   };
 
   const handleClearFilter = () => {
-    // Clear filter form state
     setFilterColumn('');
     setFilterValue('');
     setFilterOperator(EFilterOperator.CONTAINS);
     setActiveFilters([]);
-    
-    // Only include sort data if it exists
-    const fetchQuery: IFetchQuery = {};
+    const fetchQuery: any = {};
     if (activeSorts.length > 0) {
       fetchQuery.sortData = activeSorts;
     }
-    
-    // Fetch data with just sort parameters (or no parameters if no sorts)
     fetchData('/api/generic/executeQuery', list, setData, initData, setLoading, showSnackbar, name, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   const handleSort = (field: string) => {
     console.log('Sorting by:', field);
-    
-    // Determine the new sort order
-    const newOrder = 
-      sortField === field && sortOrder === ESortOrder.ASC
-        ? ESortOrder.DESC
-        : ESortOrder.ASC;
-    
-    // Update sort state
+    const newOrder = sortField === field && sortOrder === ESortOrder.ASC ? ESortOrder.DESC : ESortOrder.ASC;
     setSortField(field);
     setSortOrder(newOrder);
-    
-    // Create or update sort info
     const newSort: ISortInfo = { field, order: newOrder };
-    setActiveSorts([newSort]); // Only one sort field supported at a time
-    
-    // Create fetch query with both filters and the new sort
-    const fetchQuery: IFetchQuery = {
+    setActiveSorts([newSort]);
+    const fetchQuery: any = {
       sortData: [newSort],
       filtersData: activeFilters.length > 0 ? activeFilters : undefined,
     };
-    
-    fetchData('/api/generic/executeQuery', list,setData, initData, setLoading, showSnackbar, name, fetchQuery);
+    fetchData('/api/generic/executeQuery', list, setData, initData, setLoading, showSnackbar, name, fetchQuery);
   };
 
   const handleClearSort = () => {
-    // Clear sort state
     setSortField('');
     setSortOrder(ESortOrder.ASC);
     setActiveSorts([]);
-    
-    // Create fetch query with just filters (if any)
-    const fetchQuery: IFetchQuery = {};
+    const fetchQuery: any = {};
     if (activeFilters.length > 0) {
       fetchQuery.filtersData = activeFilters;
     }
-    
-    // Fetch data with just filter parameters (or no parameters if no filters)
-    fetchData('/api/generic/executeQuery', list,setData, initData, setLoading, showSnackbar, name, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+    fetchData('/api/generic/executeQuery', list, setData, initData, setLoading, showSnackbar, name, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -221,117 +196,37 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
       ) : (
         <div className={styles.entryListContainer}>
           <h2 className={styles.title}>{name}</h2>
-          {/* Filter UI */}
-          <div className={styles.filterCard}>
-            <div className={styles.filterRow}>
-              <select
-                value={filterColumn}
-                onChange={(e) => setFilterColumn(e.target.value)}
-                className={styles.select}
-              >
-                <option value="">Select Column</option>
-                {list_config.columns
-                  .map((col: any) => (
-                    <option key={col.name} value={col.name}>
-                      {col.label}
-                    </option>
-                  ))}
-              </select>
-              <input
-                type="text"
-                value={filterValue}
-                onChange={(e) => setFilterValue(e.target.value)}
-                placeholder="Enter filter value"
-                className={styles.input}
-              />
-              <select
-                value={filterOperator}
-                onChange={(e) => setFilterOperator(e.target.value as EFilterOperator)}
-                className={styles.select}
-              >
-                {Object.values(EFilterOperator).map((op) => (
-                  <option key={op} value={op}>
-                    {op.replace(/_/g, ' ').toLowerCase()}
-                  </option>
-                ))}
-              </select>
-              <button onClick={handleFilterApply} className={styles.actionButton}>
-                Apply Filter
-              </button>
-              <button onClick={handleClearFilter} className={clsx(styles.actionButton, styles.disabledButton)}>
-                Clear Filter
-              </button>
-              {activeSorts.length > 0 && (
-                <button onClick={handleClearSort} className={styles.actionButton}>
-                  Clear Sort
-                </button>
-              )}
-            </div>
-          </div>
+          <FilterComponent
+            columns={list_config.columns}
+            filterColumn={filterColumn}
+            filterValue={filterValue}
+            filterOperator={filterOperator}
+            onFilterColumnChange={setFilterColumn}
+            onFilterValueChange={setFilterValue}
+            onFilterOperatorChange={setFilterOperator}
+            onApplyFilter={handleFilterApply}
+            onClearFilter={handleClearFilter}
+            onClearSort={handleClearSort}
+            hasSort={!!activeSorts.length}
+          />
           
           <div className={styles.tableWrapper}>
-            <table className={styles.entryTable}>
-              <thead>
-                <tr>
-                  {list_config.columns.map((column: any) => (
-                    <th
-                      key={column.name}
-                      style={{ width: `${column.width}px` }}
-                      className={clsx(styles.header, {
-                        [styles.sortable]: column.sortable,
-                        [styles.sorted]: sortField === column.name,
-                        [styles.asc]: sortField === column.name && sortOrder === ESortOrder.ASC,
-                        [styles.desc]: sortField === column.name && sortOrder === ESortOrder.DESC,
-                      })}
-                      onClick={() => column.sortable && handleSort(column.name)}
-                    >
-                      {column.label}
-                      {column.sortable && sortField === column.name && (
-                        <span className={styles.sortIndicator}>
-                          {sortOrder === ESortOrder.ASC ? ' ↑' : ' ↓'}
-                        </span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {entries[name]?.data?.map((entry: any, index: number) => (
-                  <tr
-                    key={index}
-                    className={clsx(styles.entryListItem, {
-                      [styles.selectedRow]: selectedRow === index,
-                    })}
-                    onClick={() => handleRowClick(index)}
-                  >
-                    {list_config.columns.map((column: any) => (
-                      <td key={column.name} className={styles.entryListCell}>
-                        {entry[column.name] || ''}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <DataTable
+              columns={list_config.columns}
+              data={entries[name]?.data || []}
+              selectedRow={selectedRow}
+              onRowClick={handleRowClick}
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+            />
           </div>
-          <div className={styles.buttonContainer}>
-            {list_config.applicableActions.map((actionKey: string, index: number) => {
-              const action = list_config.actionConfig[actionKey];
-              const isDisabled = (actionKey === 'delete' || actionKey === 'edit') && selectedRow === -1;
-              return (
-                <button
-                  key={index}
-                  className={clsx(styles.actionButton, {
-                    [styles.disabledButton]: isDisabled,
-                  })}
-                  onClick={() => handleAction(actionKey)}
-                  disabled={isDisabled}
-                >
-                  {action.label}
-                </button>
-              );
-            })}
-          </div>
+          <ActionBar
+            actions={list_config.applicableActions}
+            actionConfig={list_config.actionConfig}
+            selectedRow={selectedRow}
+            onAction={handleAction}
+          />
         </div>
       )}
     </>

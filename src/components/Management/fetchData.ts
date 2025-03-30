@@ -17,6 +17,7 @@ export const fetchData = async (
   try {
     setLoading(true);
     const response = await postApiCall(url, { configFile: config, fetchQuery }, true);
+    console.log(response.data, "response");
     setData(name, response.data || []);
   } catch (error) {
     showSnackbar('Error fetching data');

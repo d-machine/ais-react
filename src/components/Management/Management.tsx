@@ -27,15 +27,18 @@ export default function Management({configFile, formId, userConfig }: RoleManage
   const [columnName, setColumnName] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log(configFile);
-    
 // In the fetchData function in Management.tsx
 const fetchData = async () => {
   const path = userConfig.queryInfo.path;
   try {
     setIsLoading(true);
     const response = await postApiCall('/api/generic/executeQuery', { configFile, payload: [formId], path }, true);
-    const fetchedData = await response.data;
+  if (!response?.data) {
+      console.error('No data received from API');
+      return;
+    }
+
+    const fetchedData = response.data;
     
     // Clear existing rows first to prevent duplication
     useAddStore.setState((state) => ({
@@ -50,8 +53,12 @@ const fetchData = async () => {
     }));
     
     // Then add the fresh data
-    fetchedData.forEach((entry: any) => addRow(formId, entry));
-    setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+    if (Array.isArray(fetchedData)) {
+      fetchedData.forEach((entry: any) => addRow(formId, entry));
+      setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+    } else {
+      console.error('Fetched data is not an array:', fetchedData);
+    }
   } catch (error) {
     console.error('Error fetching data:', error);
   } finally {
@@ -128,13 +135,8 @@ const fetchData = async () => {
   }
 
   async function  handleAction (actionKey: string)  {
-    console.log(actionKey);
-    console.log(userConfig.actionConfig[actionKey]);
-    console.log(formId);
-    
-    
+
     if(actionKey==="ADD"){
-      console.log(userConfig.columns);
       const newEntry: { [name: string]: string } = {
       };
 
@@ -156,21 +158,16 @@ const fetchData = async () => {
     }
     else if(actionKey==="SAVE"){
       const configFile=userConfig.actionConfig[actionKey].configFile;
-      console.log(configFile);
       
       const selectData=useAddStore.getState().entries[formId].rows[selectedRow? selectedRow : useAddStore.getState().entries[formId].rowKeys[0]].updatedData;
-      console.log(selectData);
-      
-      const payload=[formId];
-      //payload.push(selectData.);
+
+
       const valuesArray = Object.values(selectData);
-      console.log(userConfig.actionConfig[actionKey].queryInfo.path);
       valuesArray.unshift(formId);
-      console.log(valuesArray);
-      
+
+
       const response = await postApiCall("/api/generic/executeQuery", { configFile: configFile, payload: valuesArray,path:userConfig.actionConfig[actionKey].queryInfo.path }, true);
-      console.log(response.data, "response");
-      
+     
       if (response.data?.id) {
         useAddStore.setState((state) => ({
             entries: {
@@ -179,13 +176,13 @@ const fetchData = async () => {
                     ...state.entries[formId],
                     rows: {
                         ...state.entries[formId].rows,
-                        [selectedRow]: {
+                        [selectedRow as string]: {
                             originalData: {
-                                ...state.entries[formId].rows[selectedRow].originalData,
+                                ...state.entries[formId].rows[selectedRow as string]?.originalData,
                                 claim_id: response.data.id
                             },
                             updatedData: {
-                                ...state.entries[formId].rows[selectedRow].updatedData,
+                                ...state.entries[formId].rows[selectedRow as string]?.updatedData,
                                 claim_id: response.data.id
                             }
                         }
@@ -194,37 +191,21 @@ const fetchData = async () => {
             }
         }));
     }
-
-    console.log(useAddStore.getState().entries[formId].rows);
-    
-
-      console.log(payload);
-      console.log(formId);
-      
-      console.log(selectedRow);
-      
     }
     else if(actionKey==="DELETE"){
       const configFile=userConfig.actionConfig[actionKey].configFile;
-      console.log(configFile);
-      
-      console.log(selectedRow);
       const path=userConfig.actionConfig[actionKey].queryInfo.path;
-      console.log(path);
-      
       const selectedData=useAddStore.getState().entries[formId].rows[selectedRow? selectedRow : useAddStore.getState().entries[formId].rowKeys[0]].updatedData;
-      console.log(selectedData);
       const id=userConfig.actionConfig[actionKey].queryInfo.payload[0];
-      console.log(id);
-      
       const payload=[selectedData[id]];
-      console.log(payload);
       try {
         const response=await postApiCall("/api/generic/executeQuery", { configFile: configFile, payload: payload,path:path }, true);
         console.log(response.data);
 
-        deleteRow(formId,selectedRow);
-        setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+        if (selectedRow !== null) {
+          deleteRow(formId, selectedRow);
+          setRowKeys(useAddStore.getState().entries[formId].rowKeys);
+        }
 
       } catch (error) {
         console.log(error);
