@@ -96,7 +96,7 @@
 }
 
 .entryListItem:hover {
-  background-color: #f0f0f0;
+  background-color: #e3f0ff;
 }
 
 .selectedRow {
@@ -126,13 +126,14 @@ button {
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  background-color: #007bff;
-  color: #fff;
+  background-color: #e3f0ff;
+  color: #007bff;
 }
 
 button:hover:not(.disabledButton) {
   transform: translateY(-2px);
-  background-color: #0056b3;
+  background-color: #f6faff;
+  color: #007bff;
 }
 
 button:active:not(.disabledButton) {
@@ -242,13 +243,14 @@ button:active:not(.disabledButton) {
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  background-color: #007bff;
-  color: #fff;
+  background-color: #e3f0ff;
+  color: #007bff;
 }
 
 .actionButton:hover {
   transform: translateY(-2px);
-  background-color: #0056b3;
+  background-color: #f6faff;
+  color: #007bff;
 }
 
 .actionButton:active {
