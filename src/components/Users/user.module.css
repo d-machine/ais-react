@@ -69,7 +69,7 @@
     justify-content: flex-start;
   }
   
-  .actionButton {
+  button {
     padding: 10px 20px;
     font-size: 14px;
     font-family: Arial, sans-serif;
@@ -77,14 +77,10 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    background-color: #e3f0ff;
-    color: #007bff;
   }
   
-  .actionButton:hover {
+  button:hover:not(.disabledButton) {
     transform: translateY(-2px);
-    background-color: #f6faff;
-    color: #007bff;
   }
   
   button:active:not(.disabledButton) {
@@ -103,7 +99,7 @@
   }
   
   .entryListItem:hover {
-    background-color: #e3f0ff;
+    background-color: #f0f0f0;
   }
   
   .selectedRow {

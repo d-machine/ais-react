@@ -1,3 +1,4 @@
+
 .app {
   display: flex;
   flex-direction: column;
@@ -81,7 +82,7 @@ input {
 }
 
 .loginButton:hover {
-  background-color: #e3f0ff;
+  background-color: #0056b3;
 }
 
 /* Error Message */
@@ -114,5 +115,5 @@ input {
 }
 
 .logoutButton:hover {
-  background-color: #e3f0ff;
+  background-color: #cc0000;
 }

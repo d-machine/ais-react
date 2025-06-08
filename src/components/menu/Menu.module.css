@@ -87,22 +87,33 @@
   width: 100%;
   padding: 10px 16px;
   border: none;
-  background: none;
+  background: var(--menu-item-bg);
   text-align: left;
   font-size: 14px;
-  color: #333;
+  color: var(--menu-item-text);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s, color 0.2s;
   align-items: center;
   justify-content: space-between;
 }
 
-.menuItem:hover {
-  background-color: #e3f0ff;
+.menuItem:hover,
+.menuItem:focus,
+.menuItem:active {
+  background: var(--menu-item-hover-bg) !important;
+  color: var(--menu-item-hover-text) !important;
 }
 
-.menuItem:active {
-  background-color: #e8e8e8;
+.menuItem:disabled,
+.menuItem[disabled] {
+  background: var(--menu-item-disabled-bg);
+  color: var(--menu-item-disabled-text);
+  cursor: not-allowed;
+}
+
+.menuItem.selected {
+  background: var(--menu-item-hover-bg) !important;
+  color: var(--menu-item-hover-text) !important;
 }
 
 .hasChildren::after {

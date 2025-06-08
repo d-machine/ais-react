@@ -96,7 +96,7 @@
 }
 
 .entryListItem:hover {
-  background-color: #e3f0ff;
+  background-color: #f0f0f0;
 }
 
 .selectedRow {
@@ -118,26 +118,31 @@
 }
 
 /* Button styles */
-button {
+button,
+.actionButton {
   padding: 10px 20px;
   font-size: 14px;
   font-family: Arial, sans-serif;
   border-radius: 4px;
-  border: none;
+  border: 1px solid var(--button-primary-border) !important;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  background-color: #e3f0ff;
-  color: #007bff;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  background: var(--button-primary-bg) !important;
+  color: var(--button-primary-text) !important;
 }
 
-button:hover:not(.disabledButton) {
+button:hover:not(.disabledButton),
+.actionButton:hover:not(.disabledButton) {
   transform: translateY(-2px);
-  background-color: #f6faff;
-  color: #007bff;
+  background: var(--button-primary-bg-hover) !important;
+  color: var(--button-primary-text) !important;
 }
 
-button:active:not(.disabledButton) {
+button:active:not(.disabledButton),
+.actionButton:active:not(.disabledButton) {
   transform: translateY(0);
+  background: var(--button-primary-bg-hover) !important;
+  color: var(--button-primary-text) !important;
 }
 
 .disabledButton {
@@ -232,27 +237,4 @@ button:active:not(.disabledButton) {
   border-color: #007bff;
   outline: none;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-/* Reuse button styles for consistency */
-.actionButton {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-family: Arial, sans-serif;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  background-color: #e3f0ff;
-  color: #007bff;
-}
-
-.actionButton:hover {
-  transform: translateY(-2px);
-  background-color: #f6faff;
-  color: #007bff;
-}
-
-.actionButton:active {
-  transform: translateY(0);
 }

@@ -68,7 +68,7 @@
   }
   
   .cell:hover {
-    background-color: #e3f0ff;
+    background-color: rgb(167, 167, 228);
   }
   
   .cellLeft {
