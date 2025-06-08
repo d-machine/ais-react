@@ -11,6 +11,37 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /*Theming*/
+  --button-font-family: inherit;
+  --button-font-size: 1em;
+  --button-font-weight: 500;
+  --button-border-radius: 8px;
+  --button-padding: 0.6em 1.2em;
+  --button-border-width: 1px;
+  --button-border-style: solid;
+  --button-border-color: transparent;
+
+  /*Primary button*/
+  --button-primary-bg: #fff;
+  --button-primary-bg-hover: #e3f2fd;
+  --button-primary-text: #1565c0;
+  --button-primary-border: #bbdefb;
+
+  /*for Secondary button*/
+  --button-secondary-bg: #e0e0e0;
+  --button-secondary-bg-hover: #bdbdbd;
+  --button-secondary-text: #242424;
+  --button-secondary-border: #bdbdbd;
+
+  /*Menu item theme variables*/
+  --menu-item-bg: #fff;
+  --menu-item-hover-bg: #e3f2fd;
+  --menu-item-active-bg: #bbdefb;
+  --menu-item-text: #1565c0;
+  --menu-item-hover-text: #1565c0;
+  --menu-item-disabled-bg: #f5f5f5;
+  --menu-item-disabled-text: #bdbdbd;
 }
 
 a {
@@ -35,23 +66,40 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+/* Button base styles */
+.button {
+  font-family: var(--button-font-family);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  border-radius: var(--button-border-radius);
+  border-width: var(--button-border-width);
+  border-style: var(--button-border-style);
+  border-color: var(--button-border-color);
+  padding: var(--button-padding);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  outline: none;
+  display: inline-block;
 }
-button:hover {
-  border-color: #646cff;
+
+.button.primary {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border-color: var(--button-primary-border);
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.button.primary:hover,
+.button.primary:focus {
+  background: var(--button-primary-bg-hover);
+}
+
+.button.secondary {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border-color: var(--button-secondary-border);
+}
+.button.secondary:hover,
+.button.secondary:focus {
+  background: var(--button-secondary-bg-hover);
 }
 
 @media (prefers-color-scheme: light) {
