@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styles from './user.module.css';
+import { useFocusOnKey } from '../../hooks/useFocusOnKey';
 import clsx from 'clsx';
 import Master from '../EntryForm/Master';
 import Modal from '../../Utilities/Modal';
@@ -44,13 +45,13 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const { showSnackbar, SnackbarComponent } = useSnackbar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
-  
+
   // Filter state
   const [filterColumn, setFilterColumn] = useState<string>('');
   const [filterValue, setFilterValue] = useState<string>('');
   const [filterOperator, setFilterOperator] = useState<EFilterOperator>(EFilterOperator.CONTAINS);
   const [activeFilters, setActiveFilters] = useState<IFilterInfo[]>([]);
-  
+
   // Sort state
   const [sortField, setSortField] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<ESortOrder>(ESortOrder.ASC);
@@ -79,15 +80,15 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   // Function to create combined fetch query using current filters and sorts
   const createFetchQuery = (): IFetchQuery => {
     const query: IFetchQuery = {};
-    
+
     if (activeFilters.length > 0) {
       query.filtersData = activeFilters;
     }
-    
+
     if (activeSorts.length > 0) {
       query.sortData = activeSorts;
     }
-    
+
     return query;
   };
 
@@ -113,14 +114,15 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         const response = await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile }, true);
         const addConfigData = response.data;
         console.log(addConfigData[0].queryInfo.path);
-        
+
         if (actionKey === 'edit') {
-          console.log(action,"action");
+          console.log(action, "action");
           const id = entries[name].data[selectedRow][action.payload ? action.payload[0] : 'id'];
           console.log(id);
-          console.log(action.formConfig,[id],addConfigData[0].queryInfo.path);
-          const data1=await postApiCall('http://localhost:3000/api/generic/executeQuery', {
-          configFile:action.formConfig,payload:[id],path:addConfigData[0].queryInfo.path} ,true);
+          console.log(action.formConfig, [id], addConfigData[0].queryInfo.path);
+          const data1 = await postApiCall('http://localhost:3000/api/generic/executeQuery', {
+            configFile: action.formConfig, payload: [id], path: addConfigData[0].queryInfo.path
+          }, true);
           console.log(data1.data);
           addEntry(id);
           fillform(id, data1.data);
@@ -164,18 +166,18 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
         value: filterValue,
         operator: filterOperator,
       };
-      
+
       // Update active filters (replace if same column, otherwise add)
       const updatedFilters = activeFilters.filter(f => f.field !== filterColumn);
       updatedFilters.push(newFilter);
       setActiveFilters(updatedFilters);
-      
+
       // Create fetch query with both filters and sorts
       const fetchQuery: IFetchQuery = {
         filtersData: updatedFilters,
         sortData: activeSorts.length > 0 ? activeSorts : undefined,
       };
-      
+
       fetchData('/api/generic/executeQuery', list, fetchQuery);
     }
   };
@@ -186,40 +188,40 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     setFilterValue('');
     setFilterOperator(EFilterOperator.CONTAINS);
     setActiveFilters([]);
-    
+
     // Only include sort data if it exists
     const fetchQuery: IFetchQuery = {};
     if (activeSorts.length > 0) {
       fetchQuery.sortData = activeSorts;
     }
-    
+
     // Fetch data with just sort parameters (or no parameters if no sorts)
     fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
 
   const handleSort = (field: string) => {
     console.log('Sorting by:', field);
-    
+
     // Determine the new sort order
-    const newOrder = 
+    const newOrder =
       sortField === field && sortOrder === ESortOrder.ASC
         ? ESortOrder.DESC
         : ESortOrder.ASC;
-    
+
     // Update sort state
     setSortField(field);
     setSortOrder(newOrder);
-    
+
     // Create or update sort info
     const newSort: ISortInfo = { field, order: newOrder };
     setActiveSorts([newSort]); // Only one sort field supported at a time
-    
+
     // Create fetch query with both filters and the new sort
     const fetchQuery: IFetchQuery = {
       sortData: [newSort],
       filtersData: activeFilters.length > 0 ? activeFilters : undefined,
     };
-    
+
     fetchData('/api/generic/executeQuery', list, fetchQuery);
   };
 
@@ -228,16 +230,31 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     setSortField('');
     setSortOrder(ESortOrder.ASC);
     setActiveSorts([]);
-    
+
     // Create fetch query with just filters (if any)
     const fetchQuery: IFetchQuery = {};
     if (activeFilters.length > 0) {
       fetchQuery.filtersData = activeFilters;
     }
-    
+
     // Fetch data with just filter parameters (or no parameters if no filters)
     fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
   };
+
+  const buttonRef1 = useRef<HTMLButtonElement>(null);
+  const buttonRef2 = useRef<HTMLButtonElement>(null);
+  const buttonRef3 = useRef<HTMLButtonElement>(null);
+  const buttonRef4 = useRef<HTMLButtonElement>(null);
+  const buttonRef5 = useRef<HTMLSelectElement>(null);
+
+
+  const refCtr = [buttonRef1, buttonRef2, buttonRef3, buttonRef4]
+
+  useFocusOnKey(buttonRef1, 'q');
+  useFocusOnKey(buttonRef2, 'w');
+  useFocusOnKey(buttonRef3, 'e');
+  useFocusOnKey(buttonRef4, 'r');
+  useFocusOnKey(buttonRef5, 't');
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -258,6 +275,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
                 value={filterColumn}
                 onChange={(e) => setFilterColumn(e.target.value)}
                 className={styles.select}
+                ref={buttonRef5}
               >
                 <option value="">Select Column</option>
                 {list_config.columns
@@ -297,21 +315,23 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
                 </button>
               )}
             </div>
-            
+
             {/* Active Filters Display */}
             {activeFilters.length > 0 && (
               <div className={styles.activeFilters}>
                 <p>Active Filters:</p>
                 {activeFilters.map((filter, index) => (
                   <span key={index} className={styles.filterBadge}>
-                    {list_config.columns.find((col: any) => col.name === filter.field)?.label}: 
+                    {list_config.columns.find((col: any) => col.name === filter.field)?.label}:
                     {filter.operator} "{filter.value}"
                   </span>
                 ))}
               </div>
             )}
           </div>
-          
+
+
+
           <div className={styles.tableWrapper}>
             <table className={styles.entryTable}>
               <thead>
@@ -369,6 +389,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
                   })}
                   onClick={() => handleAction(actionKey)}
                   disabled={isDisabled}
+                  ref={refCtr[index]}
                 >
                   {action.label}
                 </button>

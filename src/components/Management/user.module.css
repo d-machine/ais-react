@@ -5,6 +5,12 @@
   box-sizing: border-box;
 }
 
+.noFormStyle{
+  background-color: none !important;
+  padding: 0 !important;
+
+}
+
 /* Container for the entire list */
 .entryListContainer {
   padding: 20px;
