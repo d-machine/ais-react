@@ -4,17 +4,20 @@ import { Tab } from './components/tabs/types';
 import EntryList from './components/Management/EntryList';
 // import accessToken from '../accesstoken';
 import { postApiCall } from './api/base';
+import CountryMaster from './components/CountryMaster/CountryMaster';
+import StateMaster from './components/StateMaster/StateMaster';
+
 interface TabsState {
   tabs: Tab[];
   formTabMap: { [key: string]: string };
-  addTab: (formId: string,name:string, listConfigFile: string) => Promise<void>;
+  addTab: (formId: string, name: string, listConfigFile: string) => Promise<void>;
   updateTabStatus: (tabId: string, newStatus: string) => void;
 }
 
 const useTabsStore = create<TabsState>((set, get) => ({
   tabs: [],
   formTabMap: {},
-  addTab: async (formId: string,name: string, listConfigFile: string) => {
+  addTab: async (formId: string, name: string, listConfigFile: string) => {
     const { tabs, formTabMap } = get();
 
     if (formId in formTabMap) {
@@ -30,11 +33,17 @@ const useTabsStore = create<TabsState>((set, get) => ({
     const newTabId = `tab${tabs.length + 1}`;
     formTabMap[formId] = newTabId;
     let content;
-    if (formId === '6' || formId === '7') {
+    
+    // Special handling for Country Master and State Master
+    if (formId === '21') {
+      content = <CountryMaster />;
+    } else if (formId === '22') {
+      content = <StateMaster />;
+    } else if (formId === '6' || formId === '7') {
       try {
         console.log('listConfigFile', listConfigFile);
         
-        const response=await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile: listConfigFile }, true);
+        const response = await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile: listConfigFile }, true);
         console.log('response', response.data);
         content = <EntryList name={name} list_config={response.data} list={listConfigFile} />;
       } catch (error) {
