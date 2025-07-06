@@ -30,7 +30,7 @@ const useTabsStore = create<TabsState>((set, get) => ({
     const newTabId = `tab${tabs.length + 1}`;
     formTabMap[formId] = newTabId;
     let content;
-    if (formId === '6' || formId === '7') {
+    // if (formId === '6' || formId === '7') {
       try {
         console.log('listConfigFile', listConfigFile);
         
@@ -41,9 +41,9 @@ const useTabsStore = create<TabsState>((set, get) => ({
         console.error('Error fetching menu:', error);
         content = <div>Error fetching content</div>;
       }
-    } else {
-      content = <div>Unknown formId</div>;
-    }
+    // } else {
+    //   content = <div>Unknown formId</div>;
+    // }
 
     const newTab: Tab = {
       id: newTabId,

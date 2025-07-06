@@ -11,7 +11,7 @@ export default function Menu() {
   const { addTab } = useTabsStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
+  
  useEffect(() => {
     const fetchMenuData = async () => {
       console.log(authStore.getState().token,"tokens");
@@ -62,6 +62,7 @@ export default function Menu() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleItemClick = (item: any) => {
+    
     if (!item.children) {
       addTab((item.id).toString(),item.name, item.list_config_file);
       closeMenu();
