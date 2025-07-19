@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import styles from './user.module.css';
-import { useFocusOnKey } from '../../hooks/useFocusOnKey';
+import { useFocusOnKey } from '@hooks/useFocusOnKey';
 import clsx from 'clsx';
-import Master from '../EntryForm/Master';
-import Modal from '../../Utilities/Modal';
-import { useSnackbar } from '../../Utilities/useSnackBar';
-import useEntryListStore from '../../useEntryListStore';
-import { useAddStore } from '../../useAddStore';
+import Master from '@components/EntryForm/Master';
+import Modal from '@utils/Modal';
+import { useSnackbar } from '@utils/useSnackBar';
+import useEntryListStore from './useEntryListStore';
+import { useAddStore } from './useAddStore';
 import { random } from 'lodash';
-import { postApiCall } from '../../api/base';
+import { postApiCall } from '@api/base';
 import { EFilterOperator, ESortOrder } from './types';
 
 export interface ISortInfo {

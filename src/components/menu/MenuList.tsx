@@ -1,4 +1,4 @@
-import { MenuItem } from './types';
+import { MenuItem } from '@/types';
 import MenuItemComponent from './MenuItem';
 import styles from './Menu.module.css';
 

@@ -6,6 +6,7 @@ import { useEffect, RefObject } from 'react';
  * @param ref - The element ref to focus.
  * @param key - The keyboard key to listen for (e.g., 'F9', 'Enter', 'a').
  */
+
 export function useFocusOnKey<T extends HTMLElement>(
   ref: RefObject<T>,
   key: string

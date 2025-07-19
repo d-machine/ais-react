@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { MenuItem } from './types';
+import { MenuItem } from '@/types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
-import useTabsStore from '../../useTabsStore';
-import { postApiCall } from '../../api/base';
-import authStore from '../../store/auth/store';
+import useTabsStore from '@components/tabs/useTabsStore';
+import { postApiCall } from '@api/base';
+import authStore from '@api/auth/store';
+
+
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);

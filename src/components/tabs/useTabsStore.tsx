@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { Tab } from './components/tabs/types';
+import { Tab } from '@/types';
 // import axios from 'axios';
-import EntryList from './components/Management/EntryList';
+import EntryList from '@components/EntryList';
 // import accessToken from '../accesstoken';
-import { postApiCall } from './api/base';
+import { postApiCall } from '@api/base';
 interface TabsState {
   tabs: Tab[];
   formTabMap: { [key: string]: string };

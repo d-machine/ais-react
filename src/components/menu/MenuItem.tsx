@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { MenuItem } from './types';
+import { MenuItem } from '@/types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
 

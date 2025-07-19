@@ -1,5 +1,5 @@
-import Menu from '../menu/Menu';
-import styles from './Header.module.css';
+import Menu from '@components/menu/Menu';
+import styles from '@styles/Header.module.css';
 
 interface HeaderProps {
   title: string;

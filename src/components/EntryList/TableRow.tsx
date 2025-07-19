@@ -1,7 +1,7 @@
 import React, { memo  } from 'react';
 import clsx from 'clsx';
 import styles from './Management.module.css';
-import { useAddStore } from '../../useAddStore';
+import { useAddStore } from './useAddStore';
 import { Column } from './MangementTypes';
 
 interface TableRowProps {

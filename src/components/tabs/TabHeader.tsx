@@ -1,4 +1,4 @@
-import useTabsStore from '../../useTabsStore';
+import useTabsStore from './useTabsStore';
 import styles from './Tabs.module.css';
 
 interface TabHeaderProps {
