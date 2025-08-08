@@ -1,8 +1,8 @@
 import axios from "axios";
-import { logIn, logOut } from "../store/auth/actions";
-import { getRefreshToken, getToken } from "../store/auth/selectors";
-import useAuthStore from "../store/auth/store";
-import { _isNil } from "../utils/aisLodash";
+import { logIn, logOut } from "./auth/actions";
+import { getRefreshToken, getToken } from "./auth/selectors";
+import useAuthStore from "./auth/store";
+import { _isNil } from "@utils/aisLodash";
 
 const BASE_URL = "http://localhost:3000";
 

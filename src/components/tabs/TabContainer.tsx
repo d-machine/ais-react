@@ -1,6 +1,6 @@
 import TabHeader from './TabHeader';
 import styles from './Tabs.module.css';
-import useTabsStore from '../../useTabsStore';
+import useTabsStore from './useTabsStore';
 
 
 export default function TabContainer() {

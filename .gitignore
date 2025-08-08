@@ -131,3 +131,5 @@ dist
 
 
 LeftOvers/
+
+/package-lock.json

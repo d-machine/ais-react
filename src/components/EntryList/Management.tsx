@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAddStore } from '../../useAddStore';
+import { useAddStore } from './useAddStore';
 import Table from './Table';
 import Modal from './Modal';
 import styles from './Management.module.css';

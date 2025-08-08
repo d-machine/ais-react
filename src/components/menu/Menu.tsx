@@ -1,17 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import { MenuItem } from './types';
+import { MenuItem } from '@/types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
-import useTabsStore from '../../useTabsStore';
-import { postApiCall } from '../../api/base';
-import authStore from '../../store/auth/store';
+import useTabsStore from '@components/tabs/useTabsStore';
+import { postApiCall } from '@api/base';
+import authStore from '@api/auth/store';
+
+
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const { addTab } = useTabsStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
+  
  useEffect(() => {
     const fetchMenuData = async () => {
       console.log(authStore.getState().token,"tokens");
@@ -62,6 +64,7 @@ export default function Menu() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleItemClick = (item: any) => {
+    
     if (!item.children) {
       addTab((item.id).toString(),item.name, item.list_config_file);
       closeMenu();

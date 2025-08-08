@@ -1,10 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
-import Header from './components/header/Header';
-import TabContainer from './components/tabs/TabContainer';
-import styles from './App.module.css';
-import { loginApiCall, logoutApiCall, refreshTokenApiCall } from './api/base';
-import useAuthStore from './store/auth/store';
+import Header from '@components/Header';
+import TabContainer from '@components/tabs/TabContainer';
+
+import styles from '@styles/App.module.css';
+
+import { loginApiCall, logoutApiCall, refreshTokenApiCall } from '@api/base';
+import useAuthStore from '@api/auth/store';
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);

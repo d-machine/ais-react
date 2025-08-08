@@ -1,14 +1,14 @@
 
 //import InputSelect from "./InputSelect";
-import styles1 from "../Users/user.module.css";
+import styles1 from "@styles/user.module.css";
 import InputText from "./InputText";
 import styles from "./Input.module.css"
 import InputPassword from "./InputPassowrd";
 import InputSelect from "./InputSelect";
 import InputTextArea from "./InputTextArea";
 import { EFieldType } from "./types";
-import { useAddStore } from "../../useAddStore";
-import { postApiCall } from "../../api/base";
+import { useAddStore } from "@components/EntryList/useAddStore";
+import { postApiCall } from "@api/base";
 
 
 const INPUT_MAP = {

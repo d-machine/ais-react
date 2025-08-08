@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { TAuthStore } from "./types";
+import { TAuthStore } from "@/types";
 import { persist } from "zustand/middleware";
 
 const authStore = create<TAuthStore>()(

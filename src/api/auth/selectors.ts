@@ -1,4 +1,4 @@
-import { TAuthStore } from "./types";
+import { TAuthStore } from "@/types";
 
 export function getIsLoggedIn(state: TAuthStore): boolean | undefined {
   return state.isLoggedIn;
