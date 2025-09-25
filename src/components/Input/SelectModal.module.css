@@ -14,7 +14,7 @@
   
   .modal {
     z-index: 5000;
-    background: white;
+    /* background: white; */
     padding: 20px;
     border-radius: 8px;
     width: 90%;
@@ -34,7 +34,7 @@
   }
   
   .closeButton {
-    background-color: #007bff;
+    background-color: #5a41be;
     color: #fff;
     border: none;
     padding: 10px 20px;

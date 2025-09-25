@@ -1,0 +1,35 @@
+.loginContainer {
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    background: radial-gradient(circle at center, #f9f4ef 0%, #f2f2f6 100%);
+}
+
+.loginCard {
+    background: radial-gradient(circle at center, #f9f4ef 0%, #f2f2f6 100%);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-width: 400px;
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.loginInputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}

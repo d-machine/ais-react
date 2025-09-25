@@ -5,11 +5,11 @@
     overflow-x: auto;
   }
 
-  h2{
+  /* h2{
     height: 30px;
     font: optional;
     overflow: hidden;
-  }
+  } */
 
   .tableWrapper {
     max-width: 100%;
@@ -84,7 +84,7 @@
   }
   
   button:hover:not(.disabledButton) {
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
   }
   
   button:active:not(.disabledButton) {

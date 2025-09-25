@@ -80,11 +80,11 @@
   }
   
   button:hover:not(.disabledButton) {
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
   }
   
   button:active:not(.disabledButton) {
-    transform: translateY(0);
+    /* transform: translateY(0); */
   }
   
   .disabledButton {

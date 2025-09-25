@@ -4,7 +4,7 @@ import MenuList from './MenuList';
 import styles from './Menu.module.css';
 import useTabsStore from '@components/tabs/useTabsStore';
 import { postApiCall } from '@api/base';
-import authStore from '@api/auth/store';
+import authStore from '@/stores/auth/store';
 
 
 export default function Menu() {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAddStore } from "@components/EntryList/useAddStore";
 import Management from "@components/EntryList/Management";
-import Form from "../Input/Index";
+import Form from "../Input";
 
 interface Props {
   addConfig: any[];
