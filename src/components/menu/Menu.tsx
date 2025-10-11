@@ -2,36 +2,28 @@ import { useState, useRef, useEffect } from 'react';
 import { MenuItem } from '@/types';
 import MenuList from './MenuList';
 import styles from './Menu.module.css';
-import useTabsStore from '@components/tabs/useTabsStore';
-import { postApiCall } from '@api/base';
-import authStore from '@/stores/auth/store';
-
+import { getMenuApiCall } from '@/api/api';
+import { MENU_UPDATED } from '@/events/constants';
+import { getMenu } from '@/storage/data';
+import { createNewTab } from '@/storage/tabs';
+import { bcm } from '@/events/base';
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const { addTab } = useTabsStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   
  useEffect(() => {
-    const fetchMenuData = async () => {
-      console.log(authStore.getState().token,"tokens");
-      
-      try {
-        const response = await postApiCall('http://localhost:3000/api/generic/getMenu', {}, true);
-        setMenuItems(response.data.children);
-        console.log("pass");
-        
-      } catch (error) {
-        console.error('Error fetching menu:', error);
-        console.log("fail");
-        
-      }
+    const handler = () => {
+      setMenuItems(getMenu() || []);
     };
-
-    fetchMenuData();
-  }, []);
+    bcm.register(MENU_UPDATED, handler);
+    getMenuApiCall();
+    return () => {
+      bcm.deregister(MENU_UPDATED, handler);
+    };
+  }, [])
 
   useEffect(() => {
     if (!isOpen) return;
@@ -64,9 +56,20 @@ export default function Menu() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleItemClick = (item: any) => {
-    
+    // Only create a tab when a leaf node (no children) is selected
     if (!item.children) {
-      addTab((item.id).toString(),item.name, item.list_config_file);
+      // Create a tab object with required properties
+      const tab = {
+        id: `tab-${item.id}-${Date.now()}`, // Unique ID with timestamp
+        title: item.name,
+        content: item.content || `Content for ${item.name}`,
+        status: 'ACTIVE',
+        resourceId: item.id,
+        listConfigFile: item.list_config_file
+      };
+      
+      // Create a new tab using our storage system
+      createNewTab(tab);
       closeMenu();
     }
   };

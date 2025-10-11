@@ -3,7 +3,7 @@ import { Tab } from '@/types';
 // import axios from 'axios';
 import EntryList from '@components/EntryList';
 // import accessToken from '../accesstoken';
-import { postApiCall } from '@api/base';
+import { getConfigApiCall } from '@api/api';
 interface TabsState {
   tabs: Tab[];
   formTabMap: { [key: string]: string };
@@ -34,11 +34,11 @@ const useTabsStore = create<TabsState>((set, get) => ({
       try {
         console.log('listConfigFile', listConfigFile);
         
-        const response=await postApiCall('http://localhost:3000/api/generic/getConfig', { configFile: listConfigFile }, true);
+        const response = await getConfigApiCall(listConfigFile);
         console.log('response', response.data);
         content = <EntryList name={name} list_config={response.data} list={listConfigFile} />;
       } catch (error) {
-        console.error('Error fetching menu:', error);
+        console.error('Error fetching config:', error);
         content = <div>Error fetching content</div>;
       }
     // } else {

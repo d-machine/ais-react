@@ -265,9 +265,10 @@ export interface IFeildBase {
   type: EFieldType;
   required?: boolean;
   readOnly?: boolean;
-  grid_column?: number;
-  dependencies?: IDependency[];
+  grid_columns?: number;
   width?: number;
+  input_width?: number;
+  dependencies?: string[];
   disabled?: boolean;
 }
 

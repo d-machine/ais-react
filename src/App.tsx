@@ -6,34 +6,39 @@ import TabContainer from '@components/tabs/TabContainer';
 import styles from '@styles/App.module.css';
 
 import { refreshTokenApiCall } from '@api/base';
-import useAuthStore from '@/stores/auth/store';
 import Login from './components/impure/login';
+import { getBoolean, getString } from './storage/base';
+import { IS_LOGGED_IN, REFRESH_TOKEN } from './storage/contants';
+import { logOut } from './storage/auth';
+import { AUTH_CHANGED } from './events/constants';
+import { bcm } from './events/base';
 
 function App() {
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const refreshToken = useAuthStore((state) => state.refreshToken);
-  const [authInitialized, setAuthInitialized] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(getBoolean(IS_LOGGED_IN));
 
   useEffect(() => {
-    async function initializeAuth() {
-      if (isLoggedIn) {
-        setAuthInitialized(true);
+    if (isLoggedIn === null) {
+      refreshTokenApiCall();
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    const handler = () => {
+      const loggedIn = getBoolean(IS_LOGGED_IN);
+      const refreshToken = getString(REFRESH_TOKEN);
+      if (loggedIn && !refreshToken) {
+        logOut();
         return;
       }
-      if (refreshToken) {
-        const success = await refreshTokenApiCall(refreshToken);
-        if (success) {
-          setAuthInitialized(true);
-          return;
-        }
-        useAuthStore.setState({ isLoggedIn: false, refreshToken: undefined });
-      }
-      setAuthInitialized(true);
-    }
-    initializeAuth();
-  }, [isLoggedIn, refreshToken]);
+      setIsLoggedIn(loggedIn);
+    };
+    bcm.register(AUTH_CHANGED, handler);
+    return () => {
+      bcm.deregister(AUTH_CHANGED, handler);
+    };
+  }, []);
 
-  if (!authInitialized && refreshToken) {
+  if (isLoggedIn === null) {
     return (
       <div className={styles.loading}>
         <p>Loading...</p>

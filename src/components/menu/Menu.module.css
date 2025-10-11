@@ -29,7 +29,7 @@
   width: 30px;
   height: 4px;
   backdrop-filter: blur(4px) brightness(0.7);
-  background: linear-gradient(90deg, #5a41be 5%, #e6850f 50%, #5a41be 95%);;
+  background-color: #f9f4ef;
   position: absolute;
   border-radius: 3px;
   left: 0;

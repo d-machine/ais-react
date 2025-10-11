@@ -27,7 +27,7 @@ export default function InputPassword({id,field, formData,setFormData}:InputPass
         <input
           className={styles.input}
           name={field.name}
-          value={formData[field.name] || ""}
+          defaultValue={formData[field.name] || ""}
           style={{ width: "200px" ,gridColumn:"span 10" }}
           type={field.type}
           onChange={handleInputChange}

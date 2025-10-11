@@ -20,7 +20,7 @@
   margin: 0;
   margin-left: 20px;
   font-size: 1.5rem;
-  color: #333;
+  color: #f9f4ef;
   font-weight: 600;
 }
 
@@ -34,10 +34,21 @@
   gap: 20px;
 }
 
-.headerTitle {
-  background: -webkit-linear-gradient(90deg, #5a41be 5%, #e6850f 50%, #5a41be 95%);
-  background: linear-gradient(90deg, #5a41be 5%, #e6850f 50%, #5a41be 95%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.logoutButton {
+  background-color: #BE4166;
+  color: #f9f4ef;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: #CB6785;
+}
+
+.logoutButton:active {
+  background-color: #CB6785aa;
 }

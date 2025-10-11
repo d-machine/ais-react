@@ -22,9 +22,7 @@
     padding: 8px 16px;
     border: none;
     background: transparent;
-    color: #5a41be;
-    font-size: 2rem;
-    font-weight: 500;
+    color: #7B67CB;
     letter-spacing: .05rem;
     cursor: pointer;
     border-radius: 4px 4px 0 0;
@@ -34,6 +32,9 @@
     border: 1px solid transparent;
     border-bottom: none;
     margin-bottom: -1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .tab:hover {
@@ -42,6 +43,7 @@
   }
   
   .tab.active {
+    color: #5a41be;
     background: #fefefd;
     font-weight: 600;
     border-color: #e1e1e1;
@@ -59,8 +61,36 @@
     overflow: auto;
     /* background: white; */
   }
+  
   .tabContentChild{
     height: 100%;
     width: 100%;
     position: absolute;
+  }
+  
+  .tabTitle {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .closeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-left: 8px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.2s;
+  }
+  
+  .closeButton:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
   }

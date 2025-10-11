@@ -44,7 +44,7 @@ export default function InputDate({id,field, formData,setFormData}:InputDateProp
         <input
           className={styles.input}
           name={field.name}
-          value={formData[field.name] || ""}
+          defaultValue={formData[field.name] || ""}
           style={{ width: field.input_width }}
           type={field.type}
           onChange={handleInputChange}

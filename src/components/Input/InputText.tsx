@@ -1,29 +1,72 @@
-import styles from "./Input.module.css"
-import { IField } from "./types";
+import React from 'react';
+import styles from './Input.module.css';
+import BaseInput from './BaseInput';
 
-
-interface InputTextProps {
-  id: string;
-  field: IField;
-  formData: { [key: string]: string | number };
-  setFormData: (id: string, name: string, value: string | number) => void
+export interface InputTextProps {
+  name: string;
+  label: string;
+  required?: boolean;
+  read_only?: boolean;
+  disabled?: boolean;
+  grid_columns?: number;
+  input_width?: string;
+  dependencies?: string[];
+  formData: Record<string, any>;
+  setFormData: (name: string, value: any) => void;
+  dependencyValues?: Record<string, any>;
+  id?: string;
+  field?: any;
 }
 
-export default function InputText({ id, field, formData, setFormData }: InputTextProps) {
+const InputText: React.FC<InputTextProps> = ({
+  name,
+  label,
+  required = false,
+  read_only = false,
+  disabled = false,
+  grid_columns,
+  input_width,
+  dependencies = [],
+  formData,
+  setFormData,
+  dependencyValues = {},
+  id,
+  field
+}) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(id, e.target.name, e.target.value);
+    setFormData(name, e.target.value);
   };
 
+  // Support both new and old API
+  const actualName = name || (field && field.name);
+  const actualLabel = label || (field && field.label);
+  const actualRequired = required || (field && field.required) || false;
+  
+  // Check if field should be disabled based on dependencies
+  const isDependencyDisabled = dependencies.length > 0 && 
+    dependencies.some(dep => !dependencyValues[dep]);
+
+  // Determine if component should be disabled
+  const isDisabled = disabled || isDependencyDisabled || read_only;
+
   return (
-    <>
-      <label>{field.label}</label>
+    <BaseInput
+      label={actualLabel}
+      required={actualRequired}
+      gridColumns={grid_columns}
+      inputWidth={input_width}
+    >
       <input
-        className={`${styles.input} ${styles[`input-width-${field.width || 200}`]}`}
-        name={field.name}
-        value={formData[field.name]}
-        type='text'
+        className={`${styles.input} ${read_only ? styles.readOnly : ''}`}
+        name={actualName}
+        defaultValue={formData[actualName] || ''}
+        type="text"
         onChange={handleInputChange}
+        disabled={isDisabled}
+        readOnly={read_only}
       />
-    </>
+    </BaseInput>
   );
-}
+};
+
+export default InputText;
