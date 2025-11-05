@@ -1,0 +1,57 @@
+{
+  "sections": [
+    {
+      "sectionType": "fields",
+      "sectionName": "Country Details",
+      "applicableActions": ["save", "cancel"],
+      "actionConfig": {
+        "save": {
+          "label": "Create Country",
+          "actionType": "EXECUTE_QUERY",
+          "queryInfo": {
+            "query": "INSERT INTO countries (code, name, description, is_active) VALUES ($1, $2, $3, $4)",
+            "payload": ["code", "name", "description", "is_active"],
+            "path": "insertCountry"
+          }
+        },
+        "cancel": {
+          "label": "Cancel",
+          "actionType": "EXIT"
+        }
+      },
+      "fields": [
+        {
+          "name": "code",
+          "label": "Country Code",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., US, IN, UK"
+        },
+        {
+          "name": "name",
+          "label": "Country Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., United States, India"
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Optional description"
+        },
+        {
+          "name": "is_active",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "options": [
+            {"id": true, "name": "Active"},
+            {"id": false, "name": "Inactive"}
+          ]
+        }
+      ]
+    }
+  ]
+}

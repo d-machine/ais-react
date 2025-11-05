@@ -63,9 +63,11 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     initData(name);
     try {
       setLoading(true);
+      // Ensure we always send a proper fetchQuery structure
+      const normalizedFetchQuery = fetchQuery || {};
       const response = await postApiCall(url, {
         configFile: config,
-        fetchQuery,
+        fetchQuery: normalizedFetchQuery,
       }, true);
       console.log(name, response.data);
       setData(name, response.data || []);
@@ -95,7 +97,8 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
   const refreshData = () => {
     // Always use the current filter and sort settings when refreshing
     const fetchQuery = createFetchQuery();
-    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+    // Always send the fetchQuery object, even if empty
+    fetchData('/api/generic/executeQuery', list, fetchQuery);
   };
 
   useEffect(() => {
@@ -196,7 +199,7 @@ export default function EntryList({ list, name, list_config }: EntryListProps) {
     }
 
     // Fetch data with just sort parameters (or no parameters if no sorts)
-    fetchData('/api/generic/executeQuery', list, Object.keys(fetchQuery).length > 0 ? fetchQuery : undefined);
+    fetchData('/api/generic/executeQuery', list, fetchQuery);
   };
 
   const handleSort = (field: string) => {

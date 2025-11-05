@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAddStore } from "@components/EntryList/useAddStore";
 import Management from "@components/EntryList/Management";
-import Form from "../Input";
+import TanStackInput from "../Input/TanStackInput";
 
 interface Props {
   addConfig: any[];
@@ -40,7 +40,7 @@ export default function Master({configFile, addConfig, formId ,setIsModalOpen}: 
         minHeight: 0, 
         overflowY: "auto" 
       }}>
-      <Form
+      <TanStackInput
       configFile={configFile}
         setIsModalOpen={setIsModalOpen}
         selectedValues={useAddStore.getState().entries[formId]?.selectedValues || {}}

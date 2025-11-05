@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './Input.module.css';
 import BaseInput from './BaseInput';
 import SelectModal from './SelectModal';
+import InputSelectLookup from './InputSelectLookup';
 import { postApiCall } from '../../api/base';
 import { executeQueryApiCall } from '../../api/api';
 
@@ -34,6 +35,14 @@ interface InputSelectProps {
   configFile?: string;
   // Case 3: Resource name
   resource?: string;
+  // Case 4: SelectConfig (for lookup tables)
+  selectConfig?: {
+    resource: string;
+    selectHandler: string;
+    currentSelection: Array<{ key: string; as: string }>;
+    selectParser: string;
+    fields_to_extract: Array<{ key: string; as: string }>;
+  };
   formData: Record<string, any>;
   setFormData: (name: string, value: any) => void;
   dependencyValues?: Record<string, any>;
@@ -63,12 +72,31 @@ const InputSelect: React.FC<InputSelectProps> = ({
   configFile,
   // Case 3
   resource,
+  // Case 4
+  selectConfig,
   formData,
   setFormData,
   dependencyValues = {},
   id,
   field
 }) => {
+  // If selectConfig is provided, use the lookup component
+  if (selectConfig) {
+    return (
+      <InputSelectLookup
+        name={name || field?.name}
+        label={label || field?.label}
+        required={required || field?.required}
+        read_only={read_only}
+        disabled={disabled}
+        grid_columns={grid_columns}
+        input_width={input_width}
+        formData={formData}
+        setFormData={setFormData}
+        selectConfig={selectConfig}
+      />
+    );
+  }
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [displayValue, setDisplayValue] = useState('');

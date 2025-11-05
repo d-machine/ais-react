@@ -8,6 +8,7 @@ export function logIn(token: string, refreshToken: string) {
   setBoolean(IS_LOGGED_IN, true);
   setString(ACCESS_TOKEN, token);
   setString(REFRESH_TOKEN, refreshToken);
+  console.log("User logged in");
   bcm.broadcast({ type: AUTH_CHANGED });
 }
 

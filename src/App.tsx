@@ -24,6 +24,7 @@ function App() {
 
   useEffect(() => {
     const handler = () => {
+      // console.log("AUTH_CHANGED event received");
       const loggedIn = getBoolean(IS_LOGGED_IN);
       const refreshToken = getString(REFRESH_TOKEN);
       if (loggedIn && !refreshToken) {
@@ -32,6 +33,7 @@ function App() {
       }
       setIsLoggedIn(loggedIn);
     };
+    console.log("Registering AUTH_CHANGED event handler");
     bcm.register(AUTH_CHANGED, handler);
     return () => {
       bcm.deregister(AUTH_CHANGED, handler);

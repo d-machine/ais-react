@@ -6,12 +6,16 @@ class BroadcastChannelManager {
 
   constructor(channelName: string) {
     this.channel = new BroadcastChannel(channelName);
+    console.log("BroadcastChannel created:", this.channel);
     this.channel.onmessage = (event) => {
+      console.log("Received message:", event.data, this.channel.name);
+      // console.trace();
+      // console.log("onmessage triggered");
       const eventType = event.data.type;
-      console.log("Received message:", event.data);
+      // console.log("Received message:", event.data);
       if (this.listeners.has(eventType)) {
         const handlers = this.listeners.get(eventType);
-        console.log(`Notifying ${handlers?.size} listeners for event: ${eventType}`);
+        // console.log(`Notifying ${handlers?.size} listeners for event: ${eventType}`);
         if (handlers && handlers.size > 0) {
           handlers.forEach(handler => handler(event.data.payload));
         }

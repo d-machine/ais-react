@@ -5,7 +5,7 @@ import { Tab } from '@/types';
 import { getOrderedTabs, setActiveTab, removeTab, getActiveTab } from '@/storage/tabs';
 import { ACTIVE_TAB_CHANGED, TAB_CREATED, TAB_REMOVED } from '@/events/constants';
 import { bcm } from '@/events/base';
-import EntryList from '@components/EntryList';
+import EntryListNew from '@components/EntryList/EntryListNew';
 import { postApiCall } from '@api/base';
 
 export default function TabContainerWithStorage() {
@@ -61,7 +61,7 @@ export default function TabContainerWithStorage() {
           
           return {
             ...tab,
-            content: <EntryList 
+            content: <EntryListNew 
               name={tab.title} 
               list_config={response.data} 
               list={tab.listConfigFile} 

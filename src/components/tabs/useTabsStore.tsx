@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Tab } from '@/types';
 // import axios from 'axios';
-import EntryList from '@components/EntryList';
+import EntryListNew from '@components/EntryList/EntryListNew';
 // import accessToken from '../accesstoken';
 import { getConfigApiCall } from '@api/api';
 interface TabsState {
@@ -36,7 +36,7 @@ const useTabsStore = create<TabsState>((set, get) => ({
         
         const response = await getConfigApiCall(listConfigFile);
         console.log('response', response.data);
-        content = <EntryList name={name} list_config={response.data} list={listConfigFile} />;
+        content = <EntryListNew name={name} list_config={response.data} list={listConfigFile} />;
       } catch (error) {
         console.error('Error fetching config:', error);
         content = <div>Error fetching content</div>;
